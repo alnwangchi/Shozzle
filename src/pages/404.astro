@@ -1,0 +1,22 @@
+---
+import Link from '@components/Link.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+---
+
+<MainLayout title='404' description='沒有這頁'>
+  <div
+    class='container'
+    style={{
+      display: 'grid',
+      placeItems: 'center',
+      textAlign: 'center',
+      gap: 'var(--space-sm)',
+    }}
+  >
+    <div>
+      <h1 class='h1'>OOPS!</h1>
+      <p>沒有這頁喔</p>
+    </div>
+    <Link text='回首頁' href='/' style='primary' />
+  </div>
+</MainLayout>

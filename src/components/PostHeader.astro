@@ -1,0 +1,30 @@
+---
+// library imports
+import { Image } from '@astrojs/image/components';
+// utils imports
+import { slugify } from '@utils/index.js';
+import dayjs from 'dayjs';
+const { category, title, author, date, image } = Astro.props;
+---
+
+<header>
+  <div class='container'>
+    <small>
+      <a href={`/category/${slugify(category)}/`} class='badge'>{category}</a>
+    </small>
+    <h1 class='h2'>{title}</h1>
+    <p>
+      by <a href={`/author/${slugify(author)}/`}>{author}</a> • {dayjs(date).format('YYYY-MM-DD')}
+    </p>
+  </div>
+  <Image
+    src={image.src}
+    alt={image.alt}
+    width={1200}
+    format='avif'
+    fit='cover'
+    quality={80}
+    aspectRatio='3:1'
+    class='hero-image'
+  />
+</header>

@@ -9,7 +9,7 @@ const navData = [
   },
   {
     name: '文章',
-    path: '/blog/',
+    path: '/posts/',
     icon: {
       name: 'ri:book-3-line',
       side: 'left',
