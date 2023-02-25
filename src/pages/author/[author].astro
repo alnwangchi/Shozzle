@@ -1,0 +1,31 @@
+---
+import { PostCard } from '@components/index.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+
+import { organizeAllPosts, slugify } from '@utils/index.js';
+
+// 動態產生 author 列表
+export async function getStaticPaths() {
+  const allPosts = await Astro.glob('../posts/*.md');
+
+  const allAuthor = [...new Set(allPosts.map((p) => p.frontmatter.author).flat())];
+  return allAuthor.map((a) => ({
+    params: { author: slugify(a) },
+    props: { author: a },
+  }));
+}
+
+// 動態頁面資訊
+const { author } = Astro.props;
+const allPosts = await Astro.glob('../posts/*.md');
+const organizedAllPosts = organizeAllPosts(allPosts, { author });
+---
+
+<MainLayout title='blog' description='作者頁'>
+  <section class='container' aria-label='New Blog Posts'>
+    <h1>{author}</h1>
+    <div class='post-container'>
+      {organizedAllPosts.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
+    </div>
+  </section>
+</MainLayout>

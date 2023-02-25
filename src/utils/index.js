@@ -24,16 +24,19 @@ export function organizeAllPosts(
     sortByDate = true,
     limit = undefined,
     category = null,
+    author = null,
   } = {}
 ) {
   const filteredPosts = posts.reduce((acc, post) => {
     const { date, draft } = posts;
     // 過濾草稿
-    if (draft && filterOutDrafts) return acc;
-    // 過濾奇怪的未來文章 FIXME: 怎麼好像沒有用 操
-    if (dayjs(date).isAfter(dayjs(new Date())) && filterOutFuturePosts) return acc;
+    if (filterOutDrafts && draft) return acc;
+    // 過濾奇怪的未來文章 FIXME: 怎麼沒有用 操
+    if (filterOutFuturePosts && dayjs(date).isAfter(dayjs(new Date()))) return acc;
     // 過濾不同類型
     if (category && slugify(post.frontmatter.category) !== category) return acc;
+    // 過漏不同作者
+    if (author && post.frontmatter.author !== author) return acc;
 
     acc.push(post);
 
@@ -49,5 +52,6 @@ export function organizeAllPosts(
   if (typeof limit === 'number') {
     return filteredPosts.slice(0, limit);
   }
+
   return filteredPosts;
 }
