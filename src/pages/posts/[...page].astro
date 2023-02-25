@@ -1,0 +1,28 @@
+---
+import PostCard from '@components/PostCard.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+import { Pagination } from '@components/index.astro';
+
+import { organizeAllPosts } from '@utils/index.js';
+
+export async function getStaticPaths({ paginate }) {
+  // Load your data with fetch(), Astro.glob(), etc.
+  const allPosts = await Astro.glob('./*.md');
+  const organizedAllPosts = organizeAllPosts(allPosts);
+  // Return a paginated collection of paths for all posts
+  return paginate(organizedAllPosts, { pageSize: 3 });
+}
+
+// 文章列表包在 data 裡面
+const { page } = Astro.props;
+// console.log('🚀 ~ page:', page);
+---
+
+<MainLayout title='blog' description='文章們'>
+  <section class='container' aria-label='New Blog Posts'>
+    <div class='post-container'>
+      {page.data.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
+    </div>
+    <Pagination prevUrl={page.url.prev} nextUrl={page.url.next} />
+  </section>
+</MainLayout>
