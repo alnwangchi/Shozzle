@@ -8,6 +8,7 @@
       "@style/*": ["src/style/*"],
       "@constans/*": ["src/constans/*"],
       "@utils/*": ["src/utils/*"]
-    }
+    },
+    "types": ["@astrojs/image/client"]
   }
 }

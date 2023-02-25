@@ -2,8 +2,7 @@
 // library imports
 import { Image } from '@astrojs/image/components';
 // utils imports
-import { slugify } from '@utils/index.js';
-import dayjs from 'dayjs';
+import { slugify, commonDayFormatter } from '@utils/index.js';
 const { category, title, author, date, image } = Astro.props;
 ---
 
@@ -14,7 +13,7 @@ const { category, title, author, date, image } = Astro.props;
     </small>
     <h1 class='h2'>{title}</h1>
     <p>
-      by <a href={`/author/${slugify(author)}/`}>{author}</a> • {dayjs(date).format('YYYY-MM-DD')}
+      by <a href={`/author/${slugify(author)}/`}>{author}</a> • {commonDayFormatter(date)}
     </p>
   </div>
   <Image

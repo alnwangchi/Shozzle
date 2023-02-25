@@ -1,12 +1,12 @@
 ---
 layout: '@layouts/BlogPostLayout.astro'
-title: JavaScript SchmavaScript
-date: 2022-12-05
-author: Victoria Greenfelder
-image: { src: '/images/post-5.jpg', alt: 'A picture of a coder' }
-description: This is a blog post about the JavaScript programming language. Like it, love it, hate it, it's here to stay.
+title: Building an Astro Post Tag Component
+date: 2023-03-06
+author: Anna Dixon
+image: { src: '/images/post-6.jpg', alt: 'A picture of a coder' }
+description: In this project, we’ll build out a custom Astro component for post tags.
 draft: false
-category: Reference Docs
+category: Astro
 ---
 
 Nisi duis ex aliqua eu officia eiusmod duis magna pariatur. Irure laborum qui aliqua nulla esse cillum laborum aliquip nulla elit. Id id Lorem duis irure cillum culpa. Nulla sint et aliqua velit do. Nulla sit sit proident consectetur enim ullamco aliqua in reprehenderit ullamco officia.

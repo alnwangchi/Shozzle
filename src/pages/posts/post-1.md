@@ -1,12 +1,12 @@
 ---
 layout: '@layouts/BlogPostLayout.astro'
-title: A Post about Important Items Of Life
+title: A Example Post
 date: 2023-02-24
 author: Allen Wang
 image: { src: '/images/post-1.jpg', alt: 'A picture of a coder' }
-description: Have you ever wondered what the most important items of life are? Well, wonder no more!
+description: all information is frontmatter
 draft: false
-category: Reference Docs
+category: JavaScript
 ---
 
 Nisi duis ex aliqua eu officia eiusmod duis magna pariatur. Irure laborum qui aliqua nulla esse cillum laborum aliquip nulla elit. Id id Lorem duis irure cillum culpa. Nulla sint et aliqua velit do. Nulla sit sit proident consectetur enim ullamco aliqua in reprehenderit ullamco officia.
