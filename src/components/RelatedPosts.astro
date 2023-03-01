@@ -1,0 +1,23 @@
+---
+import { slugify } from '@utils/index.js';
+
+const { relatedPosts } = Astro.props;
+// console.log('🚀 ~ relatedPosts:', relatedPosts);
+---
+
+{
+  relatedPosts.map((post) => {
+    const { title, author, category } = post.frontmatter;
+    return (
+      <div class='post'>
+        <h3 class='h4'>
+          <a href={post.url}>{title}</a>
+        </h3>
+        <small>{category}</small>
+        <small>
+          <a href={`/author/${slugify(author)}/`}>{author}</a>
+        </small>
+      </div>
+    );
+  })
+}

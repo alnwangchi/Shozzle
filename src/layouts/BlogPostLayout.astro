@@ -2,13 +2,22 @@
 // style
 import '../style/global.css';
 
-import { CategoryCloud, PostHeader } from '@components/index.astro';
+import { CategoryCloud, PostHeader, RelatedPosts } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
+import { organizeAllPosts } from '@utils/index';
 
 const { frontmatter } = Astro.props;
 // console.log(frontmatter);
 
 const { title, description, date, category, author, image } = frontmatter;
+console.log('🚀 ~ category:', category);
+console.log('🚀 ~ author:', author);
+
+const allPosts = await Astro.glob('../pages/posts/*.md');
+// FIXME: 加上 category 卻無法正確篩出
+const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: false }).filter(
+  (post) => post.frontmatter.title !== title
+);
 ---
 
 <MainLayout>
@@ -21,6 +30,11 @@ const { title, description, date, category, author, image } = frontmatter;
       <aside class='container' aria-label='Blog categories'>
         <h2 class='h3'>Blog Categories</h2>
         <CategoryCloud />
+      </aside>
+
+      <aside class='container' aria-label='Related posts'>
+        <h2 class='h3'>Related Posts</h2>
+        {relatedPosts.length > 0 ? <RelatedPosts {relatedPosts} /> : '該作者沒有相關文章 都在混!'}
       </aside>
     </div>
   </div>

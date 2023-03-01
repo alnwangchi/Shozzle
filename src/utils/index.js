@@ -27,6 +27,8 @@ export function organizeAllPosts(
     author = null,
   } = {}
 ) {
+  console.log('🚀 ~ category:', category);
+  console.log('🚀 ~ author:', author);
   const filteredPosts = posts.reduce((acc, post) => {
     const { date, draft } = posts;
     // 過濾草稿
@@ -34,9 +36,9 @@ export function organizeAllPosts(
     // 過濾奇怪的未來文章 FIXME: 怎麼沒有用 操
     if (filterOutFuturePosts && dayjs(date).isAfter(dayjs(new Date()))) return acc;
     // 過濾不同類型
-    if (category && slugify(post.frontmatter.category) !== category) return acc;
+    if (category && category !== slugify(post.frontmatter.category)) return acc;
     // 過漏不同作者
-    if (author && post.frontmatter.author !== author) return acc;
+    if (author && author !== post.frontmatter.author) return acc;
 
     acc.push(post);
 

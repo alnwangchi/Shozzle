@@ -1,6 +1,6 @@
 ---
 layout: '@layouts/BlogPostLayout.astro'
-title: CSS SchmavaScript
+title: CSS OKOKO
 date: 2022-12-05
 author: Victoria Greenfelder
 image: { src: '/images/post-5.jpg', alt: 'A picture of a coder' }
