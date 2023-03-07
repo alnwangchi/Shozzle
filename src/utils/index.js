@@ -25,10 +25,10 @@ export function organizeAllPosts(
     limit = undefined,
     category = null,
     author = null,
-  } = {}
+  } = {},
 ) {
-  console.log('🚀 ~ category:', category);
-  console.log('🚀 ~ author:', author);
+  // console.log('🚀 ~ category:', category);
+  // console.log('🚀 ~ author:', author);
   const filteredPosts = posts.reduce((acc, post) => {
     const { date, draft } = posts;
     // 過濾草稿
