@@ -20,7 +20,7 @@ const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: 
 );
 ---
 
-<MainLayout>
+<MainLayout {title} {description}>
   <PostHeader {title} {description} {date} {category} {image} {author} />
   <div class='post-content'>
     <div class='content'>
