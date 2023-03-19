@@ -7,6 +7,7 @@ import Link from './Link.astro';
 
 // utils imports
 import { commonDayFormatter, slugify } from '@utils/index.js';
+import Icon from 'astro-icon';
 
 const { frontmatter, url } = Astro.props;
 
@@ -14,30 +15,38 @@ const { title, date, author, image, description, category } = frontmatter;
 ---
 
 <article class='card'>
-  <small>
-    <a href={`/category/${slugify(category)}/`} class='badge'>{category}</a>
-  </small>
-  <a href={url} aria-hidden='true' tabindex='-1'>
-    <Image
-      src={image.src}
-      alt={image.alt}
-      width={400}
-      format='webp'
-      fit='cover'
-      quality={80}
-      aspectRatio='3:2'
-    />
-  </a>
   <div class='content'>
-    <div>
-      <h3 class='h3'>
+    <small class="block mb-1">{commonDayFormatter(date)}</small>
+    <div class="flex gap-1 mb-3">
+      <small class='badge'>
+        <a href={`/category/${slugify(category)}/`} >{category}</a>
+      </small>
+    </div>
+    <a class="block mb-3" href={url} aria-hidden='true' tabindex='-1'>
+      <Image
+        src={image.src}
+        alt={image.alt}
+        width={600}
+        format='webp'
+        fit='cover'
+        quality={80}
+        aspectRatio='2.5:1'
+      />
+    </a>
+    <div  class='mb-3'>
+      <h3 class='mb-1'>
         <a href={url}>{title}</a>
       </h3>
       <small>
-        by <a href={`/author/${slugify(author)}/`}>{author}</a> • {commonDayFormatter(date)}
+        by <a href={`/author/${slugify(author)}/`}>{author}</a> 
       </small>
     </div>
-    <p>{description}</p>
-    <Link href={url} text='Read Post' style='secondary' />
+    <p class="line-clamp-2">{description}</p>
   </div>
+  <a href={url} class="circle-btn animation-1 flex self-end">
+    <span class="icon">
+      <Icon name='typcn:arrow-right' width='24'/>
+    </span>
+    <div class="circle-bg"></div>
+  </a>
 </article>

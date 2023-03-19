@@ -1,19 +1,11 @@
 const navData = [
   {
-    name: '關於我',
-    path: '/about/',
-    icon: {
-      name: 'ri:account-circle-fill',
-      side: 'left',
-    },
+    name: 'Posts',
+    path: '/posts/',
   },
   {
-    name: '文章',
-    path: '/posts/',
-    icon: {
-      name: 'ri:book-3-line',
-      side: 'left',
-    },
+    name: 'Authors',
+    path: '/author/',
   },
 ];
 

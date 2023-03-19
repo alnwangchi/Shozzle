@@ -1,0 +1,61 @@
+$size: 36px
+$static: #fe7f2d
+
+.circle-btn 
+  cursor: pointer
+  position: relative
+  width: $size
+  height: $size
+  line-height: $size
+  overflow: hidden
+.icon 
+  display: flex
+  justify-content: center
+  align-items: center
+  font-size: 30px
+  width: 100%
+  height: 100%
+
+
+.circle-btn:hover .icon 
+  color: $clr_emphasize
+
+
+.circle-bg 
+  position: absolute
+  top: 0
+  left: 0
+  z-index: 0
+  width: 100%
+  height: 100%
+  display: block
+
+.circle-btn.animation-1
+  .circle-bg 
+    border-radius: 50%
+    transition: background .5s linear
+    border: 1px solid transparent
+    backface-visibility: hidden
+  
+  &:hover .circle-bg 
+    border-color: transparent
+    background: transparent
+    animation: circleround cubic-bezier(0.17, 0.13, 0.28, 1) 1s
+    animation-fill-mode: forwards
+    border-right-color: $clr_emphasize
+    border-bottom-color: $clr_emphasize
+  
+
+
+@keyframes circleround 
+  0% 
+    transform: rotate(-90deg)
+    opacity: 1.0
+  
+  50% 
+    opacity: 1.0
+  
+  100% 
+    transform: rotate(360deg)
+    opacity: 0.0
+  

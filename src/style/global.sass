@@ -1,0 +1,63 @@
+@import '_variables.sass'
+@import '_reset.sass'
+@import '_break-point.sass'
+@import '_dark-mode-switcher.sass'
+@import '_arrow-animation.sass'
+  
+.navbar
+  border-bottom: 1px solid $clr_soft
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0 2rem
+  .logo
+    a
+      font-size: 42px
+      padding: 1rem 0 0
+      display: flex
+      align-items: end
+      margin: 0 0 -0.5rem
+      font-weight: $fw_bold
+  ul
+    display: flex
+    li
+      border-left:1px solid $clr_soft
+      &:hover
+        a
+          color: $clr_primary
+      a
+        height: 6rem
+        padding: 1rem 2rem 1rem 9rem
+        display: flex
+        align-items: end
+        color: $clr_soft
+        transition: $transition
+  .theme-controller
+    position: relative
+    width: 200px
+
+.badge
+  border: 1px solid $clr_soft
+  border-radius: $radius_m
+  padding: 2px 4px
+  color: $clr_secondary
+  &:hover
+    color: $clr_primary
+  
+.card
+  position: relative
+  border: 1px solid $clr_soft
+  padding: 2.5rem 2.5rem  1.5rem 2.5rem 
+  border-radius: $radius_m
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  img
+    object-fit: cover
+
+
+.post-container 
+  display: grid
+  grid-template-columns: repeat(3, 1fr)
+  gap: 1.5rem
+

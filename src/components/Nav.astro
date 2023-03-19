@@ -8,30 +8,32 @@ import Link from '@components/Link.astro';
 // data imports
 import navData from '@constans/navData';
 ---
-
-<nav aria-label='Primary'>
-  <div class='navbar'>
-    <a href='/' class='logomark' aria-label='Go home'>
-      <Icon name='logo' width='40' />
+<nav class="navbar">
+  <div class="logo">
+    <a href="/">
+      shozzle
     </a>
-    <ul>
-      {
-        navData.map((item) => (
-          <Link
-            text={item.name}
-            href={item.path}
-            style='primary'
-            isFilled={false}
-            borderVisible={true}
-            data-navLink
-            icon={item.icon}
-          />
-        ))
-      }
-    </ul>
   </div>
+  <ul>
+    {
+      navData.map((item) => (
+        <li>
+          <a
+            href={item.path}
+            data-navLink
+          >
+            {item.name}
+          </a>
+        </li>
+        ))
+    }
+    <li class="theme-controller"> 
+      <div id="sun-moon"></div>
+    </li>  
+  </ul>
+
 </nav>
 
 <script>
-  //   import '../js/nav.js';
+  
 </script>
