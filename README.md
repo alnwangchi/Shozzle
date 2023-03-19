@@ -40,7 +40,13 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`      | Preview your build locally, before deploying     |
 | `npm run astro ...`    | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro --help` | Get help using the Astro CLI                     |
+## project style
 
+考慮到專案類型並不會很複雜，所以直接訂定一套 style 標準，基本上這部分交給 Allen
+
+另外，專案也已經有加上 tailwind 可以寫，不過比較像是輔助
+
+若想針對元件做類似 module css 的話 astro 亦提供了解決方案 [官網](https://docs.astro.build/zh-tw/tutorial/2-pages/4/#style-an-individual-page)
 ## dependencies
 
 - npm : 9.5.1
