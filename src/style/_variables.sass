@@ -11,11 +11,17 @@ $fw_bold: 600
 $fw_bolder: 700
 $fw_boldest: 900
 
-
+/* fixed */
 $fs_s: .75rem
 $fs_m: 1rem
 $fs_l: 1.5rem
 $fs_xl: 2rem
+/* fluid */
+$fs_fluid_s: clamp(0.78rem, calc(0.75rem + 0.17vw), 0.88rem)
+$fs_fluid_m: clamp(1.13rem, calc(1.04rem + 0.43vw), 1.38rem)
+$fs_fluid_l: clamp(1.35rem, calc(1.22rem + 0.64vw), 1.72rem)
+$fs_fluid_xl: clamp(1.94rem, calc(1.69rem + 1.29vw), 2.69rem)
+$fs_fluid_2xl: clamp(2.80rem, calc(2.31rem + 2.43vw), 4.20rem)
 
   
 $transition: all .2s cubic-bezier(.76,0,.24,1)
@@ -25,3 +31,4 @@ $radius_s: .25em
 $radius_m: .5em
 $radius_l: 1em
 $radius_full: 100vmax
+

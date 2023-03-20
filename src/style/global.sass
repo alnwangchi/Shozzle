@@ -47,17 +47,29 @@
 .card
   position: relative
   border: 1px solid $clr_soft
-  padding: 2.5rem 2.5rem  1.5rem 2.5rem 
+  padding: 2.5rem 2.5rem  1.25rem 2.5rem
   border-radius: $radius_m
   display: flex
   flex-direction: column
   justify-content: space-between
+  @include md 
+    padding: 2rem 2rem  1rem 2rem
   img
     object-fit: cover
 
 
 .post-container 
   display: grid
-  grid-template-columns: repeat(3, 1fr)
   gap: 1.5rem
-
+  grid-template-columns: repeat(3, 1fr)
+  @include md 
+    grid-template-columns: repeat(2, 1fr)
+  @include sm 
+    grid-template-columns: repeat(1, 1fr)
+    
+    
+footer
+  display: flex
+  justify-content: center
+  align-items: center
+  min-height: 88px
