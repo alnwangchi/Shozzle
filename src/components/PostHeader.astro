@@ -7,23 +7,34 @@ const { category, title, author, date, image } = Astro.props;
 ---
 
 <header>
-  <div class='container'>
-    <small>
-      <a href={`/category/${slugify(category)}/`} class='badge'>{category}</a>
-    </small>
-    <h1 class='h2'>{title}</h1>
-    <p>
-      by <a href={`/author/${slugify(author)}/`}>{author}</a> • {commonDayFormatter(date)}
-    </p>
-  </div>
-  <Image
+  <div class='flex gap-2 items-center'>
+    <Image
     src={image.src}
     alt={image.alt}
-    width={1200}
+    width={40}
     format='avif'
     fit='cover'
     quality={80}
-    aspectRatio='3:1'
-    class='hero-image'
+    aspectRatio='1:1'
+  />
+  <div class='w-fit'>
+    <p>
+      <a class='w-fit' href={`/author/${slugify(author)}/`}>{author}</a> • {commonDayFormatter(date)}
+    </p>
+    <small>
+      <a href={`/category/${slugify(category)}/`} class='badge'>{category}</a>
+    </small>
+  </div>
+</div>
+  <h1 class='my-4'>{title}</h1>
+  <Image
+    src={image.src}
+    alt={image.alt}
+    width={480}
+    format='avif'
+    fit='cover'
+    quality={80}
+    aspectRatio='5:3'
+    class='my-8 mx-auto'
   />
 </header>

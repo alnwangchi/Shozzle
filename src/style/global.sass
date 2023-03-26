@@ -26,7 +26,7 @@
         a
           color: $clr_primary
       a
-        height: 6rem
+        height: 5rem
         padding: 1rem 2rem 1rem 9rem
         display: flex
         align-items: end
@@ -38,9 +38,10 @@
 
 .badge
   border: 1px solid $clr_soft
-  border-radius: $radius_m
-  padding: 2px 4px
+  border-radius: $radius_f
+  padding: 3px 6px
   color: $clr_secondary
+  display: inline-block
   &:hover
     color: $clr_primary
   
@@ -66,7 +67,19 @@
     grid-template-columns: repeat(2, 1fr)
   @include sm 
     grid-template-columns: repeat(1, 1fr)
-    
+
+/* post */
+.post-content
+  display: flex
+  justify-content: space-between
+  .content
+    padding: 1.5rem
+    flex: 2
+    border-right: 1px solid $clr_soft
+  .sidebar
+    padding: 1rem
+    flex: 1
+
     
 footer
   display: flex
