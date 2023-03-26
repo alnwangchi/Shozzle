@@ -16,8 +16,8 @@ const { title, date, author, image, description, category } = frontmatter;
 
 <article class='card'>
   <div class='content mb-4'>
-    <small class="block mb-1">{commonDayFormatter(date)}</small>
-    <div class="flex gap-1 mb-3">
+    <small class="block mb-3">{commonDayFormatter(date)}</small>
+    <div class="flex gap-1 mb-3 ml-[-4px]">
       <small class='badge'>
         <a href={`/category/${slugify(category)}/`} >{category}</a>
       </small>

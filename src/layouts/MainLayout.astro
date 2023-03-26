@@ -11,9 +11,9 @@ const { title, description } = Astro.props;
 
 <html lang='en'>
   <MainHead {title} {description} />
-  <body>
+  <body class='min-h-screen flex flex-col'>
     <Nav />
-    <main class="my-10">
+    <main class="my-10 flex-1">
       <slot> Default Text</slot>
     </main>
     <Footer />
