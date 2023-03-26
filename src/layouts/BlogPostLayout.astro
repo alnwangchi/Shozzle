@@ -2,6 +2,7 @@
 // style
 import '../style/global.sass';
 // import '../style/global.css';
+import '../../node_modules/github-markdown-css/github-markdown-light.css'
 
 import { CategoryCloud, PostHeader, RelatedPosts } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
@@ -19,18 +20,19 @@ const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: 
 ---
 
 <MainLayout {title} {description}>
-  <PostHeader {title} {description} {date} {category} {image} {author} />
-  <div class='post-content'>
+  <div class='post-content container'>
     <div class='content'>
-      <slot />
+      <PostHeader {title} {description} {date} {category} {image} {author} />
+      <div class='markdown-body'>
+        <slot />
+      </div>
     </div>
     <div class='sidebar'>
-      <aside class='container' aria-label='Blog categories'>
+      <aside class='' aria-label='Blog categories'>
         <h2 class='h3'>Blog Categories</h2>
         <CategoryCloud />
       </aside>
-
-      <aside class='container' aria-label='Related posts'>
+      <aside class='' aria-label='Related posts'>
         <h2 class='h3'>Related Posts</h2>
         {relatedPosts.length > 0 ? <RelatedPosts {relatedPosts} /> : '該作者沒有相關文章 都在混!'}
       </aside>
