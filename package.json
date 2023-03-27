@@ -5,6 +5,10 @@
   "browerslist": [
     "defaults"
   ],
+  "engines": {
+    "node": "^16.17.1",
+    "npm": "^9.5.1"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
