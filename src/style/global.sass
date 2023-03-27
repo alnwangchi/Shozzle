@@ -3,14 +3,18 @@
 @import '_break-point.sass'
 @import '_dark-mode-switcher.sass'
 @import '_arrow-animation.sass'
+@import '_hamburger-animation.sass'
   
 .navbar
+  position: relative
   border-bottom: 1px solid $clr_soft
   display: flex
   justify-content: space-between
   align-items: center
   padding: 0 2rem
   .logo
+    @include lg 
+      margin: 0 auto
     a
       font-size: 42px
       padding: 1rem 0 0
@@ -18,8 +22,12 @@
       align-items: end
       margin: 0 0 -0.5rem
       font-weight: $fw_bold
+      @include lg 
+        padding: 1rem 0
   ul
     display: flex
+    @include lg 
+      display: none
     li
       border-left:1px solid $clr_soft
       &:hover
@@ -54,7 +62,7 @@
   flex-direction: column
   justify-content: space-between
   @include md 
-    padding: 2rem 2rem  1rem 2rem
+    padding: 1.75rem 1.75rem  1rem 1.75rem
   img
     object-fit: cover
 
@@ -63,7 +71,7 @@
   display: grid
   gap: 1.5rem
   grid-template-columns: repeat(3, 1fr)
-  @include md 
+  @include xl 
     grid-template-columns: repeat(2, 1fr)
   @include sm 
     grid-template-columns: repeat(1, 1fr)

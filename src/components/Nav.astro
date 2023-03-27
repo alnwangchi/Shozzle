@@ -3,10 +3,10 @@
 import { Icon } from 'astro-icon';
 
 // component imports
-import Link from '@components/Link.astro';
+import Hamburger from '@components/Hamburger.astro';
 
 // data imports
-import navData from '@constans/navData';
+import navData from '@constants/navData';
 ---
 <nav class="navbar">
   <div class="logo">
@@ -31,7 +31,7 @@ import navData from '@constans/navData';
       <div id="sun-moon"></div>
     </li>  
   </ul>
-
+  <Hamburger/>
 </nav>
 
 <script>
