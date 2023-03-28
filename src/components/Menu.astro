@@ -1,0 +1,25 @@
+---
+import navData from '@constants/navData';
+
+
+---
+
+<div class="menu">
+  <ul>
+    {
+      navData.map((item) => (
+        <li>
+          <a
+            href={item.path}
+            data-navLink
+          >
+            {item.name}
+          </a>
+        </li>
+        ))
+    }
+    <li class="theme-controller"> 
+      <div id="sun-moon"></div>
+    </li>  
+  </ul>
+</div>

@@ -4,19 +4,8 @@ import MainLayout from '@layouts/MainLayout.astro';
 ---
 
 <MainLayout title='404' description='沒有這頁'>
-  <div
-    class='container'
-    style={{
-      display: 'grid',
-      placeItems: 'center',
-      textAlign: 'center',
-      gap: 'var(--space-sm)',
-    }}
-  >
-    <div>
-      <h1 class='h1'>OOPS!</h1>
-      <p>沒有這頁喔</p>
-    </div>
-    <Link text='回首頁' href='/' style='primary' />
+  <div class='container absolute top-[40%]'>
+    <h1 class='h1 text-center mb-5'>OOPS! <br> PAGE NOT FOUND</h1>
+    <a class='block text-center' href='/'>回首頁</a>
   </div>
 </MainLayout>

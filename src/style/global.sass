@@ -44,6 +44,31 @@
     position: relative
     width: 200px
 
+.menu
+  display: none
+  @include lg
+    display: block 
+    position: fixed
+    right: -100%
+    bottom: 0
+    width: 100%
+    height: calc( 100vh - 67px )
+    background: #fff
+    z-index: 2
+    transition: $transition-1
+    &.is-active
+      right: 0
+    ul
+      display: flex
+      flex-direction: column
+      align-items: center
+      justify-content: center
+      padding: 3rem 0
+      gap: 1rem
+      li
+        padding: 2rem 0
+        a
+          font-size: $fs_fluid_m
 .badge
   border: 1px solid $clr_soft
   border-radius: $radius_f

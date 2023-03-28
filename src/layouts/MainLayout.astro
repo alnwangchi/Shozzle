@@ -4,7 +4,7 @@
 import '../style/global.sass';
 
 import MainHead from './MainHead.astro';
-import { Footer, Nav } from '@components/index.astro';
+import { Footer, Menu, Nav } from '@components/index.astro';
 
 const { title, description } = Astro.props;
 ---
@@ -13,9 +13,14 @@ const { title, description } = Astro.props;
   <MainHead {title} {description} />
   <body class='min-h-screen flex flex-col'>
     <Nav />
+    <Menu />
     <main class="my-10 flex-1">
       <slot> Default Text</slot>
     </main>
     <Footer />
   </body>
 </html>
+
+<script>
+  import '@scripts/menu.js';
+</script>
