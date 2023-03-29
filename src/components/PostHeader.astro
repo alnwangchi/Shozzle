@@ -7,34 +7,36 @@ const { category, title, author, date, image } = Astro.props;
 ---
 
 <header>
-  <div class='flex gap-2 items-center'>
+  <div class="flex gap-2 items-center">
     <Image
-    src={image.src}
-    alt={image.alt}
-    width={40}
-    format='avif'
-    fit='cover'
-    quality={80}
-    aspectRatio='1:1'
-  />
-  <div class='w-fit'>
-    <p>
-      <a class='w-fit' href={`/author/${slugify(author)}/`}>{author}</a> • {commonDayFormatter(date)}
-    </p>
-    <small>
-      <a href={`/category/${slugify(category)}/`} class='badge'>{category}</a>
-    </small>
+      src={image.src}
+      alt={image.alt}
+      width={52}
+      format="avif"
+      fit="cover"
+      quality={80}
+      aspectRatio="1:1"
+    />
+    <div class="w-fit">
+      <p class="leading-none mb-2">
+        <a class="w-fit" href={`/author/${slugify(author)}/`}>{author}</a> • {
+          commonDayFormatter(date)
+        }
+      </p>
+      <small>
+        <a href={`/category/${slugify(category)}/`} class="badge">{category}</a>
+      </small>
+    </div>
   </div>
-</div>
-  <h1 class='my-4'>{title}</h1>
+  <h1 class="my-4">{title}</h1>
   <Image
     src={image.src}
     alt={image.alt}
     width={480}
-    format='avif'
-    fit='cover'
+    format="avif"
+    fit="cover"
     quality={80}
-    aspectRatio='5:3'
-    class='my-8 mx-auto'
+    aspectRatio="5:3"
+    class="my-8 mx-auto"
   />
 </header>

@@ -12,40 +12,42 @@ import Icon from 'astro-icon';
 const { frontmatter, url } = Astro.props;
 
 const { title, date, author, image, description, category } = frontmatter;
+// TODO: for making stagger effect
+// data-aos-delay={Math.floor(Math.random() * (700 - 100 + 1) + 700)}
 ---
 
-<article class='card' data-aos="fade-up" data-aos-delay={Math.floor(Math.random() * (700 - 100 + 1) + 700)}>
-  <div class='content mb-4'>
+<article class="card" data-aos="fade-up">
+  <div class="content mb-4">
     <small class="block mb-3">{commonDayFormatter(date)}</small>
     <div class="flex gap-1 mb-3 ml-[-4px]">
-      <small class='badge'>
-        <a href={`/category/${slugify(category)}/`} >{category}</a>
+      <small class="badge">
+        <a href={`/category/${slugify(category)}/`}>{category}</a>
       </small>
     </div>
-    <a class="block mb-3" href={url} aria-hidden='true' tabindex='-1'>
+    <a class="block mb-3" href={url} aria-hidden="true" tabindex="-1">
       <Image
         src={image.src}
         alt={image.alt}
         width={600}
-        format='webp'
-        fit='cover'
+        format="webp"
+        fit="cover"
         quality={80}
-        aspectRatio='2.5:1'
+        aspectRatio="2.5:1"
       />
     </a>
-    <div  class='mb-3'>
-      <h3 class='mb-1'>
+    <div class="mb-3">
+      <h3 class="mb-1">
         <a href={url}>{title}</a>
       </h3>
       <small>
-        by <a href={`/author/${slugify(author)}/`}>{author}</a> 
+        by <a href={`/author/${slugify(author)}/`}>{author}</a>
       </small>
     </div>
     <p class="line-clamp-2 text-sm md:text-[15px]">{description}</p>
   </div>
   <a href={url} class="circle-btn animation-1 flex self-end">
     <span class="icon">
-      <Icon name='typcn:arrow-right' width='24'/>
+      <Icon name="typcn:arrow-right" width="24" />
     </span>
     <div class="circle-bg"></div>
   </a>

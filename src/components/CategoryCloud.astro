@@ -7,13 +7,11 @@ const organizedAllPosts = organizeAllPosts(allPosts);
 const categoryBadges = [...new Set(organizedAllPosts.map((p) => p.frontmatter.category))];
 ---
 
-<ul class='categories'>
+<ul class="categories">
   {
     categoryBadges.map((c) => (
       <li>
-        <a class='badge' href={`/category/${slugify(c)}/`}>
-          {c}
-        </a>
+        <a href={`/category/${slugify(c)}/`}>{c}</a>
       </li>
     ))
   }
