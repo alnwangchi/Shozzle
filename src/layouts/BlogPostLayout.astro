@@ -2,7 +2,7 @@
 // style
 import '../style/global.sass';
 // import '../style/global.css';
-import '../../node_modules/github-markdown-css/github-markdown-light.css'
+import '../../node_modules/github-markdown-css/github-markdown-light.css';
 
 import { CategoryCloud, PostHeader, RelatedPosts } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
@@ -20,21 +20,31 @@ const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: 
 ---
 
 <MainLayout {title} {description}>
-  <div class='post-content container'>
-    <div class='content'>
+  <div class="post-content">
+    <div class="content">
       <PostHeader {title} {description} {date} {category} {image} {author} />
-      <div class='markdown-body'>
+      <div class="markdown-body">
         <slot />
       </div>
     </div>
-    <div class='sidebar'>
-      <aside class='' aria-label='Blog categories'>
-        <h2 class='h3'>Blog Categories</h2>
+    <div class="sidebar">
+      <aside class="" aria-label="anchor">
+        <h3 class="font-semibold mb-3">Anchor</h3>
+        <small> TODO: 文章 Heading Links</small>
+      </aside>
+      <aside class="" aria-label="Blog categories">
+        <h3 class="font-semibold mb-3">Categories</h3>
         <CategoryCloud />
       </aside>
-      <aside class='' aria-label='Related posts'>
-        <h2 class='h3'>Related Posts</h2>
-        {relatedPosts.length > 0 ? <RelatedPosts {relatedPosts} /> : '該作者沒有相關文章 都在混!'}
+      <aside class="" aria-label="Related posts">
+        <h3 class="font-semibold mb-3">Related Posts</h3>
+        {
+          relatedPosts.length > 0 ? (
+            <RelatedPosts {relatedPosts} />
+          ) : (
+            <small>該作者沒有其他相關文章 都在混!</small>
+          )
+        }
       </aside>
     </div>
   </div>
