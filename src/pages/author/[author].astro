@@ -11,7 +11,7 @@ export async function getStaticPaths() {
   const allAuthor = [...new Set(allPosts.map((p) => p.frontmatter.author).flat())];
   return allAuthor.map((a) => ({
     params: { author: slugify(a) },
-    props: { author: a },
+    props: { author: a }
   }));
 }
 
@@ -21,11 +21,18 @@ const allPosts = await Astro.glob('../posts/*.md');
 const organizedAllPosts = organizeAllPosts(allPosts, { author });
 ---
 
-<MainLayout title='blog' description='作者頁'>
-  <section class='container' aria-label='New Blog Posts'>
+<MainLayout title="blog" description="作者頁">
+  <section class="container" aria-label="New Blog Posts">
     <h1>{author}</h1>
-    <div class='post-container'>
+    <div class="post-container">
       {organizedAllPosts.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
     </div>
   </section>
 </MainLayout>
+
+<script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script is:inline>
+  AOS.init({
+    duration: 900
+  });
+</script>
