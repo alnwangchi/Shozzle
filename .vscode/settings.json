@@ -1,3 +1,7 @@
 {
-  "cSpell.words": ["astro", "astrojs", "frontmatter", "shozzle", "tailwindcss", "tsconfigs"]
+  "cSpell.words": ["astro", "astrojs", "frontmatter", "shozzle", "tailwindcss", "tsconfigs"],
+  // enable globally (here: format on save)
+  "editor.formatOnSave": true,
+  // enable per-language (here: Prettier as formatter)
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
