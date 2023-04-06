@@ -24,8 +24,8 @@ export function organizeAllPosts(
     sortByDate = true,
     limit = undefined,
     category = null,
-    author = null,
-  } = {},
+    author = null
+  } = {}
 ) {
   // console.log('🚀 ~ category:', category);
   // console.log('🚀 ~ author:', author);
