@@ -1,28 +1,58 @@
 # Shozzle
 
-[online](https://gentle-queijadas-a317c9.netlify.app/)
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## [online](https://gentle-queijadas-a317c9.netlify.app/)
 
 ## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
+```
+src
+├─ components
+│  ├─ CategoryCloud.astro
+│  ├─ Footer.astro
+│  ├─ Hamburger.astro
+│  ├─ Link.astro
+│  ├─ Menu.astro
+│  ├─ Nav.astro
+│  ├─ Pagination.astro
+│  ├─ PostCard.astro
+│  ├─ PostHeader.astro
+│  ├─ RelatedPosts.astro
+│  └─ index.astro
+├─ constants
+│  └─ navData.js
+├─ env.d.ts
+├─ icons
+│  └─ logo.svg
+├─ layouts
+│  ├─ BlogPostLayout.astro
+│  ├─ MainHead.astro
+│  └─ MainLayout.astro
+├─ pages
+│  ├─ 404.astro
+│  ├─ about.astro
+│  ├─ author
+│  │  ├─ [author].astro
+│  │  └─ allen.astro
+│  ├─ category
+│  │  └─ [category].astro
+│  ├─ index.astro
+│  └─ posts
+│     └─ Shozzle blog post introduction.mdx
+├─ scripts
+│  └─ menu.js
+├─ style
+│  ├─ _arrow-animation.sass
+│  ├─ _break-point.sass
+│  ├─ _dark-mode-switcher.sass
+│  ├─ _hamburger-animation.sass
+│  ├─ _reset.sass
+│  ├─ _variables.sass
+│  ├─ github-markdown-light.css
+│  └─ global.sass
+└─ utils
+   └─ index.js
 
 ```
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
 
 Any static assets, like images, can be placed in the `public/` directory.
 
@@ -54,5 +84,5 @@ All commands are run from the root of the project, from a terminal:
 
 ## 👀 Common Rules
 
-- 元件必須統一由 index.astro 匯出
-- icon 用這邊 [icones](https://icones.js.org/)
+- 有寫元件記得統一由 index.astro 匯出
+- icon 用這 [icones](https://icones.js.org/)
