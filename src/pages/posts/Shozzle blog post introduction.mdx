@@ -4,7 +4,7 @@ title: Shozzle blog post introduction
 date: 2023-04-08
 author: Allen Wang
 image: { src: '/images/MyHead.png', alt: '範例' }
-description: Shozzle 首篇文章登場，大致上說明一下如何在 Shozzle 新增一篇文章的流程以及一些內容的說明
+description: Shozzle 首篇文章登場，大致上說明一下如何新增一篇文章的流程以及一些內容的說明
 draft: false
 category: Astro
 ---
@@ -91,10 +91,10 @@ Here is my counter component, working in MDX:
 
 ```javascript
 // Import a single file
-import * as myPost from '../pages/post/my-post.md';
+import * as myPost from '../pages/post/my-post.mdx';
 
 // Import multiple files with Astro.glob
-const posts = await Astro.glob('../pages/post/*.md');
+const posts = await Astro.glob('../pages/post/*.mdx');
 ```
 
 藉此方式取得後再用上述的 [關於文章的資訊](#關於文章的資訊) 然後再配合我寫了個 util function `organizeAllPosts` 來決定我最終會拿到什麼文章

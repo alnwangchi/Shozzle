@@ -6,11 +6,11 @@ import { organizeAllPosts, slugify } from '@utils/index.js';
 
 // 動態產生 category 列表
 export async function getStaticPaths() {
-  const allPosts = await Astro.glob('../posts/*.md');
+  const allPosts = await Astro.glob('../posts/*.mdx');
   const allCategory = [...new Set(allPosts.map((p) => p.frontmatter.category).flat())];
   return allCategory.map((c) => ({
     params: { category: slugify(c) },
-    props: { name: c },
+    props: { name: c }
   }));
 }
 
@@ -18,22 +18,22 @@ export async function getStaticPaths() {
 const { category } = Astro.params;
 const { name } = Astro.props;
 
-const allPosts = await Astro.glob('../posts/*.md');
+const allPosts = await Astro.glob('../posts/*.mdx');
 const organizedAllPosts = organizeAllPosts(allPosts, { category });
 ---
 
-<MainLayout title='blog' description='文章們'>
-  <section class='container' aria-label='New Blog Posts'>
+<MainLayout title="blog" description="文章們">
+  <section class="container" aria-label="New Blog Posts">
     <h1>{name}</h1>
-    <div class='post-container'>
+    <div class="post-container">
       {organizedAllPosts.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
     </div>
   </section>
 </MainLayout>
 
-<script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"/>
+<script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script is:inline>
   AOS.init({
-    duration: 900,
+    duration: 900
   });
 </script>

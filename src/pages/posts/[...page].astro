@@ -7,7 +7,7 @@ import { organizeAllPosts } from '@utils/index.js';
 
 export async function getStaticPaths({ paginate }) {
   // Load your data with fetch(), Astro.glob(), etc.
-  const allPosts = await Astro.glob('./*.md');
+  const allPosts = await Astro.glob('./*.mdx');
   const organizedAllPosts = organizeAllPosts(allPosts);
   // Return a paginated collection of paths for all posts
   return paginate(organizedAllPosts, { pageSize: 7 });
@@ -15,21 +15,21 @@ export async function getStaticPaths({ paginate }) {
 
 // 文章列表包在 data 裡面
 const { page } = Astro.props;
-console.log('as',Astro)
+console.log('as', Astro);
 ---
 
-<MainLayout title='blog' description='文章們'>
-  <section class='container' aria-label='New Blog Posts'>
-    <div class='post-container'>
+<MainLayout title="blog" description="文章們">
+  <section class="container" aria-label="New Blog Posts">
+    <div class="post-container">
       {page.data.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
     </div>
     <Pagination prevUrl={page.url.prev} nextUrl={page.url.next} />
   </section>
 </MainLayout>
 
-<script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"/>
+<script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script is:inline>
   AOS.init({
-    duration: 900,
+    duration: 900
   });
 </script>

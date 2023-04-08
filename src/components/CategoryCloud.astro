@@ -1,7 +1,7 @@
 ---
 import { organizeAllPosts, slugify } from '@utils/index.js';
 
-const allPosts = await Astro.glob('../pages/posts/*.md');
+const allPosts = await Astro.glob('../pages/posts/*.mdx');
 const organizedAllPosts = organizeAllPosts(allPosts);
 
 const categoryBadges = [...new Set(organizedAllPosts.map((p) => p.frontmatter.category))];
