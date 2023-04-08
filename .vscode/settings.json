@@ -3,5 +3,8 @@
   // enable globally (here: format on save)
   "editor.formatOnSave": true,
   // enable per-language (here: Prettier as formatter)
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.associations": {
+    "*.mdx": "markdown"
+  }
 }
