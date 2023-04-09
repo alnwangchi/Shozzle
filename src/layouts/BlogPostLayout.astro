@@ -1,8 +1,9 @@
 ---
 // style
 import '../style/global.sass';
-// import '../style/global.css';
 import '../style/github-markdown-light.css';
+// components
+import ReadingProgress from '@components/ReadingProgress.jsx';
 
 import { CategoryCloud, PostHeader, RelatedPosts } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
@@ -45,6 +46,10 @@ const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: 
             <small>該作者沒有其他相關文章 都在混!</small>
           )
         }
+      </aside>
+      <aside class="" aria-label="Reading progresser">
+        <h3 class="font-semibold mb-3">Reading progresser</h3>
+        <ReadingProgress client:load />
       </aside>
     </div>
   </div>
