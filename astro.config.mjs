@@ -8,14 +8,19 @@ import tailwind from '@astrojs/tailwind';
 import netlify from '@astrojs/netlify/functions';
 
 // https://astro.build/config
-import mdx from "@astrojs/mdx";
+import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
   // ...
-  integrations: [image({
-    serviceEntryPoint: '@astrojs/image/sharp'
-  }), react(), tailwind(), mdx()],
+  integrations: [
+    image({
+      serviceEntryPoint: '@astrojs/image/sharp'
+    }),
+    react(),
+    tailwind(),
+    mdx()
+  ],
   // output: 'server',
   adapter: netlify()
 });
