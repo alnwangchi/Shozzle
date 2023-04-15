@@ -1,0 +1,162 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Unit Test (1)：介紹單元測試
+date: 2023-04-14
+author: Jamie Chien
+image: { src: '/images/Jamie_Avatar.png', alt: '範例' }
+description: 使用Jest加上React Testing Library來寫Unit Test
+draft: false
+category: Unit Test
+---
+
+## 前言
+
+本系列 Unit Test 文章將會分成以下幾篇文章來做撰寫，而這篇文章主要是簡單介紹 Unit Test 以及這次會使用到的兩大套件：[**Jest**](https://jestjs.io/)、[**React Testing Library**](https://testing-library.com/docs/react-testing-library/intro/)
+
+- **Jest Configuration 整理**
+- **Query Functions 整理**
+- **Matchers 整理**
+- **Mock Functions 整理**
+- **一些常見的使用情境**
+- **一些常見使用 React Testing Library 的錯誤**
+
+## 什麼是 Unit Test (What)
+
+<strong style="color:#DAA001">簡單的說就是測試程式碼中最小的單元</strong>，通常是
+function、method、class 等等，預設使用者 input 進去後應該得到怎麼樣的 output。(i.e.
+LeetCode、Codility 就是一個例子，這些平台會針對你寫的 function 做許多驗證，確保你的
+function在各種情境下都是符合題目需求的)
+
+還可以簡單用幾個方向來解釋：
+
+1. 執行快速
+2. 獨立性，不受到其他 Unit Test 影響
+3. 驗證一小段程式碼，並驗證單一的行為
+
+而針對第三點的定義，可以參考[這篇文章](https://yu-jack.github.io/2020/09/14/unit-test-best-practice-part-1/)，裡面有詳細解釋 unit 的定義
+
+## 為什麼要有 Unit Test (Why)
+
+簡單來說就是確保程式碼的品質，避免出現預期外的錯誤，以下是一些寫 Test 的理由：
+
+1. 確保程式的行為符合預期
+2. 開發新功能或修改舊功能時，test 可以作為最後一道防線避免出現非預期的行為
+3. 避免多人團隊協作的時候動到彼此的 code
+4. 自動化、並且有效提升效率（長遠來看）
+
+透過 Unit Test 可以立刻發現錯誤，避免 push 錯誤的程式碼，可以大大的降低日後維護成本，而現在也有許多團隊採用 TDD(Test Driven Development)來加快開發速度！！
+
+> 在『[Unit Testing: Principles, Practices, and Patterns](<https://sd.blackball.lv/library/unit_testing_(2020).pdf>)』這本書中更是有提到說：<strong style="color:#DAA001">Unit Test 的目標是實現可持續增長的軟體</strong>
+
+## 什麼時候要寫測試 (When)
+
+1. 開源的 library、共用的**modules**, **components**, **util functions**...等等
+2. 需求(**feature**)異動的時候
+3. 出現非預期執行結果(**bug**)的時候
+
+> ⚠️ 當然有時候客戶或上級要求要看覆蓋率(Coverage)，那就必須寫啦!!
+
+## 誰來寫測試 (Who)
+
+> **TL;DR 應該由 Developer 來撰寫**
+
+在設計一個 function 或物件的時候，是**developer 先去預期外部該如何使用這個物件，並根據此來讓物件具備怎麼樣的功能以及行為**。正因為設計此物件的人以及使用此物件的人都是 developer，所以單元測試應該由 developer 來撰寫最為妥當。
+
+## 如何寫一個 Unit Test (How)
+
+講了這麼多，終於要來講到如何寫一個 Unit Test 了，在這個系列文章中會專注在[**Jest**](https://jestjs.io/)、[**React Testing Library**](https://testing-library.com/docs/react-testing-library/intro/)這兩個套件上的使用～
+
+### 安裝
+
+首先要先安裝以下套件(詳細安裝流程可以參考[Jest 官網](https://jestjs.io/docs/getting-started) & [RTL 官網](https://testing-library.com/docs/react-testing-library/intro/))
+
+```bash
+npm install --save-dev jest
+npm install --save-dev @testing-library/react @/testing-library/jest-dom
+```
+
+> ⚠️ 如果你是使用`create-react-app`來建立專案的話，Jest 和 React Testing Library 預設就會被安裝，因此就不需要再另外安裝了
+
+### 跑測試
+
+> ⚠️ 這邊簡單列出最簡單常用的指令，詳細的指令可以參考[Jest 官網說明](https://jestjs.io/docs/cli)
+
+輸入這個指令就可以跑測試了：
+
+```bash
+npm test
+```
+
+也可以使用 watch 模式來監控，在這個模式下，只要你儲存檔案都會自動重新執行測試，在這個模式下也可以選擇要監聽的測試有哪些：
+
+```bash
+jest --watch
+```
+
+產生 coverage：
+
+```bash
+jest --coverage
+```
+
+### 測試檔檔名＆資料夾結構
+
+測試檔名為 `{fileName}.test.{js,ts,jsx,tsx}`
+
+慣例上，很多開發者習慣使用 `__tests__` 資料夾來放測試檔，也有些開發者會把測試檔案與原本檔案放在一起，沒有標準的做法，端看個人要怎麼管理這些測試檔囉～
+
+### Jest Configuration
+
+這邊可以設定一些 Configuration，詳細細節會在日後的章節介紹到，但這邊可簡單先 init 這個 config file:
+
+```bash
+jest --init
+```
+
+> ⚠️ 在這個 config 檔中可以設定測試的規則，其中很常用的像是是透過 `modulePaths`, `modulePathIgnorePatterns`來設定 coverage 的範圍，還有許多設定可以參考[Jest 官網說明](https://jestjs.io/docs/configuration)
+
+## 其他 Unit Test 解惑
+
+### 我需要測試哪些東西？
+
+1. 高價值的 features
+2. 高價值 features 的 edge cases
+3. 容易壞的東西
+4. 基本的 React component 測試
+   1. user interactions
+   2. conditional rendering
+   3. utils / hooks
+
+### 寫 Unit Test 的一些原則
+
+1. 變數 & 測試說明要清晰
+2. 單一責任原則 (一個測試只測試一件事)
+3. 考慮所有可能的場景
+
+### Unit Test Coverage 的名詞解釋
+
+1. **Statement** - 以一個最小程式 Syntax 為單位
+2. **Branch** - 以一個分岔點為單位。例如：if else 或是 三元表達式(condition ? true : false )
+3. **Functions** - 以一個 function 為單位
+4. **Lines** - 以一行為單位
+
+## 相關資源
+
+- Jest
+  - [Globals](https://jestjs.io/docs/api)
+  - [Expect(Matcher)](https://jestjs.io/docs/expect)
+  - [Mock Function](https://jestjs.io/docs/mock-function-api)
+- React Testing Library
+  - [Query Function](https://testing-library.com/docs/queries/about)
+  - [Fire Events](https://testing-library.com/docs/dom-testing-library/api-events)
+  - [React 相關 API](https://testing-library.com/docs/react-testing-library/api)
+- Useful Tools
+  - [Testing Playground](https://testing-playground.com/)
+
+## 參考文章
+
+- [Unit Test 實踐守則](https://yu-jack.github.io/2020/09/14/unit-test-best-practice-part-1/)
+- [What's unit test?在前端要測什麼?!](https://hsien-w-wei.medium.com/ut-whats-unit-test-%E5%9C%A8%E5%89%8D%E7%AB%AF%E6%98%AF%E8%A6%81%E6%B8%AC%E4%BB%80%E9%BA%BC-a11efc529204)
+- [Unit Testing 簡介](https://ithelp.ithome.com.tw/articles/10102264)
+- [Unit Testing: Principles, Practices, and Patterns](<https://sd.blackball.lv/library/unit_testing_(2020).pdf>)
+- [React Testing (PJCHENder)](https://pjchender.dev/react/note-react-testing/)
