@@ -1,0 +1,249 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Package manage tool pnpm
+date: 2023-04-16
+author: Josh Chou
+image: { src: '/images/Josh_Avatar.png', alt: '範例' }
+description: 淺談pnpm如何改善npm及yarn的問題點
+draft: false
+category: Astro
+---
+
+## Description
+
+{frontmatter.description}
+
+## NPM
+
+    - 發展背景：
+
+        NPM是2010年Isaac Z. Schlueter寫了用來管理Node.js上的package，到2011年即新增許多需求和改善，並發佈了 1.0版本。
+
+        2012年，NPM成為Node.js預設的套件管理工具，並隨著Node.js 0.6.3發佈。
+
+        2016年，NPM從Node.js獨立出來成為一間獨立的公司。
+
+        2017年，NPM 5.0對lockfiles做了更好的支援。
+
+        2019年，NPM公司被Github併購。
+
+        2020年，NPM release 7.0，包括新的peer dependency演算法並支援子資料夾的workspace。
+
+    - 使用範例：
+
+```bash
+# 從頭開始安裝（已經安裝Node.js）
+npm init;
+# 安裝指定套件指定版本，不同專案可以用空格隔開一次安裝多個
+npm install <package-name>@<package-version>
+```
+
+        - 按照package.json安裝依賴
+
+```bash
+npm i
+```
+
+        - 嚴格按照package-lock.json安裝依賴，安裝前先將舊的node_modules刪除，通常用在確保本地測試與CI pipelines或production部署完全一樣。
+
+```bash
+npm ci
+```
+
+        - Workspace for monorepo
+            - 在根目錄指定monorepo涵蓋哪些資料夾
+
+```json
+{
+  "name": "my-monorepo",
+  "private": true,
+  "workspaces": ["packages/*"]
+}
+```
+
+            - 在指定的workspace上面跑npm指令
+
+```bash
+npm run build --workspace my-package
+```
+
+## PNPM
+
+    - 發展背景
+
+        PNPM當初是是用來解決NPM, YARN遇到大型Node.js專案依賴層級過深、依賴重複安裝的痛點
+
+        2016年， Zoltan Kochan first released pnpm，解決當時npm, yarn在安裝一大包node_modules時遇到的問題，包含佔用硬碟空間、時間緩慢等等。
+
+        2017年, pnpm 2.0 支援 yarn-lock
+
+        2019年，pnpm 4.0 支援 workspace
+
+        2021年，pnpm 6.0 對巢狀依賴支援更佳，並改善與其他套件管理工具的相容性。
+
+    - 知識點
+        - node_modules結構
+            - flat installation
+                - package裡面的依賴被提升到最上層，容易導致幽靈依賴（使用者沒安裝但可以引用），不同版本的相同依賴則是提升最先被引用的到最上層，其餘的其他版本相同依賴則繼續在各自的package的node_modules中，一樣無法避免同版本專案的重複安之汪
+            - nested installation
+                - 將package裡的依賴留在package自身的node_modules裡，容易造成過深的巢狀，且常常重複安裝同樣的依賴。
+        - file link
+            - hard link
+                - 一種檔案連結類型，hard link可以理解為用新的檔名去連結到原本的檔案。以作業系統層級來說，原本的檔案和hard link都是一樣的 inode(index node) number。hard link可以讓一個檔案可以擁有多個名稱，便於組織管理。
+            - symbolic link (symlink)
+                - 一種會指向至其他檔案或目錄的檔案，當存取symlink的時候，作業系統會導向至被指向的檔案。
+        - peer dependencies
+            1. 在plugin開發時有些依賴是不需要安裝的，因為使用這些plugin的host已經安裝了，plugin為了要限制host使用這些依賴的版本會在peer dependency聲明依賴版本的限制
+            2. 可以避免重複安裝相同的依賴
+
+            ```json
+            // package.json 限制使用這個plugin的host的react版本
+            // 如果版本不符在install的時候會噴警告
+            "peerDependencies": {
+                "react": ">=16.9.0",
+            		"react-dom": ">=16.9.0"
+              }
+            ```
+
+
+    - 常用指令
+
+```json
+// 要先 npm -g install pnpm
+// pnpm相關指令
+pnpm install
+pnpm add <packaga-name> -w // workspace root
+pnpm <cmd> // same as npm run <cmd>
+pnpm --filter <package-selector> <cmd> // 限制執行指令的package
+```
+
+```json
+// pnpm-worksapce.yaml
+"packages/**"
+```
+
+    - 為什麼是 p(performance)npm?
+        - 節省硬碟空間：clone專案下來，調整node版本之後便直接npm install，對於多個專案來說，很容易重複安裝。pnpm在每次 pnpm install的時候，預設會安裝在 home dir (家目錄)上的.pnpm-store/裡面，再hard link到專案目錄裡，當遇到相同的專案時，會跳過安裝直接reuse hard link進專案，避免多個專案有同樣的依賴，會安裝多次，額外佔用硬碟空間。
+        - pnpm官網以簡單的範例分析如何處理node_modules:
+            1. hard link 所有專案到 content-addressable store
+
+```json
+node_modules
+└── .pnpm
+    ├── bar@1.0.0
+    │   └── node_modules
+    │       └── bar -> <store>/bar
+    │           ├── index.js
+    │           └── package.json
+    └── foo@1.0.0
+        └── node_modules
+            └── foo -> <store>/foo
+                ├── index.js
+                └── package.json
+```
+
+            2. 因為bar@1.0.0是foo@1.0.0下的巢狀依賴，將foo底下的bar，symlink到.pnpm下的bar@1.0.0
+
+```json
+node_modules
+└── .pnpm
+    ├── bar@1.0.0
+    │   └── node_modules
+    │       └── bar -> <store>/bar
+    └── foo@1.0.0
+        └── node_modules
+            ├── foo -> <store>/foo
+            └── bar -> ../../bar@1.0.0/node_modules/bar
+```
+
+            3. 將專案中的顯性依賴foo symlink到root node_modules中
+
+```json
+node_modules
+├── foo -> ./.pnpm/foo@1.0.0/node_modules/foo
+└── .pnpm
+    ├── bar@1.0.0
+    │   └── node_modules
+    │       └── bar -> <store>/bar
+    └── foo@1.0.0
+        └── node_modules
+            ├── foo -> <store>/foo
+            └── bar -> ../../bar@1.0.0/node_modules/bar
+```
+
+        - 處理peer dependencies
+            - 正常沒有peer dependencies時，foo, qux, plugh都會被hard link，確保其他專案有依賴到foo, qux, plugh時都能存取同一個檔案，不用額外重新安裝。
+
+```json
+node_modules
+└── .pnpm
+    ├── foo@1.0.0
+    │   └── node_modules
+    │       ├── foo
+    │       ├── qux   -> ../../qux@1.0.0/node_modules/qux
+    │       └── plugh -> ../../plugh@1.0.0/node_modules/plugh
+    ├── qux@1.0.0
+    ├── plugh@1.0.0
+```
+
+            - 有peer dependencies時，會創建每一種peer dependencies，範例中針對baz的兩個版本各自創建兩個集合: foo@1.0.0_bar@1.0.0+baz@1.0.0 和foo@1.0.0_bar@1.0.0+baz@1.1.0，確保能正確resolve各自的peer dependency
+
+```json
+node_modules
+└── .pnpm
+    ├── foo@1.0.0_bar@1.0.0+baz@1.0.0
+    │   └── node_modules
+    │       ├── foo
+    │       ├── bar   -> ../../bar@1.0.0/node_modules/bar
+    │       ├── baz   -> ../../baz@1.0.0/node_modules/baz
+    │       ├── qux   -> ../../qux@1.0.0/node_modules/qux
+    │       └── plugh -> ../../plugh@1.0.0/node_modules/plugh
+    ├── foo@1.0.0_bar@1.0.0+baz@1.1.0
+    │   └── node_modules
+    │       ├── foo
+    │       ├── bar   -> ../../bar@1.0.0/node_modules/bar
+    │       ├── baz   -> ../../baz@1.1.0/node_modules/baz
+    │       ├── qux   -> ../../qux@1.0.0/node_modules/qux
+    │       └── plugh -> ../../plugh@1.0.0/node_modules/plugh
+    ├── bar@1.0.0
+    ├── baz@1.0.0
+    ├── baz@1.1.0
+    ├── qux@1.0.0
+    ├── plugh@1.0.0
+```
+
+            - package本身沒有peer dependencies，但是package的依賴有peer dependencies，以下是 pnpm 的處理方式
+
+```json
+// 處理b@1.0.0有 peer dependency c@^1
+// a@1.0.0永遠不會resolve b@1.0.0的peer c@^1，所以各種版本的c獨立了出來
+// 可以看到a1.0.0因為有兩種c版本而出現了兩次: a@1.0.0_c@1.0.0和a@1.0.0_c@1.1.0
+// b1.0.0也因為有兩種c版本而出現兩次: b@1.0.0_c@1.0.0和b@1.0.0_c@1.1.0
+// c因為是b@1.0.0的peer，所以兩種版本被獨立出來
+node_modules
+└── .pnpm
+    ├── a@1.0.0_c@1.0.0
+    │   └── node_modules
+    │       ├── a
+    │       └── b -> ../../b@1.0.0_c@1.0.0/node_modules/b
+    ├── a@1.0.0_c@1.1.0
+    │   └── node_modules
+    │       ├── a
+    │       └── b -> ../../b@1.0.0_c@1.1.0/node_modules/b
+    ├── b@1.0.0_c@1.0.0
+    │   └── node_modules
+    │       ├── b
+    │       └── c -> ../../c@1.0.0/node_modules/c
+    ├── b@1.0.0_c@1.1.0
+    │   └── node_modules
+    │       ├── b
+    │       └── c -> ../../c@1.1.0/node_modules/c
+    ├── c@1.0.0
+    ├── c@1.1.0
+```
+
+## Reference:
+
+    - [https://www.readfog.com/a/1658320214914338816](https://www.readfog.com/a/1658320214914338816)
+    - [https://pnpm.io/symlinked-node-modules-structure](https://pnpm.io/symlinked-node-modules-structure)
+    - [https://pnpm.io/how-peers-are-resolved](https://pnpm.io/how-peers-are-resolved)
