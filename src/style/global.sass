@@ -4,7 +4,7 @@
 @import '_dark-mode-switcher.sass'
 @import '_arrow-animation.sass'
 @import '_hamburger-animation.sass'
-  
+
 .navbar
   position: relative
   border-bottom: 1px solid $clr_soft
@@ -113,6 +113,10 @@
     max-width: 780px
     padding: 1.5rem
     flex: 2
+    h1
+      font-size: clamp(1.94rem,1.69rem + 1.29vw,2.69rem)
+      font-weight: 600
+      line-height: 1.25
     @include lg 
       margin: 0 auto
     @include md 
