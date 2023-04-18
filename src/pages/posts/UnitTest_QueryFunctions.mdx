@@ -1,0 +1,110 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Unit Test (2)： Query Functions 整理
+date: 2023-04-18
+author: Jamie Chien
+image: { src: '/images/post-1.jpg', alt: '範例' }
+description: Unit Test的Query Functions整理以及Testing Playground介紹
+draft: false
+category: Unit Test
+---
+
+## 前言
+
+**Query Functions**幫助我們找到要測試的 elements，但要把所有**Query Functions**記起來來尋找 elements 和 roles 是很困難的，所以可以妥善利用工具。以下會先介紹一下工具，後面再來介紹這些**Query Functions**們。
+
+## 目錄
+
+- Testing Playground 使用介紹
+- Query Functions 介紹
+- Other Query Method
+
+> 💡 **以下會先介紹 Testing Playground 再介紹 Query Functions 們**
+
+> 💡 **不需要將這些 Query Functions 全部記起來，可以妥善利用 Testing Playground 工具**
+
+## Testing Playground ([Link](https://testing-playground.com/))
+
+使用 Testing Playground 的方法有幾個:
+
+### 方法 1
+
+直接到 Testing Playground 的網站使用
+
+### 方法 2
+
+在測試的區塊裡面加上`screen.logTestingPlaygroundURL()`可以在跑測試的時候產生一串網址，點擊網址就可以導到有你 render 出來的 element 的 playground 去了~
+
+> _Example_
+
+```jsx
+it('should render component correctly', () => {
+  render(<Component />);
+
+  screen.logTestingPlaygroundURL();
+
+  // ...other logic
+
+  // ...expect
+});
+```
+
+接者`npm run test {檔名}`來跑測試，然後就會出現如下圖的一串網址
+
+![](https://i.imgur.com/jF7r51T.png)
+
+點擊網址就會直接導向 Testing Playground 了~
+
+## Query Functions
+
+所有的 query functions 都是透過`screen` object 來使用的，這些 query functions 永遠都是從以下幾個名字開頭的: `getBy`、`getAllBy`、`queryBy`、`queryAllBy`、`findBy`、`findAllBy`
+
+| Start of Function Name | Examples                             |
+| ---------------------- | ------------------------------------ |
+| `getBy...`             | getByRole, getByText                 |
+| `getAllBy...`          | getAllByText, getAllByDisplayValue   |
+| `queryBy...`           | queryByDisplayValue, queryByTitle    |
+| `queryAllBy...`        | queryAllByTitle, queryAllByText      |
+| `findBy...`            | findByRole, findByText               |
+| `findAllBy...`         | findAllByText, findAllByDisplayValue |
+
+> Compare
+
+| Name            | 0 matches | 1 matches | >1 matches | Await? | Notes                   |
+| --------------- | --------- | --------- | ---------- | ------ | ----------------------- |
+| `getBy...`      | Throw     | Element   | Throw      | NO     |                         |
+| `getAllBy...`   | Throw     | Element[] | Element[]  | NO     |                         |
+| `queryBy...`    | null      | Element   | Throw      | NO     |                         |
+| `queryAllBy...` | []        | Element[] | Element[]  | NO     |                         |
+| `findBy...`     | Throw     | Element   | Throw      | YES    | 預設 1 秒內尋找 element |
+| `findAllBy...`  | Throw     | Element[] | Element[]  | YES    | 預設 1 秒內尋找 element |
+
+> 💡`findBy`, `findAllBy` 是在 1 秒內不斷 retry 尋找 element，1 秒後 `findBy`, `findAllBy` 沒有找到 element 或 `findBy` 找到多個 elements 時就會 reject 掉
+
+> 💡 `findBy` 是 `getBy*` 與 `[**waitFor**](https://testing-library.com/docs/dom-testing-library/api-async/#waitfor)` 的結合，他接收 `waitFor` options 來做為最後一個參數
+> (i.e. `await screen.findByText('text', queryOptions, waitForOptions)` )
+
+> Use Scenario
+
+| Goal of test                                      | Use                 |
+| ------------------------------------------------- | ------------------- |
+| 證明 element 存在                                 | getBy, getAllBy     |
+| 證明 element<span style="color:red">不</span>存在 | queryBy, queryAllBy |
+| 確保 element 最終存在                             | findBy, findAllBy   |
+
+### API
+
+> 💡 以下…可以根據需求替換成這幾個開頭: `getBy`、`getAllBy`、`queryBy`、`queryAllBy`、`findBy`、`findAllBy`，詳細使用請參考上方
+
+> 💡 以下基本上皆以 `getBy` 來做範例
+
+<details>
+  <summary>
+    <h3>...ByRole</h3>
+  </summary>
+  123
+</details>
+
+## Other Query Method ([Link](https://testing-library.com/docs/react-testing-library/api/))
+
+## Unit Test 系列其他文章
