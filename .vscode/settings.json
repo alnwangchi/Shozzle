@@ -2,11 +2,12 @@
   "cSpell.words": [
     "astro",
     "astrojs",
+    "Chien",
     "frontmatter",
+    "imgur",
     "shozzle",
     "tailwindcss",
-    "tsconfigs",
-    "Chien"
+    "tsconfigs"
   ],
   // enable globally (here: format on save)
   "editor.formatOnSave": true,
