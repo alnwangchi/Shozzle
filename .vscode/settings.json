@@ -6,7 +6,8 @@
     "shozzle",
     "tailwindcss",
     "tsconfigs",
-    "Chien"
+    "Chien",
+    "Callout"
   ],
   // enable globally (here: format on save)
   "editor.formatOnSave": true,
