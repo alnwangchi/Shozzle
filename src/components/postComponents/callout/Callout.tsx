@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import './_callout.sass';
+import './callout.sass';
 
 import {
   TbAlertTriangleFilled,
@@ -18,7 +17,13 @@ const colorMapper = {
   tip: '#E3FCEF'
 };
 
-const Callout = ({ children, className = '', type = 'info', ...rest }) => {
+interface CalloutProps {
+  children: React.ReactNode;
+  className: string;
+  type: 'warning' | 'error' | 'note' | 'info' | 'tip';
+}
+
+const Callout = ({ children, className = '', type = 'info', ...rest }: CalloutProps) => {
   const iconMapper = {
     warning: <TbAlertTriangleFilled className="w-6 h-6 text-[#FF9A1E]" />,
     error: <TbCircleXFilled className="w-6 h-6 text-[#DF360C]" />,
@@ -41,12 +46,6 @@ const Callout = ({ children, className = '', type = 'info', ...rest }) => {
       </div>
     </div>
   );
-};
-
-Callout.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['warning', 'error', 'note', 'info', 'tip'])
 };
 
 export default Callout;
