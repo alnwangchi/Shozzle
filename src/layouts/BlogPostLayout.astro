@@ -5,11 +5,11 @@ import '../style/github-markdown-light.css';
 // components
 import ReadingProgress from '@components/ReadingProgress.jsx';
 
-import { CategoryCloud, PostHeader, RelatedPosts } from '@components/index.astro';
+import { CategoryCloud, PostHeader, RelatedPosts, TOC } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
 import { organizeAllPosts } from '@utils/index';
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings } = Astro.props;
 
 const { title, description, date, category, author, image } = frontmatter;
 
@@ -31,7 +31,8 @@ const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: 
     <div class="sidebar">
       <aside class="" aria-label="anchor">
         <h3 class="font-semibold mb-3">Anchor</h3>
-        <small> TODO: 文章 Heading Links</small>
+        <TOC pageHeadings={headings} />
+        <!-- <small> TODO: 文章 Heading Links</small> -->
       </aside>
       <aside class="" aria-label="Blog categories">
         <h3 class="font-semibold mb-3">Categories</h3>

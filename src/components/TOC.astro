@@ -1,0 +1,28 @@
+---
+interface headingProps {
+  depth: number;
+  text: string;
+  slug: string;
+}
+
+export type Props = {
+  pageHeadings: Array<headingProps>;
+};
+
+const { pageHeadings } = Astro.props;
+---
+
+<ul class="toc">
+  {
+    pageHeadings.reduce((acc, heading) => {
+      if (heading.depth === 2) {
+        acc.push(
+          <li>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        );
+      }
+      return acc;
+    }, [])
+  }
+</ul>
