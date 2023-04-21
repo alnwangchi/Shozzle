@@ -7,7 +7,9 @@
     "imgur",
     "shozzle",
     "tailwindcss",
-    "tsconfigs"
+    "tsconfigs",
+    "Chien",
+    "Callout"
   ],
   // enable globally (here: format on save)
   "editor.formatOnSave": true,
