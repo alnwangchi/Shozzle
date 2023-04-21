@@ -1,12 +1,13 @@
 ---
-interface headingProps {
+interface HeadingProps {
   depth: number;
   text: string;
   slug: string;
+  children: Array<HeadingProps>;
 }
 
 export type Props = {
-  pageHeadings: Array<headingProps>;
+  pageHeadings: Array<HeadingProps>;
 };
 
 const { pageHeadings } = Astro.props;
@@ -14,15 +15,16 @@ const { pageHeadings } = Astro.props;
 
 <ul class="toc">
   {
-    pageHeadings.reduce((acc, heading) => {
-      if (heading.depth === 2) {
-        acc.push(
-          <li>
-            <a href={`#${heading.slug}`}>{heading.text}</a>
-          </li>
-        );
-      }
-      return acc;
-    }, [])
+    pageHeadings?.map((item) => (
+      <li>
+        <a
+          href={`#${item.slug}`}
+          style={{ paddingInlineStart: item.depth === 3 ? '2rem' : 'none' }}
+        >
+          {item.text}
+        </a>
+        {item.children.length ? <Astro.self pageHeadings={item.children} /> : ''}
+      </li>
+    ))
   }
 </ul>
