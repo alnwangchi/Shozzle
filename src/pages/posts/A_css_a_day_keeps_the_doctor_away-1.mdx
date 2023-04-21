@@ -1,0 +1,135 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: a CSS a day keeps the doctor away (1)
+date: 2023-04-20
+author: Allen Wang
+image: { src: '/images/MyHead.png', alt: '範例' }
+description: Tailwind CSS 你該知道的用例，space、group、peer，不僅僅是像是在寫 inline style 而是用更簡潔的描述達成樣式效果
+draft: false
+category: Tailwind CSS
+---
+
+import TailwindSpace from '../../components/postExample/TailwindSpace.jsx';
+import TailwindPeer from '../../components/postExample/TailwindPeer.jsx';
+import TailwindGroup from '../../components/postExample/TailwindGroup.jsx';
+
+## Description
+
+{frontmatter.description}
+
+## a CSS a day keeps the doctor away 系列前言
+
+我是個設計出身的前端工程師，對於畫面算是蠻有自己的想法也會在意很多的細節，不過近期所開發的產品類型屬於 CMS 系統，會在邏輯、狀態管理上比較著重，樣式方面簡直好久沒有 C 了，有也都是用淺淺的。剛好最近 CSS 也多了些新寫法，像是 CSS Nesting (雖然支援度還不高)、新的 selector `:has` `:where` `:is` 等等，豈能讓自己不持續更新一下新技術，因此每天都要 follow 一些相關知識點，積攢一些就 po 上來，看看能堅持多久
+
+身為前端 CSS 是很重要滴，千萬不可以像這樣啊 ⬇
+
+<img src="https://i.imgur.com/En3Sz11.png" class="md:w-[30vw]" title="source: imgur.com" />
+
+## Summary
+
+[Tailwind CSS](https://tailwindcss.com/) 基本用起來很簡單就像是在寫 inline style 不過還是有很多被封裝過的語法可以快速達成一些期望效果，這篇來分享以下三個用例
+
+## space vs. gap
+
+兩個都是用來控制其 children element 的間距離，不過 `gap` 需作用在 Flex or Grid box 裡，,且他是原生 CSS 屬性 ; `space` 是 tailwind 封裝的 utility，通過計算給 children element 以 `margin` 推出間距。
+
+### practical example
+
+<TailwindSpace />
+
+這樣子的排版，以下兩種寫法都是長這樣，可以想想當下使用場景為了做出間距，有沒有必要用上 Flex， 再用 gap
+
+```html
+<ul className="flex flex-col gap-4 p-4 border border-red-300 border-solid">
+  <li>Customizing your AAA</li>
+  <li>Extracting classes with BBB</li>
+  <li>Code completion with instant preview</li>
+</ul>
+```
+
+其實也可以只用 `space` 達成
+
+```html
+<ul className="space-y-4 p-4 border border-red-300 border-solid">
+  <li>Customizing your AAA</li>
+  <li>Extracting classes with BBB</li>
+  <li>Code completion with instant preview</li>
+</ul>
+```
+
+### conclusion
+
+可以少寫兩個 class ，賺爛了 (適用於結構單純場景)
+
+---
+
+## peer-\{modifier}
+
+綁定 sibling element，使其有相依性並可依照 A element 狀態定義 B element 樣式。
+
+通常搭配 [pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes) 一起服用 e.g.
+
+- `peer-disabled`
+- `peer-focus`
+- `peer-required`
+- `peer-invalid`
+- `peer-checked`
+- 還有很多請自己去找
+
+這個的應用場景大多都會是用在 interactive elements 上，e.g. 一個輸入框有 invalid 的時候要跳出錯誤訊息，錯誤是出在 input element 上，訊息則要出現在他的下方，可能是個 `span` 這時候就可以 peer 一下了
+
+### practical example
+
+可用在像是 Netflix 登入時候的輸入框效果(一)，或是錯誤提示的顯示(二)
+
+<TailwindPeer />
+
+```html
+<label class="block">
+  <span class="block text-sm font-medium text-slate-700">Email</span>
+  <input type="email" class="peer" />
+  <p class="mt-2 invisible peer-invalid:visible text-pink-600 text-sm">
+    Please provide a valid email address.
+  </p>
+</label>
+```
+
+- 注意只有在前面的 element 才可以被標記 peer
+
+### conclusion
+
+同層相依樣式的好夥伴
+
+---
+
+## group-\{modifier}
+
+基本上跟樓上的撰寫方式一樣，差別在 `peer` 是同輩 `group` 是老爸，標記 `group` 綁定 children element，使用多層時候以 `group/{name}` 多個標識符即可，如此一來將可以很彈性的個別定義效果
+
+### practical example
+
+<TailwindGroup />
+
+當 `<li>` 被 hover 的時候下層的 `<a>` 會顯示，因為用了相同的標識符 `group/item` 此時要再 hover 到 `<a>` 再下層的 `<span>` 跟 `<svg>` 才會有另外的效果，因為有定義另外的 `group/edit`
+
+```html
+<div className="group/item ...">
+  <div className="...">
+    <div className="...">
+      <img className="..." src="/images/MyHead.png" alt="" />
+    </div>
+    <div className="w-full text-sm leading-6">
+      <span>Allen Wang</span>
+      <div className="text-slate-500">Frontend developer</div>
+    </div>
+  </div>
+  <span href="#" className="group/edit invisible hover:bg-slate-300 group-hover/item:visible ...">
+    <span className=" group-hover/edit:text-gray-700 ..."> Call Me </span>
+    <svg></svg>
+  </span>
+</div>
+```
+
+### conclusion
+
+子層相依樣式的好夥伴
