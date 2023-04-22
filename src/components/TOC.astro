@@ -28,3 +28,32 @@ const { pageHeadings } = Astro.props;
     ))
   }
 </ul>
+
+<script>
+  const setCurrentHeading: IntersectionObserverCallback = (entries) => {
+    for (let entry of entries) {
+      const { id } = entry.target;
+
+      // 找到所有toc底下的a elements
+      const tocLinkEl = document.querySelector(`.toc a[href='#${id}']`);
+
+      if (!tocLinkEl) return;
+
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.toc a').forEach((e) => e.classList.remove('active'));
+
+        tocLinkEl.classList.add('active');
+      }
+    }
+  };
+
+  // rootMargin 負越多代表觸發的越慢（負越多代表heading要到畫面的越上面才會被觸發）
+  const observerOptions = {
+    threshold: 1,
+    rootMargin: '0px 0px -60%'
+  };
+
+  const observer = new IntersectionObserver(setCurrentHeading, observerOptions);
+  const elToObserve = document.querySelectorAll('h2, h3');
+  elToObserve.forEach((el) => observer.observe(el));
+</script>
