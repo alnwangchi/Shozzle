@@ -136,6 +136,19 @@
       border-right: unset
       position: unset
       top: unset
+    .toc
+      display: flex
+      flex-direction: column
+      a
+        display: inline-flex
+        width: 100%
+        padding: 5px 0
+        color: $clr_secondary
+        &:hover
+          color: $clr_primary
+      .active
+        color: $clr_primary
+        font-weight: 600
     .categories
       display: flex
       flex-direction: column
