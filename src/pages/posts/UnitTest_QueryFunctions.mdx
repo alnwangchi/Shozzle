@@ -165,7 +165,7 @@ it('should render component correctly', () => {
     ```
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">UserList.js</span>
@@ -207,7 +207,7 @@ it('should render component correctly', () => {
     透過包含的text來找到elements
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -251,7 +251,7 @@ it('should render component correctly', () => {
     透過搭配的<strong>labels</strong>包含的text來找到elements
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -294,7 +294,7 @@ it('should render component correctly', () => {
     透過<strong>placeholder</strong> text來找到elements
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -338,7 +338,7 @@ it('should render component correctly', () => {
     透過當下的value來找到elements
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -381,7 +381,7 @@ it('should render component correctly', () => {
     透過 <code>alt</code> attribute來找到elements
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -422,7 +422,7 @@ it('should render component correctly', () => {
     透過 <code>title</code> attribute來找到elements
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -471,7 +471,7 @@ it('should render component correctly', () => {
     ``` getByTestId('{data-testid}') ```
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">DataForm.js</span>
@@ -534,7 +534,7 @@ it('should render component correctly', () => {
     </Callout>
 
     <details>
-      <summary style="font-style: italic; font-weight: bold">Example</summary>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
 
         <span style="font-style: italic">UserList.js</span>
@@ -654,6 +654,92 @@ it('should render component correctly', () => {
   </summary>
   <div style="padding-left: 14px">
     從rendered的component回傳一個 <code>DocumentFragment</code>
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">cleanup</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    他會unmount那些透過 <code>render</code> mounted的React trees
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">act</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    為斷言準備一個component，包裹要渲染的code在裡面，並在調用 <code>act()</code>
+    時更新，這會使得測試更接近React在瀏覽器中的工作方式
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+          <div style="padding-left: 14px">
+
+            <span style="font-style: italic">hook</span>
+            ```jsx
+              import { useState, useCallback } from 'react'
+
+              export default function useCounter() {
+                const [count, setCount] = useState(0)
+                const increment = useCallback(() => setCount((x) => x + 1), [])
+                return { count, increment }
+              }
+            ```
+            <span style="font-style: italic">hook.test.js</span>
+            ```jsx
+              test('should increment counter', () => {
+                const { result } = renderHook(() => useCounter())
+
+                act(() => {
+                  result.current.increment()
+                })
+
+                expect(result.current.count).toBe(1)
+              })
+            ```
+        </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">renderHook</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    渲染一個用於測試的component，这个component會調用包含的 hook 的callback。
+    直接看範例吧！！
+    
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+          <div style="padding-left: 14px">
+
+            <span style="font-style: italic">hook</span>
+            ```jsx
+              import { useState, useCallback } from 'react'
+
+              export default function useCounter() {
+                const [count, setCount] = useState(0)
+                const increment = useCallback(() => setCount((x) => x + 1), [])
+                return { count, increment }
+              }
+            ```
+            <span style="font-style: italic">hook.test.js</span>
+            ```jsx
+              test('should use counter', () => {
+                const { result } = renderHook(() => useCounter())
+
+                expect(result.current.count).toBe(0)
+                expect(typeof result.current.increment).toBe('function')
+              })
+            ```
+        </div>
+
+    </details>
+
   </div>
 </details>
 
