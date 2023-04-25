@@ -5,11 +5,11 @@ import '../style/github-markdown-light.css';
 // components
 import ReadingProgress from '@components/ReadingProgress.jsx';
 
-import { CategoryCloud, PostHeader, RelatedPosts } from '@components/index.astro';
+import { CategoryCloud, PostHeader, RelatedPosts, TOC } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
 import { organizeAllPosts } from '@utils/index';
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings } = Astro.props;
 
 const { title, description, date, category, author, image } = frontmatter;
 
@@ -18,6 +18,19 @@ const allPosts = await Astro.glob('../pages/posts/*.mdx');
 const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: false }).filter(
   (post) => post.frontmatter.title !== title
 );
+
+// 更改headings array的結構
+const nestedHeadings = (headingParam) => {
+  return headingParam.reduce((result, heading) => {
+    const last = result[result.length - 1];
+    if (heading.depth === 2) {
+      result.push({ ...heading, children: [] });
+    } else {
+      last.children.push({ ...heading, children: [] });
+    }
+    return result;
+  }, []);
+};
 ---
 
 <MainLayout {title} {description}>
@@ -31,7 +44,8 @@ const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: 
     <div class="sidebar">
       <aside class="" aria-label="anchor">
         <h3 class="font-semibold mb-3">Anchor</h3>
-        <small> TODO: 文章 Heading Links</small>
+        <TOC pageHeadings={nestedHeadings(headings)} />
+        <!-- <small> TODO: 文章 Heading Links</small> -->
       </aside>
       <aside class="" aria-label="Blog categories">
         <h3 class="font-semibold mb-3">Categories</h3>
