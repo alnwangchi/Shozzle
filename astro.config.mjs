@@ -13,7 +13,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://gentle-queijadas-a317c9.netlify.app/',
+  site: 'https://shozzle.dev/',
   integrations: [
     image({
       serviceEntryPoint: '@astrojs/image/sharp'
