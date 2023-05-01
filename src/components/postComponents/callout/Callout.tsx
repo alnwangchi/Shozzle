@@ -7,7 +7,7 @@ import {
   TbPinFilled,
   TbInfoCircleFilled,
   TbBulbFilled
-} from 'react-icons/tb';
+} from 'react-icons/tb/index.js';
 
 const colorMapper = {
   warning: '#FEFAE6',
