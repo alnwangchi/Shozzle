@@ -15,7 +15,7 @@ const { title, description, date, category, author, image } = frontmatter;
 
 const allPosts = await Astro.glob('../pages/posts/*.mdx');
 // FIXME: 加上 category 卻無法正確篩出
-const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: false }).filter(
+const relatedPosts = organizeAllPosts(allPosts, { category, limit: 2, sortByDate: false }).filter(
   (post) => post.frontmatter.title !== title
 );
 

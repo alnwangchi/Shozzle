@@ -36,7 +36,7 @@ export function organizeAllPosts(
     // 過濾奇怪的未來文章 FIXME: 怎麼沒有用 操
     if (filterOutFuturePosts && dayjs(date).isAfter(dayjs(new Date()))) return acc;
     // 過濾不同類型
-    if (category && category !== slugify(post.frontmatter.category)) return acc;
+    if (category && category !== post.frontmatter.category) return acc;
     // 過漏不同作者
     if (author && author !== post.frontmatter.author) return acc;
 
