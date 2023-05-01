@@ -1,6 +1,10 @@
 # Shozzle
 
-## [online](https://gentle-queijadas-a317c9.netlify.app/)
+## [online](https://shozzle.dev/)
+
+## tools
+
+[FigJam](https://www.figma.com/file/i7dYTbkJ1lnIqRX42Wkilz/Shozzle?node-id=0-1&t=cXvTg1eZTFDi349A-0)
 
 ## 🚀 Project Structure
 
@@ -85,4 +89,11 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Common Rules
 
 - 有寫元件記得統一由 index.astro 匯出
-- icon 用這 [icones](https://icones.js.org/)
+- icon 可用這 [icones](https://icones.js.org/)
+
+## 文章圖片注意事項
+
+在 mdx 文章中若有圖片的使用時，請用以下的 astro 封裝過的元件，這可以大大優化圖片的大小，不信去看 Network Img
+`import PostImage from '../../components/postComponents/PostImage.astro';`
+
+- 請務必傳入 width or height 並且在只有給 width 的時候 aspectRatio 為必填
