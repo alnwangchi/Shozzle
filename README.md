@@ -96,4 +96,4 @@ All commands are run from the root of the project, from a terminal:
 在 mdx 文章中若有圖片的使用時，請用以下的 astro 封裝過的元件，這可以大大優化圖片的大小，不信去看 Network Img
 `import PostImage from '../../components/postComponents/PostImage.astro';`
 
-- 請務必傳入 width or height 並且在只有給 width 的時候 aspectRatio 為必填
+- 使用外部圖片路徑請務必傳入 width 跟 height
