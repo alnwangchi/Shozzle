@@ -1,0 +1,19 @@
+name: merge main into dev
+on:
+  push:
+    branches:
+      - main
+jobs:
+  merge-into-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Merge main into dev
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git fetch --unshallow
+          git checkout dev
+          git pull
+          git merge main --no-ff -m "Merge main into dev"
+          git push
