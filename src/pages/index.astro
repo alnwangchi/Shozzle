@@ -9,7 +9,7 @@ const allPosts = await Astro.glob('../pages/posts/*.mdx');
 const latestPosts = organizeAllPosts(allPosts, { limit: 1 }).at(0).frontmatter;
 ---
 
-<MainLayout title="My Blog">
+<MainLayout title="Shozzle">
   <div>
     <div class="w-fit typewriter relative left-2/4 -translate-x-2/4 mb-10">
       <h1 class="text-xl font-orbitron font-normal">
