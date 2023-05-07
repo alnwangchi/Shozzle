@@ -6,7 +6,7 @@ const TailwindGroup = () => {
       <div className="group/item relative flex items-center justify-between rounded-xl p-4 bg-slate-100 hover:bg-slate-200 cursor-pointer">
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <img className="h-32 w-32 rounded-full" src="/images/MyHead.png" alt="" />
+            <img className="h-32 w-32 rounded-full" src="/images/Allen_Avatar.png" alt="" />
           </div>
           <div className="w-full text-sm leading-6">
             <span>Allen Wang</span>

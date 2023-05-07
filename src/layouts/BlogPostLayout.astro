@@ -7,7 +7,7 @@ import ReadingProgress from '@components/ReadingProgress.jsx';
 
 import { CategoryCloud, PostHeader, RelatedPosts, TOC } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
-import { organizeAllPosts } from '@utils/index';
+import { organizeAllPosts, slugify } from '@utils/index';
 
 const { frontmatter, headings } = Astro.props;
 
@@ -15,9 +15,11 @@ const { title, description, date, category, author, image } = frontmatter;
 
 const allPosts = await Astro.glob('../pages/posts/*.mdx');
 // FIXME: 加上 category 卻無法正確篩出
-const relatedPosts = organizeAllPosts(allPosts, { author, limit: 2, sortByDate: false }).filter(
-  (post) => post.frontmatter.title !== title
-);
+const relatedPosts = organizeAllPosts(allPosts, {
+  category: slugify(category),
+  limit: 2,
+  sortByDate: false
+}).filter((post) => post.frontmatter.title !== title);
 
 // 更改headings array的結構
 const nestedHeadings = (headingParam) => {

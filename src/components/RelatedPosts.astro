@@ -9,11 +9,14 @@ const { relatedPosts } = Astro.props;
   relatedPosts.map((post) => {
     const { title, author, category } = post.frontmatter;
     return (
-      <div class='post'>
-        <h3 class='h4'>
+      <div class="post related-post">
+        <p>
           <a href={post.url}>{title}</a>
-        </h3>
-        <small>{category}</small>
+        </p>
+        <small>
+          <a href={`/category/${slugify(category)}`}>{category}</a>
+        </small>
+        <small>-</small>
         <small>
           <a href={`/author/${slugify(author)}/`}>{author}</a>
         </small>

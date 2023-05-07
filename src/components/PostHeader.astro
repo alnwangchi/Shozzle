@@ -1,22 +1,40 @@
 ---
 // library imports
 import { Image } from '@astrojs/image/components';
+import { Icon } from 'astro-icon';
 // utils imports
 import { slugify, commonDayFormatter } from '@utils/index.js';
+import authorData from '@constants/authorData';
+
 const { category, title, author, date, image } = Astro.props;
+
+const authorImageConverter = (author: string): { name: string; avatar: string } => {
+  const targetAuthor = authorData.find((val) => val.name === author);
+
+  return targetAuthor;
+};
+
+const authorImage = authorImageConverter(author);
 ---
 
 <header>
   <div class="flex gap-2 items-center">
-    <Image
-      src={image.src}
-      alt={image.alt}
-      width={52}
-      format="avif"
-      fit="cover"
-      quality={80}
-      aspectRatio="1:1"
-    />
+    {
+      authorImage ? (
+        <Image
+          src={authorImage.avatar}
+          alt={authorImage.name}
+          width={52}
+          height={52}
+          format="avif"
+          fit="cover"
+          quality={80}
+          aspectRatio="1:1"
+        />
+      ) : (
+        <Icon name="typcn:user" height="52" width="52" />
+      )
+    }
     <div class="w-fit">
       <p class="leading-none mb-2">
         <a class="w-fit" href={`/author/${slugify(author)}/`}>{author}</a> • {
