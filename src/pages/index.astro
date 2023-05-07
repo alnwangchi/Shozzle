@@ -12,31 +12,31 @@ const latestPosts = organizeAllPosts(allPosts, { limit: 1 }).at(0).frontmatter;
 <MainLayout title="Shozzle">
   <div>
     <div class="w-fit typewriter relative left-2/4 -translate-x-2/4 mb-10">
-      <h1 class="text-xl font-orbitron font-normal">
-        Shozzle, a frontend Technology Sharing Blog.
+      <h1 class="text-sm lg:text-xl font-orbitron font-normal">
+        Shozzle, a frontend <span class="hidden sm:inline">Technology Sharing</span> Blog.
       </h1>
     </div>
-    <div class="">
-      <Image
-        src="/images/home.jpg"
-        alt="Shozzle"
-        width={1000}
-        height={undefined}
-        aspectRatio={5 / 2}
-        format="avif"
-        class="w-full max-w-[1200px] mx-auto opacity-90"
-      />
-    </div>
-    <!-- 最新一篇文 -->
-    <div class="max-w-[1200px] mx-auto -mt-[15vh]">
-      <div class="relative w-fit max-w-[520px] bg-white p-10 z-1 shadow-lg">
-        <div>
-          <small>{commonDayFormatter(latestPosts.date)}</small>
-        </div>
-        <h3 class="mb-4">{latestPosts.title}</h3>
-
-        <p class="text-sm">{latestPosts.description}</p>
+  </div>
+  <div class="">
+    <Image
+      src="/images/home.jpg"
+      alt="Shozzle"
+      width={1000}
+      height={undefined}
+      aspectRatio={5 / 2}
+      format="avif"
+      class="w-full max-w-[1200px] mx-auto opacity-90"
+    />
+  </div>
+  <!-- 最新一篇文 -->
+  <div class="sm:max-w-[1200px] max-w-[300px] mx-auto sm:-mt-[15vh]">
+    <div class="relative w-fit max-w-[520px] bg-white p-10 z-1 shadow-lg">
+      <div>
+        <small>{commonDayFormatter(latestPosts.date)}</small>
       </div>
+      <h3 class="mb-4">{latestPosts.title}</h3>
+
+      <p class="text-sm">{latestPosts.description}</p>
     </div>
   </div>
 </MainLayout>
