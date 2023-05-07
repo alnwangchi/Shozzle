@@ -19,12 +19,14 @@ const { page } = Astro.props;
 ---
 
 <MainLayout title="blog" description="文章們">
-  <section class="container" aria-label="New Blog Posts">
-    <div class="post-container">
-      {page.data.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
-    </div>
-    <Pagination prevUrl={page.url.prev} nextUrl={page.url.next} />
-  </section>
+  <div class="py-10">
+    <section class="container" aria-label="New Blog Posts">
+      <div class="post-container">
+        {page.data.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
+      </div>
+      <Pagination prevUrl={page.url.prev} nextUrl={page.url.next} />
+    </section>
+  </div>
 </MainLayout>
 
 <script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

@@ -1,18 +1,35 @@
 ---
-import { organizeAllPosts, slugify } from '@utils/index.js';
+import { organizeAllPosts, slugify, categoryAccumulator } from '@utils/index.js';
 
 const allPosts = await Astro.glob('../pages/posts/*.mdx');
+
 const organizedAllPosts = organizeAllPosts(allPosts);
 
-const categoryBadges = [...new Set(organizedAllPosts.map((p) => p.frontmatter.category))];
+const calcResult = categoryAccumulator(organizedAllPosts);
+
+const accumulatedPosts = Object.entries(calcResult);
 ---
 
-<ul class="categories">
+<div class="space-y-3">
   {
-    categoryBadges.map((c) => (
-      <li>
-        <a href={`/category/${slugify(c)}/`}>{c}</a>
-      </li>
-    ))
+    // FIXME: 乾 這個 type 是怎樣啦
+    accumulatedPosts.map(([category, { count, latest }]) => {
+      return (
+        <a
+          href={`/category/${slugify(category)}/`}
+          class="group flex outline-2 outline-[#999] hover:outline-[#101010] outline w-fit cursor-pointer text-[#999] hover:text-[#101010]"
+        >
+          <div class="h">
+            <small class="flex justify-center items-center p-1 font-semibold border-b-[#999] group-hover:border-b-[#101010] border-b-[2px] border-solid">
+              {count} post
+            </small>
+            <small class="flex justify-center items-center p-1 font-semibold">{latest}</small>
+          </div>
+          <div class="border-l-[#999] group-hover:border-l-[#101010] border-l-[2px] border-solid flex justify-center items-center px-2">
+            <span class="font-bold">{category}</span>
+          </div>
+        </a>
+      );
+    })
   }
-</ul>
+</div>

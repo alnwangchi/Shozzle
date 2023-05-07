@@ -1,6 +1,6 @@
 ---
 layout: '@layouts/BlogPostLayout.astro'
-title: a CSS a day keeps the doctor away (1)
+title: 每日 C ss 系列 - Tailwind 實用案例
 date: 2023-04-20
 author: Allen Wang
 image: { src: '/images/Allen_Avatar.png', alt: '範例' }
@@ -18,7 +18,7 @@ import PostImage from '../../components/postComponents/PostImage.astro';
 
 {frontmatter.description}
 
-## a CSS a day keeps the doctor away 系列前言
+## 每日 C 系列前言
 
 我是個設計出身的前端工程師，對於畫面算是蠻有自己的想法也會在意很多的細節，不過近期所開發的產品類型屬於 CMS 系統，會在邏輯、狀態管理上比較著重，樣式方面簡直好久沒有 C 了，有也都是用淺淺的。剛好最近 CSS 也多了些新寫法，像是 CSS Nesting (雖然支援度還不高)、新的 selector `:has` `:where` `:is` 等等，豈能讓自己不持續更新一下新技術，因此每天都要 follow 一些相關知識點，積攢一些就 po 上來，看看能堅持多久
 
@@ -26,7 +26,7 @@ import PostImage from '../../components/postComponents/PostImage.astro';
 
 <PostImage src="https://i.imgur.com/En3Sz11.png" width={400} height={500} aspectRatio="1/1" />
 
-## Summary
+## 此篇大綱
 
 [Tailwind CSS](https://tailwindcss.com/) 基本用起來很簡單就像是在寫 inline style 不過還是有很多被封裝過的語法可以快速達成一些期望效果，這篇來分享以下三個用例
 
@@ -64,7 +64,7 @@ import PostImage from '../../components/postComponents/PostImage.astro';
 
 ---
 
-## peer-\{modifier}
+## peer
 
 綁定 sibling element，使其有相依性並可依照 A element 狀態定義 B element 樣式。
 
@@ -103,7 +103,7 @@ import PostImage from '../../components/postComponents/PostImage.astro';
 
 ---
 
-## group-\{modifier}
+## group
 
 基本上跟樓上的撰寫方式一樣，差別在 `peer` 是同輩 `group` 是老爸，標記 `group` 綁定 children element，使用多層時候以 `group/{name}` 多個標識符即可，如此一來將可以很彈性的個別定義效果
 
@@ -111,10 +111,12 @@ import PostImage from '../../components/postComponents/PostImage.astro';
 
 <TailwindGroup />
 
-當 `<li>` 被 hover 的時候下層的 `<a>` 會顯示，因為用了相同的標識符 `group/item` 此時要再 hover 到 `<a>` 再下層的 `<span>` 跟 `<svg>` 才會有另外的效果，因為有定義另外的 `group/edit`
+當第一層 `<div>` 被 hover 的時候下層的 `<a>` 會顯示，因為用了相同的標識符 `group/item` 此時要再 hover 到 `<a>` 再下層的 `<span>` 跟 `<svg>` 才會有另外的效果，因為有定義另外的 `group/edit`
 
 ```html
-<div className="group/item ...">
+<div
+  className="group/item relative flex items-center justify-between rounded-xl p-4 bg-slate-100 hover:bg-slate-200 cursor-pointer"
+>
   <div className="...">
     <div className="...">
       <img className="..." src="/images/Allen_Avatar.png" alt="" />
@@ -124,10 +126,10 @@ import PostImage from '../../components/postComponents/PostImage.astro';
       <div className="text-slate-500">Frontend developer</div>
     </div>
   </div>
-  <span href="#" className="group/edit invisible hover:bg-slate-300 group-hover/item:visible ...">
+  <a href="#" className="group/edit invisible hover:bg-slate-300 group-hover/item:visible ...">
     <span className=" group-hover/edit:text-gray-700 ..."> Call Me </span>
     <svg></svg>
-  </span>
+  </a>
 </div>
 ```
 
