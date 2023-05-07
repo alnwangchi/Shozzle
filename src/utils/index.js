@@ -57,3 +57,23 @@ export function organizeAllPosts(
 
   return filteredPosts;
 }
+
+// for category 篇數計算及最新時間
+export const categoryAccumulator = (postsArr) => {
+  const result = postsArr.reduce((acc, cur) => {
+    const { category, date } = cur.frontmatter;
+
+    if (!acc[category]) {
+      acc[category] = {
+        count: 1,
+        latest: dayjs(date).format('MMM-DD')
+      };
+      return acc;
+    } else {
+      acc[category].count = acc[category].count++;
+      return acc;
+    }
+  }, {});
+
+  return result;
+};
