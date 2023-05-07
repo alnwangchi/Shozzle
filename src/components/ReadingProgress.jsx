@@ -11,9 +11,8 @@ const ReadingProgress = () => {
       const currentScrollY = window.pageYOffset;
 
       const currentPercent = (currentScrollY / (bodyHeight - windowHeight)) * 100;
-      const currentPercentToInteger = Math.ceil(currentPercent);
 
-      setPercent(currentPercentToInteger);
+      setPercent(currentPercent);
     };
 
     window.addEventListener('scroll', updateCurrentPagePercent);
@@ -26,14 +25,8 @@ const ReadingProgress = () => {
   return (
     <>
       {/* <div>{percent}</div> */}
-      <div
-        className="progress"
-        style={{ backgroundColor: `${percent === 100 ? 'transparent' : ''}` }}
-      >
-        <div
-          className="h-full bg-white rounded-full w-7"
-          style={{ width: `${percent}%`, backgroundColor: `${percent === 100 ? '#efe960' : ''}` }}
-        />
+      <div className="progress">
+        <div className="h-full w-7 bg-[#efe960]" style={{ width: `${percent}%` }} />
       </div>
     </>
   );

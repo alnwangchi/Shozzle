@@ -159,16 +159,15 @@
         &:hover
           color: $clr_primary
     
-.progress 
+.progress
+  position: sticky
+  top: 0
+  z-index: 3
   display: flex
   justify-content: flex-start
-  border-radius: 100px
   align-items: center
-  position: relative
-  padding: 2px
-  height: 10px
-  width: 220px
-  background-color: $clr_secondary
+  height: 5px
+  width: 100%
   transition: $transition
 
 footer
