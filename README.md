@@ -8,8 +8,6 @@
 
 ## 🚀 Project Structure
 
-1
-
 ```
 src
 ├─ components
@@ -100,4 +98,7 @@ All commands are run from the root of the project, from a terminal:
 
 - 使用外部圖片路徑請務必傳入 width 跟 height
 
-TT
+## 文章圖片注意事項
+
+.mdx 文章檔案名稱必須用 - 作為分隔符號
+google 建議使用 - 作為分隔符號，不建議使用 \_ 或是小駝峰寫法，這將會是 GSC 中的網頁未編入索引的原因之一，若無編入索引該篇文章將不可能被搜尋的到
