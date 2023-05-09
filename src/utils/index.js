@@ -70,7 +70,7 @@ export const categoryAccumulator = (postsArr) => {
       };
       return acc;
     } else {
-      acc[category].count = acc[category].count++;
+      acc[category].count = ++acc[category].count;
       return acc;
     }
   }, {});
