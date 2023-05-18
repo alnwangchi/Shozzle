@@ -1,3 +1,5 @@
+
+
 @import '_break-point.sass'
 @import '_variables.sass'
 @import '_reset.sass'
@@ -5,6 +7,22 @@
 @import '_arrow-animation.sass'
 @import '_hamburger-animation.sass'
 @import '_typing-animation.css'
+
+@tailwind base
+@tailwind components
+@tailwind utilities
+
+@layer base
+  p
+    @apply leading-loose
+  li
+    @apply leading-loose
+
+@layer utilities
+  .f-center
+    @apply flex justify-center items-center
+
+
 
 .navbar
   position: relative
