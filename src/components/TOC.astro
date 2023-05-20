@@ -13,12 +13,14 @@ export type Props = {
 const { pageHeadings } = Astro.props;
 ---
 
-<ul class="toc">
+<!-- class toc only for querySelector -->
+<ul class="toc flex flex-col">
   {
     pageHeadings?.map((item) => (
       <li>
         <a
           href={`#${item.slug}`}
+          class="inline-flex w-full py-[5px] text-secondary leading-none hover:text-primary"
           style={{ paddingInlineStart: item.depth === 3 ? '2rem' : 'none' }}
         >
           {item.text}
@@ -28,6 +30,12 @@ const { pageHeadings } = Astro.props;
     ))
   }
 </ul>
+<style>
+  .active {
+    color: #101010;
+    font-weight: 600;
+  }
+</style>
 
 <script>
   const setCurrentHeading: IntersectionObserverCallback = (entries) => {
