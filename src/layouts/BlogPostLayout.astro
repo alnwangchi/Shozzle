@@ -45,7 +45,9 @@ const nestedHeadings = (headingParam) => {
           <slot />
         </div>
       </div>
-      <div class="sidebar">
+      <div
+        class="sticky top-10 h-fit max-w-[368px] p-4 flex flex-1 gap-4 flex-col border border-l-secondary"
+      >
         <aside class="" aria-label="anchor">
           <h3 class="font-semibold mb-3">Anchor</h3>
           <TOC pageHeadings={nestedHeadings(headings)} />
