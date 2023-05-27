@@ -1,0 +1,106 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Next manifest not found error
+date: 2023-05-27
+author: Josh Chou
+image:
+  {
+    src: 'https://images.ctfassets.net/23aumh6u8s0i/c04wENP3FnbevwdWzrePs/1e2739fa6d0aa5192cf89599e009da4e/nextjs',
+    alt: '範例'
+  }
+description: 解決部署_buildManifest.js, _ssgManifest.js 404的問題
+draft: false
+category: nextjs
+---
+
+import PostImage from '../../components/postComponents/PostImage.astro';
+
+## Description
+
+<p>{frontmatter.description}</p>
+
+## 前言
+
+最近公司產品的 production 環境突然爆開，而且是三個月以來都沒有人動 code 的情況，公司的產品是用 nextjs13 寫的，經過 dev, staging 環境 pending UAT 之後才上 production，沒道理會出問題。
+以下是網路上錯誤的內容的截圖：
+
+<PostImage
+  src="https://user-images.githubusercontent.com/36122235/136126313-5f53d759-1f93-4809-98c8-99972aa435a6.png"
+  width={588}
+  height={72}
+  class="w-full"
+  aspectRatio="9/5"
+  desc="網路參考圖"
+/>
+
+## 解決方法
+
+先說重點，解決方式就是在 next.config.js 裡面去限制產出的 hash 要長一樣，而因為要區分版本，我是決定用當下這個版本的 commit，這個 commit 的環境變數是在 K8s 上 run container 時注入的，而在本地則是使用當下的時間戳，避免 build 之後的檔案被 browser cache 住。
+
+```javascript
+module.exports = {
+  // your code...
+  async generateBuildId() {
+    // use k8s env commitID to avoid building manifest 404 not found, and handle local build.
+    return process.env.COMMIT_ID.toString().trim() ?? Date.now().toString();
+  }
+};
+```
+
+好了，本文結束～開玩笑的
+
+## error 發生原因
+
+下面來說為什麼會出現這個問題，可以先看一下 nextjs 的 issue 討論串[buildManifest 404 causing app failure #18389](https://github.com/vercel/next.js/issues/18389)，為什麼幾乎都是 production 環境遇到的，這其實就是 client 的 browser cache 機制遇上 load balancer 的情況。在正式環境中，公司為了因應網站的大流量，幾乎都會用 load balancer 去控制 client 端請求後的訪問，避免過多數量的請求同時訪問一個 server，讓我再偷一張圖
+
+<PostImage
+  src="https://www-uploads.scaleway.com/Capture_d_ecran_2022_10_26_a_11_13_34_5bcd4e0c2a.webp"
+  width={450}
+  height={250}
+  class="w-full"
+  aspectRatio="9/5"
+  desc="網路參考圖"
+/>
+
+## deploy on multi-server
+
+在 next 官網上也能看到官方的 solution 文件[一文搞懂最强首屏渲染方案【Next.js】](https://nextjs.org/docs/pages/api-reference/next-config-js/generateBuildId)
+因為我們是 run container 的時候才 `npm run build`，如果有 3 個 pod，也就表示會有 3 組 hash 存在 3 個 pod 上面，造成每次 browser cache 住的有可能是其他 pod build 出來的 hash，於是網站就噴出了資源 `404 not found error`。
+
+當然更簡單的方式就是在一開始就先 `npm run build`，不要等到 container run 的時候才 build，這樣不管丟到多少個 pod，每個 build 出來的 hash 目錄都是相同的。
+
+## 深入探討 \_buidManifest.js, \_ssgManifest.js
+
+秉持著工程師 curious about everything 的個性，我們來看一下`_buidManifest.js`, `_ssgManifest.js` 這是什麼東西，next build 完之後會在 static 資料夾下會隨機產生一組 hash 當作資料夾名稱去放，我們可以來偷看一下這兩個檔案的內容。
+
+```javascript
+// _buildManifest.js
+(self.__BUILD_MANIFEST = {
+  __rewrites: { beforeFiles: [], afterFiles: [], fallback: [] },
+  '/': ['static/chunks/pages/index-9b4eb856ed248a65.js'],
+  '/_error': ['static/chunks/pages/_error-54de1933a164a1ff.js'],
+  '/[...all]': ['static/chunks/pages/[...all]-92e5bb520962d740.js'],
+  sortedPages: ['/', '/_app', '/_error', '/[...all]']
+}),
+  self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB();
+// _ssgManifest.js
+(self.__SSG_MANIFEST = new Set()), self.__SSG_MANIFEST_CB && self.__SSG_MANIFEST_CB();
+```
+
+`_buildManifest.js`這支檔案滿好理解的，是做一個路由跟 `chunk` 檔案的 map，但當我覺得我懂了的時候，<span style="font-size: 24px;">不你什麼都不懂！</span>稍微搜尋了一下，發現這兩支檔案其實是各自產生一個變數，讓 next router `prefetch` 某個路由的時候，其實就是呼叫這個變數去找到相對應的資源。只要牽涉到原始碼的解析，一律都去掘金。以下請看神人的解釋[一文搞懂最强首屏渲染方案【Next.js】](https://juejin.cn/post/7145469834648616974)
+節錄自文章：
+
+1. 為什麼 SSR 不用重新加載 html: 還記得 `next/link` 的 `Link component` 嗎？他渲染出來的 `a` 標籤的跳轉事件被 `e.preventDefault()` ，同時 `a` 標籤上的 `href` 帶的是正確的路由，方便搜尋引擎爬蟲在無法執行 js 的時候去爬到正確的頁面，不像傳統的 `Create React App` 的 SPA 解決方案在無法執行 js 的場景，一坨 js 會讓爬蟲根本不知道要去爬哪個頁面，從而 SEO 會非常的差。
+2. 那怎麼降低載入該路由的延遲：`Link component` 中有一個 `function` 叫做 `prefetch`，他會在點擊事件和 `useEffect` 中預先載入所需要的 `js`, `css`，從而避免點擊`a`標籤之後才載入的延遲情況。
+
+那麼`__SSG_MANIFEST`…好像也是一個產生 mapping，只是是用 `Set` 避免重複，那他跟`__BUILD_MANIFEST` 有什麼不同呢？`__BUILD_MANIFEST` 是根據 `pages` 資料夾底下的結構去產生相對應的 `map`，而 SSG(Static Site Generation)是發生在該 page component 有使用 `getStaticProps` 或是 `getStaticPaths` 等等會在 `build time` 的時候產生靜態檔案的作法。這支檔案也就是一個 SSG_MANIFEST 變數去讓 router `prefetch` 找到資源，剛剛的`__BUILD_MANIFEST` 也是 `prefetch` 的時候，為什麼要區分呢？稍微看了一下原始碼，`__BUILD_MANIFEST` 被呼叫的時候，都是在 link component 出現的時候事件觸發需要做 prefetch，而`__SSG_MANIFEST`使用的時候，則是發生在當前的路由是 SSG 頁面。
+
+## conclusion
+
+以上大致說明了報 error 的原因和解法，以及 error 的檔案是啥咪東西，後面的部分屬於深入探討，error 解法看前半部就好囉。
+
+## Reference:
+
+    - [一文搞懂最强首屏渲染方案【Next.js】](https://juejin.cn/post/7145469834648616974)
+    - [Next.js - generateBuildId](https://nextjs.org/docs/pages/api-reference/next-config-js/generateBuildId)
+    - [buildManifest 404 causing app failure #18389](https://github.com/vercel/next.js/issues/18389)
