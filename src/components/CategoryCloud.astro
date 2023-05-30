@@ -1,11 +1,13 @@
 ---
 import { organizeAllPosts, slugify, categoryAccumulator } from '@utils/index.js';
 
+const { categoryList } = Astro.props;
+
 const allPosts = await Astro.glob('../pages/posts/*.mdx');
 
 const organizedAllPosts = organizeAllPosts(allPosts);
 
-const calcResult = categoryAccumulator(organizedAllPosts);
+const calcResult = categoryAccumulator(organizedAllPosts, categoryList);
 
 const accumulatedPosts = Object.entries(calcResult);
 ---

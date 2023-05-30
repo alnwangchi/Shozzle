@@ -7,11 +7,12 @@ import ReadingProgress from '@components/ReadingProgress.jsx';
 
 import { CategoryCloud, PostHeader, RelatedPosts, TOC } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
-import { organizeAllPosts, slugify } from '@utils/index';
+import { organizeAllPosts, slugify, multiCategoryHandler } from '@utils/index';
 
 const { frontmatter, headings } = Astro.props;
 
 const { title, description, date, category, author, image } = frontmatter;
+const categoryList = multiCategoryHandler(category);
 
 const allPosts = await Astro.glob('../pages/posts/*.mdx');
 // FIXME: 加上 category 卻無法正確篩出
@@ -55,7 +56,7 @@ const nestedHeadings = (headingParam) => {
         </aside>
         <aside class="" aria-label="Blog categories">
           <h3 class="font-semibold mb-3">Categories</h3>
-          <CategoryCloud />
+          <CategoryCloud categoryList={categoryList} />
         </aside>
         <aside class="" aria-label="Related posts">
           <h3 class="font-semibold mb-3">Related Posts</h3>

@@ -27,16 +27,15 @@ export function organizeAllPosts(
     author = null
   } = {}
 ) {
-  // console.log('🚀 ~ category:', category);
-  // console.log('🚀 ~ author:', author);
   const filteredPosts = posts.reduce((acc, post) => {
     const { date, draft } = posts;
+    const categoryList = multiCategoryHandler(post.frontmatter.category).map((c) => slugify(c));
     // 過濾草稿
     if (filterOutDrafts && draft) return acc;
     // 過濾奇怪的未來文章 FIXME: 怎麼沒有用 操
     if (filterOutFuturePosts && dayjs(date).isAfter(dayjs(new Date()))) return acc;
     // 過濾不同類型
-    if (category && category !== slugify(post.frontmatter.category)) return acc;
+    if (category && !categoryList.includes(category)) return acc;
     // 過漏不同作者
     if (author && author !== post.frontmatter.author) return acc;
 
@@ -59,21 +58,23 @@ export function organizeAllPosts(
 }
 
 // for category 篇數計算及最新時間
-export const categoryAccumulator = (postsArr) => {
-  const result = postsArr.reduce((acc, cur) => {
-    const { category, date } = cur.frontmatter;
-
-    if (!acc[category]) {
-      acc[category] = {
-        count: 1,
-        latest: dayjs(date).format('MMM-DD')
-      };
-      return acc;
-    } else {
-      acc[category].count = ++acc[category].count;
-      return acc;
-    }
+// 透過左邊文章的類別(categoryList)來與所有文章交叉比對，來計算與左邊文章類別一樣的文章數以及最後更新日期 by Jamie
+export const categoryAccumulator = (postsArr, categoryList) => {
+  const result = categoryList.reduce((acc, cur) => {
+    const posts = postsArr.filter((c) =>
+      multiCategoryHandler(c.frontmatter.category).includes(cur)
+    );
+    return {
+      ...acc,
+      [cur]: {
+        count: posts.length,
+        latest: dayjs(posts[0].frontmatter.date).format('MMM-DD')
+      }
+    };
   }, {});
 
   return result;
 };
+
+// for multiple categories
+export const multiCategoryHandler = (categoryStr) => categoryStr.split(',').map((c) => c.trim());

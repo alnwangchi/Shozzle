@@ -6,23 +6,27 @@ import { Image } from '@astrojs/image/components';
 import Link from './Link.astro';
 
 // utils imports
-import { commonDayFormatter, slugify } from '@utils/index.js';
+import { commonDayFormatter, slugify, multiCategoryHandler } from '@utils/index.js';
 import Icon from 'astro-icon';
 
 const { frontmatter, url } = Astro.props;
 
 const { title, date, author, image, description, category } = frontmatter;
-// TODO: for making stagger effect
-// data-aos-delay={Math.floor(Math.random() * (700 - 100 + 1) + 700)}
+
+const categoryList = multiCategoryHandler(category);
 ---
 
 <article class="card" data-aos="fade-up">
   <div class="content mb-4">
     <small class="block mb-3">{commonDayFormatter(date)}</small>
     <div class="flex gap-1 mb-3 ml-[-4px]">
-      <small class="badge">
-        <a href={`/category/${slugify(category)}/`}>{category}</a>
-      </small>
+      {
+        categoryList.map((c) => (
+          <small class="badge">
+            <a href={`/category/${slugify(c)}/`}>{c}</a>
+          </small>
+        ))
+      }
     </div>
     <a class="block mb-3" href={url} aria-hidden="true" tabindex="-1">
       <Image
