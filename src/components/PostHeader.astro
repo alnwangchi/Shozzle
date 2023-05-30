@@ -3,10 +3,11 @@
 import { Image } from '@astrojs/image/components';
 import { Icon } from 'astro-icon';
 // utils imports
-import { slugify, commonDayFormatter } from '@utils/index.js';
+import { slugify, commonDayFormatter, multiCategoryHandler } from '@utils/index.js';
 import authorData from '@constants/authorData';
 
 const { category, title, author, date, image } = Astro.props;
+const categoryList = multiCategoryHandler(category);
 
 const authorImageConverter = (author: string): { name: string; avatar: string } => {
   const targetAuthor = authorData.find((val) => val.name === author);
@@ -41,9 +42,15 @@ const authorImage = authorImageConverter(author);
           commonDayFormatter(date)
         }
       </p>
-      <small>
-        <a href={`/category/${slugify(category)}/`} class="badge">{category}</a>
-      </small>
+      <div class="space-x-1">
+        {
+          categoryList.map((c) => (
+            <small class="badge">
+              <a href={`/category/${slugify(c)}/`}>{c}</a>
+            </small>
+          ))
+        }
+      </div>
     </div>
   </div>
   <h1 class="my-4">{title}</h1>
