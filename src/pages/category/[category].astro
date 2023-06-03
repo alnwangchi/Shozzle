@@ -2,14 +2,21 @@
 import { PostCard } from '@components/index.astro';
 import MainLayout from '@layouts/MainLayout.astro';
 
-import { organizeAllPosts, slugify, multiCategoryHandler } from '@utils/index.js';
+import {
+  organizeAllPosts,
+  slugify,
+  multiCategoryHandler,
+  getAllCategoryList
+} from '@utils/index.js';
 
 // 動態產生 category 列表
 export async function getStaticPaths() {
   const allPosts = await Astro.glob('../posts/*.mdx');
   const allCategory = [
-    ...new Set(allPosts.map((p) => multiCategoryHandler(p.frontmatter.category)).flat())
+    ...new Set(allPosts.map((p) => multiCategoryHandler(p.frontmatter.category)).flat()),
+    'all'
   ];
+
   return allCategory.map((c) => ({
     params: { category: slugify(c) },
     props: { name: c }
@@ -19,16 +26,44 @@ export async function getStaticPaths() {
 // 動態頁面資訊
 const { category } = Astro.params;
 const { name } = Astro.props;
+console.log('🚀 ~ name:', name);
 
 const allPosts = await Astro.glob('../posts/*.mdx');
-const organizedAllPosts = organizeAllPosts(allPosts, { category });
+const organizedAllPosts = organizeAllPosts(allPosts, {
+  category: category === 'all' ? null : category
+});
+
+const categoryList = getAllCategoryList(allPosts);
 ---
 
-<MainLayout title="blog" description="文章們">
-  <section class="container" aria-label="New Blog Posts">
-    <h1>{name}</h1>
-    <div class="post-container">
-      {organizedAllPosts.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
+<MainLayout title="category page" description="文章分類頁" hasFooter={false}>
+  <section class="flex h-[calc(100vh_-_81px)]" aria-label="New Blog Posts">
+    <aside class="px-6 py-9 space-y-3 border-r border-solid border-r-soft">
+      <a
+        href={'/category/all/'}
+        class={`block whitespace-nowrap ${name === 'all' ? 'text-primary' : 'text-secondary'}`}
+      >
+        All</a
+      >
+      {
+        categoryList.map((c) => (
+          <a
+            href={`/category/${slugify(c)}/`}
+            class={`block whitespace-nowrap ${name === c ? 'text-primary' : 'text-secondary'}`}
+          >
+            {c}
+          </a>
+        ))
+      }
+    </aside>
+    <div id="horizontal-box" class="overflow-x-scroll px-10 flex items-center">
+      <div class="flex gap-5 items-center">
+        {
+          organizedAllPosts.map((p) => (
+            <PostCard frontmatter={p.frontmatter} url={p.url} optionalClass="w-[384px] h-[451px]" />
+          ))
+        }
+      </div>
     </div>
   </section>
 </MainLayout>
@@ -37,5 +72,13 @@ const organizedAllPosts = organizeAllPosts(allPosts, { category });
 <script is:inline>
   AOS.init({
     duration: 900
+  });
+</script>
+<script>
+  // turn vertical scroll to horizontal
+  const horizontalBox = document.querySelector('#horizontal-box');
+  horizontalBox.addEventListener('wheel', function (e: WheelEvent) {
+    e.preventDefault();
+    this.scrollLeft += e.deltaY + e.deltaX;
   });
 </script>
