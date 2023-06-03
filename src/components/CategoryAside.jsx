@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { slugify } from '@utils/index.js';
-import { BsArrowRightCircle } from 'react-icons/bs';
+import { BsArrowRightCircle } from 'react-icons/bs/index.js';
 
 // interface Props {
 //   name: string;
