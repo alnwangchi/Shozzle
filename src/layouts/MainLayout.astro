@@ -6,18 +6,18 @@ import '../style/global.sass';
 import MainHead from './MainHead.astro';
 import { Footer, Menu, Nav } from '@components/index.astro';
 
-const { title, description } = Astro.props;
+const { title, description, hasFooter = true } = Astro.props;
 ---
 
 <html lang="en">
   <MainHead {title} {description} />
-  <body class="min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col scroll-smooth">
     <Nav />
     <Menu />
     <main class="flex-1">
       <slot />
     </main>
-    <Footer />
+    {hasFooter && <Footer />}
     <script>
       import '@scripts/menu.js';
     </script>

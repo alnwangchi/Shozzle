@@ -9,14 +9,14 @@ import Link from './Link.astro';
 import { commonDayFormatter, slugify, multiCategoryHandler } from '@utils/index.js';
 import Icon from 'astro-icon';
 
-const { frontmatter, url } = Astro.props;
+const { frontmatter, url, optionalClass } = Astro.props;
 
 const { title, date, author, image, description, category } = frontmatter;
 
 const categoryList = multiCategoryHandler(category);
 ---
 
-<article class="card" data-aos="fade-up">
+<article class={`card ${optionalClass}`} data-aos="fade-up">
   <div class="content mb-4">
     <small class="block mb-3">{commonDayFormatter(date)}</small>
     <div class="flex gap-1 mb-3 ml-[-4px]">
@@ -40,7 +40,7 @@ const categoryList = multiCategoryHandler(category);
       />
     </a>
     <div class="mb-3">
-      <h3 class="mb-1">
+      <h3 class="mb-1 font-semibold">
         <a href={url}>{title}</a>
       </h3>
       <small>

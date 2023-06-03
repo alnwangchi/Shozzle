@@ -76,5 +76,18 @@ export const categoryAccumulator = (postsArr, categoryList) => {
   return result;
 };
 
+// 取得所有文章分類  return string[]
+export const getAllCategoryList = (postsArr) => {
+  const result = postsArr.reduce((acc, cur) => {
+    const { category } = cur.frontmatter;
+    const cat = multiCategoryHandler(category);
+
+    acc.push(cat);
+    return acc;
+  }, []);
+
+  return [...new Set(result.flat())];
+};
+
 // for multiple categories
 export const multiCategoryHandler = (categoryStr) => categoryStr.split(',').map((c) => c.trim());

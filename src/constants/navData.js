@@ -1,12 +1,16 @@
 const navData = [
   {
     name: 'Posts',
-    path: '/posts/',
+    path: '/posts/'
   },
   {
     name: 'Authors',
-    path: '/author/',
+    path: '/author/'
   },
+  {
+    name: 'Category',
+    path: '/category/all'
+  }
 ];
 
 export default navData;
