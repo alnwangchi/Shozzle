@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { slugify } from '@utils/index.js';
 import { BsArrowRightCircle } from 'react-icons/bs';
 
-interface Props {
-  name: string;
-  categoryList: string[];
-}
+// interface Props {
+//   name: string;
+//   categoryList: string[];
+// }
 
-const CategoryAside: React.FC<Props> = ({ name, categoryList }) => {
+// const CategoryAside: React.FC<Props> = ({ name, categoryList }) => {
+const CategoryAside = (props) => {
+  const { name, categoryList } = props;
   const [isOpen, setIsisOpen] = useState(true);
 
   const toggleAsideBar = () => setIsisOpen((b) => !b);
@@ -28,6 +30,7 @@ const CategoryAside: React.FC<Props> = ({ name, categoryList }) => {
       </a>
       {categoryList.map((c) => (
         <a
+          key={c}
           href={`/category/${slugify(c)}/`}
           className={`px-6 block whitespace-nowrap transition-all ${
             name === c ? 'text-primary' : 'text-secondary'
