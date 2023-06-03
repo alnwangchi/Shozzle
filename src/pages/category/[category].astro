@@ -1,6 +1,9 @@
 ---
 import { PostCard } from '@components/index.astro';
 import MainLayout from '@layouts/MainLayout.astro';
+import { Icon } from 'astro-icon';
+
+import CategoryAside from '@components/CategoryAside.jsx';
 
 import {
   organizeAllPosts,
@@ -26,7 +29,6 @@ export async function getStaticPaths() {
 // 動態頁面資訊
 const { category } = Astro.params;
 const { name } = Astro.props;
-console.log('🚀 ~ name:', name);
 
 const allPosts = await Astro.glob('../posts/*.mdx');
 const organizedAllPosts = organizeAllPosts(allPosts, {
@@ -34,28 +36,12 @@ const organizedAllPosts = organizeAllPosts(allPosts, {
 });
 
 const categoryList = getAllCategoryList(allPosts);
+console.log('🚀 ~ categoryList:', categoryList);
 ---
 
 <MainLayout title="category page" description="文章分類頁" hasFooter={false}>
   <section class="flex h-[calc(100vh_-_81px)]" aria-label="New Blog Posts">
-    <aside class="px-6 py-9 space-y-3 border-r border-solid border-r-soft">
-      <a
-        href={'/category/all/'}
-        class={`block whitespace-nowrap ${name === 'all' ? 'text-primary' : 'text-secondary'}`}
-      >
-        All</a
-      >
-      {
-        categoryList.map((c) => (
-          <a
-            href={`/category/${slugify(c)}/`}
-            class={`block whitespace-nowrap ${name === c ? 'text-primary' : 'text-secondary'}`}
-          >
-            {c}
-          </a>
-        ))
-      }
-    </aside>
+    <CategoryAside name={name} categoryList={categoryList} client:load />
     <div id="horizontal-box" class="overflow-x-scroll px-10 flex items-center">
       <div class="flex gap-5 items-center">
         {
