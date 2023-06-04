@@ -1,6 +1,7 @@
 ---
 import { PostCard } from '@components/index.astro';
 import MainLayout from '@layouts/MainLayout.astro';
+import AuthorAside from '@components/AuthorAside.astro';
 
 import { organizeAllPosts, slugify } from '@utils/index.js';
 
@@ -10,21 +11,27 @@ import authorData from '@constants/authorData';
 export async function getStaticPaths() {
   return authorData.map((author) => ({
     params: { author: slugify(author.name) },
-    props: { author: author.name }
+    props: { author: author.name, data: author }
   }));
 }
 
 // 動態頁面資訊
-const { author } = Astro.props;
+const { author, data } = Astro.props;
 const allPosts = await Astro.glob('../posts/*.mdx');
 const organizedAllPosts = organizeAllPosts(allPosts, { author });
 ---
 
-<MainLayout title="blog" description="作者頁">
-  <section class="container" aria-label="New Blog Posts">
-    <h1>{author}</h1>
-    <div class="post-container">
-      {organizedAllPosts.map((p) => <PostCard frontmatter={p.frontmatter} url={p.url} />)}
+<MainLayout title="blog" description="作者頁" hasFooter={false}>
+  <section class="flex h-[calc(100vh_-_81px)]" aria-label="New Blog Posts">
+    <AuthorAside data={data} />
+    <div id="horizontal-box" class="w-4/5 overflow-x-scroll px-10 flex items-center">
+      <div class="flex gap-5 items-center">
+        {
+          organizedAllPosts.map((p) => (
+            <PostCard frontmatter={p.frontmatter} url={p.url} optionalClass="w-[384px] h-[451px]" />
+          ))
+        }
+      </div>
     </div>
   </section>
 </MainLayout>
@@ -33,5 +40,13 @@ const organizedAllPosts = organizeAllPosts(allPosts, { author });
 <script is:inline>
   AOS.init({
     duration: 900
+  });
+</script>
+<script>
+  // turn vertical scroll to horizontal
+  const horizontalBox = document.querySelector('#horizontal-box');
+  horizontalBox.addEventListener('wheel', function (e: WheelEvent) {
+    e.preventDefault();
+    this.scrollLeft += e.deltaY + e.deltaX;
   });
 </script>
