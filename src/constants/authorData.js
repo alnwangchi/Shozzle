@@ -10,13 +10,15 @@ const authorData = [
     name: 'Josh Chou',
     avatar: '/images/Josh_Avatar.png',
     position: 'Frontend',
-    skills: [],
+    skills: ['React', 'Javascript (Typescript)', 'NodeJS'],
     links: {}
   },
   {
     name: 'Jamie Chien',
     avatar: '/images/Jamie_Avatar.png',
     position: 'Frontend',
+    intro:
+      'Passionate about creating useful and user-friendly websites to solve problems encountered in daily life.',
     skills: ['React', 'Javascript (Typescript)', 'NodeJS'],
     links: {
       website: 'https://tsungyu927.github.io/',
