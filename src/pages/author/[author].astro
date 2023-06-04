@@ -4,14 +4,13 @@ import MainLayout from '@layouts/MainLayout.astro';
 
 import { organizeAllPosts, slugify } from '@utils/index.js';
 
+import authorData from '@constants/authorData';
+
 // 動態產生 author 列表
 export async function getStaticPaths() {
-  const allPosts = await Astro.glob('../posts/*.mdx');
-
-  const allAuthor = [...new Set(allPosts.map((p) => p.frontmatter.author).flat())];
-  return allAuthor.map((a) => ({
-    params: { author: slugify(a) },
-    props: { author: a }
+  return authorData.map((author) => ({
+    params: { author: slugify(author.name) },
+    props: { author: author.name }
   }));
 }
 

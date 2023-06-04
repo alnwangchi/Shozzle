@@ -1,0 +1,26 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+
+import AuthorCard from '@components/AuthorCard.astro';
+import authorData from '@constants/authorData';
+---
+
+<MainLayout>
+  <div class="py-20">
+    <div class="mb-20 flex justify-center">
+      <p class="text-xl tracking-[.4em]">AUTHORS</p>
+    </div>
+    <section class="container" aria-label="Authors">
+      <div class="post-container">
+        {authorData.map((author) => <AuthorCard authorData={author} />)}
+      </div>
+    </section>
+  </div>
+</MainLayout>
+
+<script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script is:inline>
+  AOS.init({
+    duration: 900
+  });
+</script>
