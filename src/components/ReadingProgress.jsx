@@ -25,7 +25,7 @@ const ReadingProgress = () => {
   return (
     <>
       {/* <div>{percent}</div> */}
-      <div className="progress">
+      <div className="sticky top-0 z-10 flex justify-start items-center h-[5px] 2-full transition-all">
         <div className="h-full w-7 bg-[#efe960]" style={{ width: `${percent}%` }} />
       </div>
     </>

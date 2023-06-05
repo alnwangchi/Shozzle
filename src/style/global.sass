@@ -48,25 +48,6 @@
       font-weight: $fw_bold
       @include lg 
         padding: 1rem 0
-  ul
-    display: flex
-    @include lg 
-      display: none
-    li
-      border-left:1px solid $clr_soft
-      &:hover
-        a
-          color: $clr_primary
-      a
-        height: 5rem
-        padding: 1rem 2rem 1rem 9rem
-        display: flex
-        align-items: flex-end
-        color: $clr_soft
-        transition: $transition
-  .theme-controller
-    position: relative
-    width: 200px
 
 .menu
   display: none
@@ -113,8 +94,8 @@
   justify-content: space-between
   @include md 
     padding: 1.75rem 1.75rem  1rem 1.75rem
-  img
-    object-fit: cover
+  @include sm 
+    padding: 1.25rem
 
 
 .post-container 
@@ -145,20 +126,3 @@
       margin: 0 auto
     @include md 
       margin: unset
-    
-.progress
-  position: sticky
-  top: 0
-  z-index: 3
-  display: flex
-  justify-content: flex-start
-  align-items: center
-  height: 5px
-  width: 100%
-  transition: $transition
-
-footer
-  display: flex
-  justify-content: center
-  align-items: center
-  min-height: 88px
