@@ -4,10 +4,10 @@ import { Icon } from 'astro-icon';
 const { data } = Astro.props;
 
 const iconMapper = {
-  website: 'typcn:home-outline',
-  linkedin: 'typcn:social-linkedin',
-  github: 'typcn:social-github',
-  email: 'typcn:mail'
+  website: 'tabler:home',
+  linkedin: 'tabler:brand-linkedin',
+  github: 'tabler:brand-github',
+  email: 'tabler:mail'
 };
 
 // 產生link
@@ -16,7 +16,7 @@ const linkGenerator = (linksObj) => {
     if (link) {
       acc.push({
         type: key,
-        icon: iconMapper?.[key] || 'typcn:attachment',
+        icon: iconMapper?.[key] || 'tabler:link',
         link
       });
     }
@@ -59,7 +59,7 @@ const links = linkGenerator(data.links);
           return (
             <li class="inline">
               <a href={linkData.link as string} target="_blank">
-                <Icon name={linkData.icon} class="hover:text-emphasize" width="30" height="30" />
+                <Icon name={linkData.icon} class="hover:text-emphasize" width="25" height="25" />
               </a>
             </li>
           );

@@ -11,7 +11,7 @@ const url = `/author/${slugify(authorData.name)}`;
     <p class="absolute right-5 -top-4 font-bold text-xl">{authorData.position}</p>
     <a class="py-6 w-full flex items-center bg-soft hover:bg-emphasize" href={url}>
       <div class="-ml-11 w-20 h-20">
-        <img class="w-full h-full grayscale" src="https://picsum.photos/id/40/300/300" />
+        <img class="w-full h-full grayscale brightness-90" src={authorData.avatar_square} />
       </div>
       <div class="px-5 w-[calc(100%-2.25rem)] h-20 flex flex-col justify-between">
         <p class="text-lg font-bold">{authorData.name}</p>
