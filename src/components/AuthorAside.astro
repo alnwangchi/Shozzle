@@ -1,0 +1,70 @@
+---
+import { Icon } from 'astro-icon';
+
+const { data } = Astro.props;
+
+const iconMapper = {
+  website: 'tabler:home',
+  linkedin: 'tabler:brand-linkedin',
+  github: 'tabler:brand-github',
+  email: 'tabler:mail'
+};
+
+// 產生link
+const linkGenerator = (linksObj) => {
+  return Object.entries(linksObj).reduce((acc, [key, link]) => {
+    if (link) {
+      acc.push({
+        type: key,
+        icon: iconMapper?.[key] || 'tabler:link',
+        link
+      });
+    }
+    return acc;
+  }, []);
+};
+
+const links = linkGenerator(data.links);
+---
+
+<aside
+  class="relative py-9 px-6 w-1/5 max-w-xs flex flex-col justify-between border-r border-solid border-r-soft text-center transition-all"
+>
+  <div class="h-[92%] space-y-5 overflow-y-scroll">
+    <div class="flex justify-center">
+      <img class="w-1/2" src={data.avatar} />
+    </div>
+    <h1 class="text-xl font-bold">{data.name}</h1>
+    {
+      data?.intro && (
+        <div>
+          <p class="pb-2 mb-2 text-lg tracking-[.2em] border-b border-solid border-soft">
+            ABOUT ME
+          </p>
+          <ul>{data.intro}</ul>
+        </div>
+      )
+    }
+    <div>
+      <p class="pb-2 mb-2 text-lg tracking-[.2em] border-b border-solid border-soft">SKILLS</p>
+      <ul>
+        {data.skills.map((skill) => <li>{skill}</li>)}
+      </ul>
+    </div>
+  </div>
+  <div class="h-[8%]">
+    <ul class="h-full flex justify-center items-end space-x-2">
+      {
+        links.map((linkData) => {
+          return (
+            <li class="inline">
+              <a href={linkData.link as string} target="_blank">
+                <Icon name={linkData.icon} class="hover:text-emphasize" width="25" height="25" />
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</aside>
