@@ -16,7 +16,7 @@ const CategoryAside = (props) => {
 
   return (
     <aside
-      className={`relative py-9 space-y-3 border-r border-solid border-r-soft transition-all ${
+      className={`sticky top-[88px] sm:top-0 sm:relative py-9 space-y-3 border-r border-solid border-r-soft transition-all ${
         isOpen ? 'w-[150px]' : 'w-5'
       }`}
     >

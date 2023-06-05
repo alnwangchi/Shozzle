@@ -40,13 +40,20 @@ console.log('🚀 ~ categoryList:', categoryList);
 ---
 
 <MainLayout title="category page" description="文章分類頁" hasFooter={false}>
-  <section class="flex h-[calc(100vh_-_81px)]" aria-label="New Blog Posts">
+  <section class="relative flex h-[calc(100vh_-_81px)]" aria-label="New Blog Posts">
     <CategoryAside name={name} categoryList={categoryList} client:load />
-    <div id="horizontal-box" class="overflow-x-scroll px-10 flex items-center">
-      <div class="flex gap-5 items-center">
+    <div
+      id="horizontal-box"
+      class="overflow-y-scroll overflow-x-hidden sm:overflow-x-scroll sm:overflow-y-hidden px-5 py-10 sm:py-0 sm:px-10 flex items-center"
+    >
+      <div class="flex-col sm:flex-row flex gap-5 items-center h-[calc(100vh_-_88px)] py-5 sm:p-0">
         {
           organizedAllPosts.map((p) => (
-            <PostCard frontmatter={p.frontmatter} url={p.url} optionalClass="w-[384px] h-[451px]" />
+            <PostCard
+              frontmatter={p.frontmatter}
+              url={p.url}
+              optionalClass="w-[268px] h-[368px] sm:w-[384px] sm:h-[468px]"
+            />
           ))
         }
       </div>
@@ -57,14 +64,20 @@ console.log('🚀 ~ categoryList:', categoryList);
 <script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script is:inline>
   AOS.init({
-    duration: 900
+    duration: 900,
+    disable: 'mobile'
   });
 </script>
 <script>
-  // turn vertical scroll to horizontal
-  const horizontalBox = document.querySelector('#horizontal-box');
-  horizontalBox.addEventListener('wheel', function (e: WheelEvent) {
-    e.preventDefault();
-    this.scrollLeft += e.deltaY + e.deltaX;
-  });
+  const screenWidth =
+    window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+  if (screenWidth > 640) {
+    // turn vertical scroll to horizontal
+    const horizontalBox = document.querySelector('#horizontal-box');
+    horizontalBox.addEventListener('wheel', function (e: WheelEvent) {
+      e.preventDefault();
+      this.scrollLeft += e.deltaY + e.deltaX;
+    });
+  }
 </script>
