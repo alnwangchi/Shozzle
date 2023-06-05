@@ -8,32 +8,26 @@ import Hamburger from '@components/Hamburger.astro';
 // data imports
 import navData from '@constants/navData';
 ---
+
 <nav class="navbar">
   <div class="logo">
-    <a href="/">
-      shozzle
-    </a>
+    <a href="/"> shozzle</a>
   </div>
-  <ul>
+  <ul class="hidden lg:flex">
     {
       navData.map((item) => (
-        <li>
-          <a
-            href={item.path}
-            data-navLink
-          >
+        <li class=" text-secondary hover:text-primary border-solid border-soft border-l">
+          <a href={item.path} class="h-20 pt-[2.5rem] pb-1 pr-8 pl-36 flex" data-navLink>
             {item.name}
           </a>
         </li>
-        ))
+      ))
     }
-    <li class="theme-controller"> 
+    <li class="relative w-[180px] border-solid border-soft border-l">
       <div id="sun-moon"></div>
-    </li>  
+    </li>
   </ul>
-  <Hamburger/>
+  <Hamburger />
 </nav>
 
-<script>
-  
-</script>
+<script></script>

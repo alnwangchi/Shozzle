@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { slugify } from '@utils/index.js';
-import { BsArrowRightCircle } from 'react-icons/bs/index.js';
+import { BsArrowLeftCircle } from 'react-icons/bs/index.js';
 
 // interface Props {
 //   name: string;
@@ -32,15 +32,19 @@ const CategoryAside = (props) => {
         <a
           key={c}
           href={`/category/${slugify(c)}/`}
-          className={`px-6 block whitespace-nowrap transition-all ${
+          className={`px-6 block whitespace-nowrap transition-all hover:text-primary ${
             name === c ? 'text-primary' : 'text-secondary'
           } ${isOpen ? 'opacity-100' : 'opacity-0'}`}
         >
           {c}
         </a>
       ))}
-      <div className=" bg-white w-8 h-8 absolute top-2/4 -right-[16px] -translate-y-[32px] cursor-pointer z-50 rounded-full f-center">
-        <BsArrowRightCircle onClick={toggleAsideBar} className="text-secondary w-7 h-7" />
+      <div
+        className={`bg-white w-8 h-8 absolute top-2/4 -right-[16px] -translate-y-[32px] cursor-pointer z-50 rounded-full f-center transition-all duration-500 ${
+          isOpen ? 'rotate-0' : 'rotate-180'
+        }`}
+      >
+        <BsArrowLeftCircle onClick={toggleAsideBar} className="text-secondary w-7 h-7" />
       </div>
     </aside>
   );
