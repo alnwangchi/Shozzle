@@ -28,7 +28,11 @@ const organizedAllPosts = organizeAllPosts(allPosts, { author });
       <div class="flex gap-5 items-center">
         {
           organizedAllPosts.map((p) => (
-            <PostCard frontmatter={p.frontmatter} url={p.url} optionalClass="w-[384px] h-[451px]" />
+            <PostCard
+              frontmatter={p.frontmatter}
+              url={p.url}
+              optionalClass="w-[268px] h-[368px] sm:w-[384px] sm:h-[468px]"
+            />
           ))
         }
       </div>
