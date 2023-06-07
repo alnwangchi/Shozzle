@@ -12,4 +12,12 @@ hamburger.addEventListener('click', function () {
   } else {
     body.style.overflow = 'hidden';
   }
+  menu.style.height = `${window.innerHeight - 67}px`;
+  document.addEventListener(
+    'resize',
+    function () {
+      menu.style.height = `${window.innerHeight - 67}px`;
+    },
+    false
+  );
 });
