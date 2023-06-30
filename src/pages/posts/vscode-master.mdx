@@ -1,0 +1,99 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: 我要成為 VSCode 編輯器大師
+date: 2023-06-30
+author: Allen Wang
+image: { src: 'https://i.imgur.com/PI8h1Va.png', alt: 'vscode' }
+description: 身為前端工程師編輯器就要用的行雲流水，紀錄一些實用設定跟必會的快捷鍵
+draft: false
+category: general,vscode
+---
+
+import Keyboard from '../../components/postComponents/Keyboard.astro';
+import PostImage from '../../components/postComponents/PostImage.astro';
+
+## 前言
+
+vscode 用的好，開發沒煩惱，要成為高手就要用的跟鬼一樣
+
+## 來點情境
+
+### 快速用 vscode 開啟某個專案
+
+一般可以透過終端機進入要開啟的專案後下 `code .` 會直接以 vscode 開起專案省去從介面操作的動作，若遇到無效的時可以重新設定
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="P" /> 後輸入 shell command 應該就可以重新裝上 code 這個指令了
+
+[stack overflow issue](https://stackoverflow.com/questions/29955500/code-is-not-working-in-on-the-command-line-for-visual-studio-code-on-os-x-ma)
+
+### 預設點擊檔案若無更新則不開啟新分頁
+
+搜尋 workbench.editor.enablePreview 把這個取消勾選使開檔案都後會開啟新分頁 不會因沒有改變而被覆蓋
+
+![](https://i.imgur.com/w47rcmC.png)
+
+### 檔案最上層 import 太多東西了
+
+有時候我只想關注元件的邏輯或是 return 的 UI，想將無關緊要的內容預設先收合
+
+<Keyboard symbol="ctrl" /> + , => 快速開始設定，搜尋 folding import 勾起來
+
+![](https://hackmd.io/_uploads/rkbjmo9Oh.png)
+
+## 可能冷門但很有用的快捷
+
+這些大概是我一開始用 vscode 不知道，但是知道後覺得實在方便也常用的快捷鍵
+
+### 萬用的 ctrl + p
+
+![](https://hackmd.io/_uploads/rkU-jjcd3.png)
+
+### 重名系
+
+<Keyboard symbol="f2" /> => 整個專案內變數 reference 一次重新命名，按下後輸入要修改的名稱再按 shirt +
+enter，神技!
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="f2" /> => 將該檔案內已選取單一內容，一口氣全部選取
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="d" /> => 將該檔案內已選取單一內容，點一下再多選一個
+
+### 檢查系
+
+<Keyboard symbol="f8" /> => 檔案裡出現多個錯誤或警告時，可以依序查看
+
+### 整理系
+
+<Keyboard symbol="alt" /> + <Keyboard symbol="shift" /> + 0 => 整理並刪除無用 import，神技!
+
+<Keyboard symbol="alt" /> + <Keyboard symbol="↑" /> or <Keyboard symbol="↓" /> 快速移動整行程式碼
+
+### 開關系
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="k" /> + <Keyboard symbol="0" /> => 檔案內容全收合，按
+1 2 其他數字可以決定關到第幾層
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="k" /> + <Keyboard symbol="j" /> => 檔案內容全展開
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="k" /> + <Keyboard symbol="w" /> => 還在一個一個檔案點著關?
+直接給你全關
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="\" /> => 當前檔案開出新 tab
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="shift" /> + <Keyboard symbol="t" /> => 叫回不小心手殘關掉的檔案，神技!
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="space" /> + <Keyboard symbol="i" /> => 重新開啟提示，例如有個
+[] 在按下 . 時會跳出它的方法提示，但如果點到其他地方再點回來提示就沒了，這可以再度開啟
+
+### 跳轉系
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="g" /> => 還在滾滾輪? 直接輸入行數跳過去
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="p" /> => 還在檔案列表慢慢翻? 直接輸入檔名跳過去
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="shift" /> + <Keyboard symbol="e" /> => file list
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="shift" /> + <Keyboard symbol="f" /> => global search
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="shift" /> + <Keyboard symbol="g" /> => git
+
+<Keyboard symbol="ctrl" /> + <Keyboard symbol="shift" /> + <Keyboard symbol="x" /> => extension

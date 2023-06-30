@@ -1,0 +1,11 @@
+---
+const { symbol } = Astro.props;
+
+const independentStyle = (() => {
+  if (symbol === 'shift') return 'w-[88px]';
+  if (symbol === 'space') return 'w-[132px]';
+  return 'w-11';
+})();
+---
+
+<kbd class={`h-11 ${independentStyle}`}>{symbol}</kbd>
