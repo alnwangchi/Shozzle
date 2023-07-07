@@ -1,0 +1,160 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Echarts簡單畫地圖
+date: 2023-07-06
+author: Maureen
+image: { src: 'https://s4.itho.me/sites/default/files/styles/picture_size_large/public/field/image/jie_tu_2021-02-01_xia_wu_3.54.25.jpg?itok=rck1LqUG', alt: '範例' }
+description: Apache Echarts 是什麼神奇好物！簡單介紹 Echarts，無痛成為圖表達人！
+draft: false
+category: Echarts,Vue,mapshaper
+---
+## Description
+
+<p>{frontmatter.description}</p>
+
+## 這篇文章會提到
+<ul>
+  <li>Echarts 是什麼</li>
+  <li>Echarts 安裝與使用</li>
+  <li>從哪裡得到台灣的 geojson</li>
+</ul>
+
+## Echarts 是什麼
+### 為什麼想使用Echats 
+畫地圖的library比比皆是，比較常見的像 Leaflet.js、D3.js。
+之所以會想使用Echarts來繪製，主要是由於工作上常常需要將資料放在台灣的地圖上來參照。
+有時候也會需要來回切換縣市和鄉鎮地圖。
+有用過Leaflet的讀者應該知道，畫面的Loading實在要等太久～效率很差。
+基於這個理由，再加上如果只是需要呈現縣市輪廓，不需要呈現更多的細節。
+Echarts 容易上手、官方將功能做的又美又好用，在眾多library中脫穎而出👑
+
+### Echats的優缺點
+除了上述提到的好入門、功能很讚，還有其他優點：
+1. 可以閱讀壓縮後的jeojson，將檔案大小變小
+
+      geojson的coordinates通常都是落落長一大串，Echarts有個特殊的壓縮方式，可以大幅縮減篇幅，詳細如何縮減的此篇文章先不談～
+      以下範例為壓縮後的程式碼，真的超級精簡🥹
+  ```javascript
+    // 壓縮後的geojson節錄
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [["@@HCGG@CMGBCKECDGGGE@FDNHDDH@FLBFCDFFB"],["@@HAAEKICBEGG@GDINFFJ@@CJDP@"],
+          ["@@FABCL@@EGKBCLABEJB@GLHCH@FHAJFJ@LBLCCEAIECIKCFGC@EMKG@AFE@IGEGE@@HQ@CFG@DJHF@DFFCDAFFBDHGDDL"],
+          ["@@H@BGJ@@IEIDABFFDJ@BAAGMGAFO@CGG@EACBG@AAMCGG@GBSCEIA@L@HABFJFFEFBFDFPJHANNHDADHD"],
+          ["@@BEIEEECBFNDAHD"],["@@FEGABH"],["@@AEHGGGBCGEIBCFDFHFCFNF"],["@@QQCBHHDFJB"],
+          ["@@DEDECKHCNB@HFHH@@GHEHBFGBEK@CFIMEAAECBGCKHFJAFGDGCBJGFEGCHLFAFLB"]
+        ],
+      }
+  ```
+
+2. 地圖互動的功能，應有盡有，設定也非常簡單！
+
+缺點的部分，是在台灣的討論度相對低。相關討論幾乎都在中國論壇，有任何問題也是以簡體中文的回答為大宗。
+
+
+
+## Echarts 安裝與使用
+
+[Echarts 官網](https://echarts.apache.org/zh/index.html)
+
+首先在你的專案中安裝 Echarts(以下用vue專案來做示範)
+  <li> Install ECharts </li>
+
+  ```javascript
+    npm install echarts --save
+  ```
+
+  <li> Import ECharts </li>
+  ```javascript
+    在 main.js 中 import echarts
+
+    import * as echarts from 'echarts';
+
+    Vue.prototype.$echarts = echarts;
+  ```
+
+  <li>demo.vue</li>
+  ```
+    <template>
+      <div>
+        // 地圖的div 一定要給 width 和 height
+        <div id="map_chart" :style="{ width: '800px', height: '800px' }"></div>
+      </div>
+    </template>
+  ```
+  ```
+    <script>
+    import mapJson from '../assets/map.json';
+
+    export default {
+      mounted() {
+        this.create_chart();
+      },
+
+      methods: {
+        create_chart() {
+          // 選擇要繪圖的DOM
+          let map_chart = this.$echarts.init(document.getElementById("map_chart"));
+          // 使用 registerMap 註冊地圖
+          this.$echarts.registerMap('mapJson', mapJson);
+
+          const option = {
+            series: [
+              {
+                name: "台灣地圖",
+                type: "map", // 必要的
+                map: "mapJson", // 必要的
+                silent: false, // hover地圖的變化
+                emphasis: { // hover地圖的變化的設定
+                  itemStyle: {
+                    areaColor: 'none'
+                  },
+                  label: {
+                    show: true,
+                  },
+                },
+                select: { // 地圖點選後的變化的設定
+                  disabled: false, // 能不能點選地圖
+                  itemStyle: {
+                    areaColor: 'steelblue'
+                  },
+                },
+                label: { // 地圖上要不要顯示區域名稱
+                  show: true,
+                },
+                data: mapData.data[0],
+                roam: true, // 地圖可以平移及縮放
+                boundingCoords:[ [118,26.5], [122.4,21.5] ],
+                center: [120.3, 23.8],
+                layoutCenter: ['50%', '50%'],
+                left: '5%', 
+                aspectScale:1,
+                scaleLimit: { min: 1, max: 12.0 },
+              }
+            ],
+            // color bar
+            visualMap: { 
+              min: 0,
+              max: 20,
+              text: ["High", "Low"],
+              realtime: false,
+              calculable: true,
+              inRange: {
+                color: ["lightskyblue", "yellow", "orangered"],
+              },
+            },
+          };
+          map_chart.setOption(option);
+        },
+      },
+    };
+    </script>
+  ```
+
+## 從哪裡得到台灣的 geojson
+1. [政府資料開放平臺](https://data.gov.tw/dataset/7442)
+2. 政府資料開放平臺下載[直轄市、縣市界線(TWD97經緯度)SHP格式](https://data.gov.tw/dataset/7442)
+
+  註：SHP -> geojson：將檔案放上[mapshaper](https://mapshaper.org/)，可以轉成 geojson 格式。
+  步驟[可參考此篇文章](https://ithelp.ithome.com.tw/articles/10223786)。
+
