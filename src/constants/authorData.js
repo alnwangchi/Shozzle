@@ -49,6 +49,19 @@ const authorData = [
       linkedin: 'https://linkedin.com/in/tsungyu927',
       github: 'https://github.com/tsungyu927'
     }
+  },
+  {
+    name: 'Jessie Ho',
+    avatar: '/images/Jessie_Avatar.png',
+    avatar_square: '/images/Jessie_Avatar_Square.png',
+    position: 'Frontend',
+    intro: 'To be continued ...',
+    skills: ['Vue', 'Javascript (Typescript)', 'Nuxt', 'WebRTC'],
+    links: {
+      website: 'https://medium.com/@jHoProject',
+      email: 'mailto: jessieho1822@gmail.com',
+      github: 'https://github.com/JHOproject'
+    }
   }
 ];
 
