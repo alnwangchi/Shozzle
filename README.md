@@ -75,11 +75,9 @@ All commands are run from the root of the project, from a terminal:
 
 ## project style
 
-考慮到專案類型並不會很複雜，所以直接訂定一套 style 標準，基本上這部分交給 Allen
+基本上盡可能用 tailwind class，除非是為了覆蓋第三方套件的樣式才會在 global.css 去覆蓋
 
-另外，專案也已經有加上 tailwind 可以寫，不過比較像是輔助
-
-若想針對元件做類似 module css 的話 astro 亦提供了解決方案 [官網](https://docs.astro.build/zh-tw/tutorial/2-pages/4/#style-an-individual-page)
+或想針對元件做類似 module css 的話 astro 亦提供了解決方案 [官網](https://docs.astro.build/zh-tw/tutorial/2-pages/4/#style-an-individual-page)
 
 ## dependencies
 
@@ -103,3 +101,9 @@ All commands are run from the root of the project, from a terminal:
 
 .mdx 文章檔案名稱必須用 - 作為分隔符號 <br>
 google 建議使用 - 作為分隔符號，不建議使用 \_ 或是小駝峰寫法，這將會是 GSC 中的網頁未編入索引的原因之一，若無編入索引該篇文章將不可能被搜尋的到
+
+## 共筆註記
+
+- 添加作者頁資訊在 `src/constants/authorData.js` 這隻檔案裡面加
+- 文章類別會自動產生所以可以自行撰寫，用 `,` 區隔多種種類，特別注意一下同意不同字的情況 e.g. React ReactJS
+- 如果只是 po 文章直接 push main 分支沒問題，但如果有改動到專案本身的話盡量另開分支開發
