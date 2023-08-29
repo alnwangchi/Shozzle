@@ -1,0 +1,88 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: React server component
+date: 2023-08-29
+author: Josh Chou
+image:
+  {
+    src: 'https://images.ctfassets.net/23aumh6u8s0i/c04wENP3FnbevwdWzrePs/1e2739fa6d0aa5192cf89599e009da4e/nextjs',
+    alt: '範例'
+  }
+description: 了解什麼是 server component
+draft: false
+category: nextjs
+---
+
+import PostImage from '../../components/postComponents/PostImage.astro';
+
+## Description
+
+<p>{frontmatter.description}</p>
+
+## 前言
+
+React server component(RSC)已經在 React v18 被正式釋出，而 Nextjs 也在 v12 釋出了 RSC 的 preview 版本，直到 Nextjs 在 v13.4 已經可以正式在 App router 底下使用 RSC 的功能，此篇文章主要會介紹什麼是 Server component，以及如何在 Nextjs 中使用。
+
+## 什麼是 Server
+
+首先要理解什麼是 Server，最早開始 Server 是指可以被 Client 訪問的電腦，現在泛指可以被訪問的服務，例如：網頁、API、資料庫等等。
+
+在 React server component(以下簡稱 RSC)出來之前，網頁的渲染只有以下幾種方式：
+
+1. CSR(client side render)
+2. SSR(server side render)
+3. SSG(static site generation)
+4. ISR(incremental static regeneration)
+5. Hybrid
+
+## SSR 的 server 跟 RSC 的 server？?
+
+此時心中應該會有疑問：「SSR 的 server side render 就是 server render，跟 RSC 的 react server 有什麼差？」（沒有此疑問表示還沒進入狀況??要不就是懂哥
+
+以往的 SSR 的 server 是相對於 CSR 的 client，表示在 client 在瀏覽器 request 頁面時，server 會先把頁面的 component 渲染成 html markup，套用到 template 形成完整的 html 字串後再回傳給 client。
+
+而 RSC 的 server 指的是 React server，但不把 component 渲染成 html markup，而是解析成一個類似 json format 的 string，回傳給 client 端，由 client 端的 react runtime 去解析成 html markup，這樣的好處是讓前端的程式碼可以操作更接近後端，例如：data fetching、複雜運算、操作 DB 等等。
+
+最重要的是，原本是把 component 渲染成 html，現在只要解析成 json format 的 string，原本的體積可能是好幾百 kb，現在只要幾 kb，這樣的好處是可以大幅降低網頁的載入時間，提升使用者體驗。
+
+結論：可以將 server component 理解為套用中間層的 CSR，這個中間層就是 react runtime，把 React server 回傳的 json format 的 string 解析成 react element 給瀏覽器 render。
+
+## server component 解析的格式??
+
+這邊直接借用大神的範例:
+
+```json
+M1:{"id":"./src/ClientComponent.client.js","chunks":["client1"],"name":""}
+J0:["$","@1",null,{"children":["$","span",null,{"children":"Hello from server land"}]}]
+```
+
+看到這一串頭好痛，沒關係再請大神出來，上面的`M1`, `J0` 其實就是`${數據類型}${數據單元ID}:${可解析的json序列}`
+
+- `M`：表示這是一個 module，後面的數字表示這個 module 的 ID
+- `J`：表示這是一個 json，後面的數字表示這個 json 的 ID
+- `S`：表示這是一個 suspense component
+- `E`：表示 React server 渲染之後產生 error
+
+在`J0` 後面有看到一個 `@1` ，這個`@` 其實就是一個佔位符號(placeholder)，表示這個是 client component，React server 並不負責解析，等到 client 端讓 react runtime 去解析。
+
+## 無痛升級？？
+
+首先要升級腦袋，以往在寫 code 都是讓 client 端去跑，不需要考慮 runtime 的差異，舉例來說：在 server component 想要 set cookie，聽起來是不是有點怪怪的，我也是卡了半天之後才想到，server 端哪裡有 cookie????
+要考慮的點還有很多，以下列出幾個：
+
+1. 在 server fetch 的資料要修改怎麼辦？目前官網給出的只有重新整理的選項，但這樣其實體驗會很差。
+2. i18n 的渲染是在 server 端還是 client 端？
+3. 狀態管理勢必無法像以前一樣無腦丟 Redux
+4. Nextjs 有針對原生 js fetch 優化，用 axios 就失去了優化的效果，要怎麼處理？
+5. 拆分 component 不僅要考慮共用性，渲染是在 server 端還是 client 端也要考慮進去
+
+## conclusion
+
+RSC 是前端一個非常大的改變，幾乎可以說是改變前端工程師從框架開始以來的思考模式，以前所追求的 bundle size zero 幾乎已經要達成了，但前端工程師的頭腦也要爆了。
+到 RSC 完美落地還有很長一段路要走，第三方 package 的支援也還不完整，但這是一個很值得期待的技術，我們拭目以待。
+
+## Reference:
+
+    - [How React server components work: an in-depth guide](https://www.plasmic.app/blog/how-react-server-components-work)
+    - [【react】初探server component](https://juejin.cn/post/6918602124804915208)
+    - [從 Next.js 13 認識 React Server Components](https://oldmo860617.medium.com/%E5%BE%9E-next-js-13-%E8%AA%8D%E8%AD%98-react-server-components-37c2bad96d90)
