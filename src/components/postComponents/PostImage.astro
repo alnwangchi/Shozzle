@@ -1,8 +1,17 @@
 ---
 import { Image } from '@astrojs/image/components';
-const { src, alt, width, height, aspectRatio, desc } = Astro.props;
+const { src, alt, width, height, aspectRatio, desc, quality } = Astro.props;
 ---
 
 <!-- 在文章的的圖片用此元件可以大大壓縮大小 請務必傳入 width or height 並且在只有給 width 的時候 aspectRatio 為必填-->
-<Image {src} {width} {height} format="avif" fit="cover" {aspectRatio} alt={alt || 'nono'} />
+<Image
+  {src}
+  {width}
+  {height}
+  {quality}
+  format="avif"
+  fit="cover"
+  {aspectRatio}
+  alt={alt || 'nono'}
+/>
 {desc && <small>{desc}</small>}
