@@ -140,18 +140,6 @@ const {
 
 <details>
   <summary>
-    <h3 style="margin: 0">errors</h3>
-  </summary>
-  <div style="padding-left: 14px">
-    提供一個紀錄有錯誤的欄位的 errors 物件給你，用來實作錯誤訊息使用
-  </div>
-  ```javascript
-  {errors.firstName && <p className="error">This field is required</p>}
-  ```
-</details>
-
-<details>
-  <summary>
     <h3 style="margin: 0">isSubmitting</h3>
   </summary>
   <div style="padding-left: 14px">
@@ -171,6 +159,13 @@ const {
     `isSubmitSuccessful` 來說就挺適合搭配 `reset()`
     一起使用，達成當我表單真的成功送出後再去做清空表單的動作
   </div>
+  ```javascript
+  useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      reset({ something: "" })
+    }
+  }, [formState, submittedData, reset])
+  ```
 </details>
 
 ### watch & getValues
@@ -188,7 +183,7 @@ const {
   const multipleValues = getValues(["test", "test1"])
 ```
 
-#### watch & getValues 兩者的差別 (直摳官方文件)
+watch & getValues 兩者的差別 (直摳官方文件)
 
 The difference between watch and getValues is that getValues will not trigger re-renders or subscribe to input changes.
 
