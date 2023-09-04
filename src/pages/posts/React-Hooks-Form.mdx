@@ -1,0 +1,221 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: 表單管理大師 React Hooks Form (上)
+date: 2023-09-04
+author: Allen Wang
+image: { src: 'https://i.imgur.com/2gEHHeX.png', alt: '' }
+description: 介紹 React Hooks Form 這個 library以及一些用法與情境，再複雜的表單也能有條有理的控管
+draft: false
+category: React Hooks Form,UX
+---
+
+import PostImage from '../../components/postComponents/PostImage.astro';
+
+## 前言
+
+前端一定會碰到的需求 ——— 表單管理，在沒有使用套件純用 React 的情況下會用 state 去控制的 Controlled Form，不僅會不停的重複渲染，在處理欄位驗證及錯誤提示等等重要的 UX 指標都挺麻煩的，所以以前的我寫了許多糞 code，直到我遇見了本篇主角 React Hooks Form，這邊分上下兩篇快速介紹以及分享一些我覺得可以多留意的要點，以下我用 RHF 簡稱
+
+## 為什麼用 React Hooks Form
+
+它幫我整合了以下幾點原本需要分別管理的功能
+
+- 管理表單資料
+- 送出表單資料
+- 表單驗證
+- 錯誤回饋
+- 實作了許多表單常見的需求
+- 不同於 controlled component 他不會一直 rerender
+
+## 基本概念及使用
+
+安裝
+
+```
+npm i react-hook-form
+```
+
+先記一下它運作的概念，我們將表單的管理交給 RHF 是透過 "註冊" 表單的欄位給它，接收到表單中註冊的欄位後就可以使用 RHF 所提供的表單方法完成我們需求的功能，`useForm()` 是核心的 hook，提供了註冊的方法 `register()`、`handleSubmit()` 等等後續會一一帶到的方法，最基本的使用由這三個方法就可以建構完成，可以先特別記起來，參考以下範例 code 跟圖
+
+補充一下 RHF 裡面需要知道的名詞概念
+
+Touched : 代表使用者是否有與該欄位交互過(onBlur)，可以視為有沒有被摸過
+Dirty : 代表使用者是否有被編輯過(onChange)
+
+加上 valid state 是這個 library 基本且重要的概念，用來追蹤使用者與欄位的交互關係，進而建構出更好的 UX
+
+```javascript
+import { useForm } from 'react-hook-form';
+
+export default function App() {
+  const { register, handleSubmit } = useForm();
+
+  const onSubmit = (data) => console.log(data);
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('name')} />
+      <input {...register('age')} />
+      <button>送出</button>
+    </form>
+  );
+}
+```
+
+<PostImage
+  src="https://i.imgur.com/K0tkWZu.png"
+  width={600}
+  height={240}
+  aspectRatio="5/2"
+  quality={100}
+  desc="概念大概就像這樣"
+/>
+
+## API 介紹
+
+主要提及使用機率比較高的還有我對他的一些理解，基本跟細節用法還請參考官網
+
+## useForm
+
+最主要的核心 hook 提供很多可追蹤的值是個功能大禮包，想要什麼裡面通通都有(大部分)
+
+- 當前表單每個欄位的值
+- 欄位是否已經被碰過(填過)
+- 值是否有變化(watch)
+- 值是否合法
+
+### register
+
+透過它註冊欄位作為與 RHF 的連結，剛看到上面範例中註冊寫法可能會覺得有點怪，但他其實就是下面範例這樣子而已，將 event、name、ref 解構傳進去我們的欄位中，這樣看就會比較好理解了
+
+有時候當使用欄位元件包裹的層數較多，實際的 input 太深 register 會無法使用(只拿到 `undefined`)，這時候使用 [Controller](https://react-hook-form.com/docs/usecontroller/controller) 將要將元件用 render props 的方式傳入，若是使用 UI 庫的輸入欄元件可能有相同問題所以也需要使用
+
+```javascript
+const { onChange, onBlur, name, ref } = register('firstName');
+
+<input
+  onChange={onChange} // assign onChange event
+  onBlur={onBlur} // assign onBlur event
+  name={name} // assign name prop
+  ref={ref} // assign ref prop
+/>
+// same as above
+<input {...register('firstName')} />
+```
+
+### formState
+
+顧名思義就是表單的狀態是個大禮包中的小禮包，其中列舉幾個我認為會比較常用的狀態
+
+```javascript
+const {
+  formState: { errors, isDirty, isValid, isSubmitting, isSubmitSuccessful, defaultValues }
+} = useForm();
+```
+
+<details>
+  <summary>
+    <h3 style="margin: 0">errors</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    提供一個紀錄有錯誤的欄位的 errors 物件給你，用來實作錯誤訊息使用
+  </div>
+  ```javascript
+  {errors.firstName && <p className="error">This field is required</p>}
+  ```
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">isDirty</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    這邊要提一個這個 RHF 裡面挺重要的一個概念，dirty
+    這代表的是表單是否有被使用者編輯過，也就是有沒有輸入過，用在提升使用者體驗上，舉個例搭配
+    `isValid` 來實作使用者沒填或沒有通過驗證時不可以送出表單
+  </div>
+  ```javascript
+  <button disabled={!isDirty || !isValid} />
+  ```
+  <p style="padding-left: 14px">就這樣</p>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">errors</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    提供一個紀錄有錯誤的欄位的 errors 物件給你，用來實作錯誤訊息使用
+  </div>
+  ```javascript
+  {errors.firstName && <p className="error">This field is required</p>}
+  ```
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">isSubmitting</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    一個同字面上表單正在送出的狀態，很適合用在防止按鈕連點給予按鈕一個 loading or disabled 使用
+  </div>
+  ```javascript
+  <button disabled={isSubmitting}>送出</button>
+  ```
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">isSubmitSuccessful</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    有好幾個狀態都是同字面上意義一樣很好懂，需要的就是知道它後去想想什麼情況可以去用它，以
+    `isSubmitSuccessful` 來說就挺適合搭配 `reset()`
+    一起使用，達成當我表單真的成功送出後再去做清空表單的動作
+  </div>
+</details>
+
+### watch & getValues
+
+欄位監聽，能運用的情況就很多了，任何想要在某個欄位有變化時需要做些什麼對應得事情，例如當我某個欄位選了"客製化"，下方就應該多出一個欄位輸入說明文字
+
+```javascript=
+  watch('name') // 監聽單一欄位
+  watch(['name', 'age']) // 用陣列形式監聽多個欄位
+  watch() // 監聽整個表單
+
+  // 跟上面一樣用法
+  const values = getValues()
+  const singleValue = getValues("test")
+  const multipleValues = getValues(["test", "test1"])
+```
+
+#### watch & getValues 兩者的差別 (直摳官方文件)
+
+The difference between watch and getValues is that getValues will not trigger re-renders or subscribe to input changes.
+
+### reset & resetField
+
+重置表單，除了清空外也可以作為一次性填寫多個欄位使用，此外第二個參數還有許多的 keep... 可以控制表單在 reset 後的狀態，但應用的場景應該較少。
+
+resetField 為針對單一欄位的重置
+
+### setValue & setFocus
+
+setValue 動態填入表單欄位的值，例如填寫的台灣的行政區域，此時前端可以做到為使用者自動填寫相對的郵遞區號，使用者體驗直接 upup，可將表單的填寫方法二分為直接對欄位輸入以及此間接方法兩種
+
+```javascript
+setValue('yourProfile.firstName', 'value');
+```
+
+setFocus 進入表單填寫頁面時值接 focus 到第一個該填欄位，滑鼠點都不用點，使用者體驗又 upup 了
+
+```javascript
+useEffect(() => {
+  setFocus('yourProfile.firstName');
+}, [setFocus]);
+```
+
+## 本篇小結
+
+本編介紹一下 RHF 主要的概念以及一些基本的用法還有 `useForm` 這個大禮包的內容，最終目的就是建構一個易於理解、擴充、管理的表單填寫模式，與此同時站在使用者角度思考如何透過工具來將麻煩的表單填寫流程盡可能的優化、精簡、順暢使填表率與正確率提升。
+
+表單填寫通常只會是商業體整個服務中的一小部分，撇除直接購物的功能外，表單填寫可能會是與商業、商機連結的一個橋樑，相信大家也許有過填到很醜很難填的表單導致乾脆不填的情況，處理細節避免此情形發生非常重要且應該是前端工程師的職責
