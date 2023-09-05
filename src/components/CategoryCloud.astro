@@ -3,7 +3,7 @@ import { organizeAllPosts, slugify, categoryAccumulator } from '@utils/index.js'
 
 const { categoryList } = Astro.props;
 
-const allPosts = await Astro.glob('../pages/posts/*.mdx');
+const allPosts = await Astro.glob('../pages/posts/**/*.mdx');
 
 const organizedAllPosts = organizeAllPosts(allPosts);
 

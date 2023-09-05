@@ -92,7 +92,7 @@ All commands are run from the root of the project, from a terminal:
 ## 文章圖片注意事項
 
 在 mdx 文章中若有圖片的使用時，請用以下的 astro 封裝過的元件，這可以大大優化圖片的大小，不信去看 Network Img
-`import PostImage from '../../components/postComponents/PostImage.astro';`
+`import PostImage from '@components/postComponents/PostImage.astro';`
 
 - 使用外部圖片路徑請務必傳入 width 跟 height
 - 文章 metadata 中的 image src 必須是網址或是本地圖片路徑，不能是 base64 或其他無效的字串

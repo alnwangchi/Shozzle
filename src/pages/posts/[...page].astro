@@ -7,7 +7,7 @@ import { organizeAllPosts } from '@utils/index.js';
 
 export async function getStaticPaths({ paginate }) {
   // Load your data with fetch(), Astro.glob(), etc.
-  const allPosts = await Astro.glob('./*.mdx');
+  const allPosts = await Astro.glob('./**/*.mdx');
   const organizedAllPosts = organizeAllPosts(allPosts);
   // Return a paginated collection of paths for all posts
   return paginate(organizedAllPosts, { pageSize: 7 });
