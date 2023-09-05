@@ -94,7 +94,7 @@ Here is my counter component, working in MDX:
 import * as myPost from '../pages/post/my-post.mdx';
 
 // Import multiple files with Astro.glob
-const posts = await Astro.glob('../pages/post/*.mdx');
+const posts = await Astro.glob('../pages/post/**/*.mdx');
 ```
 
 藉此方式取得後再用上述的 [關於文章的資訊](#關於文章的資訊) 然後再配合我寫了個 util function `organizeAllPosts` 來決定我最終會拿到什麼文章

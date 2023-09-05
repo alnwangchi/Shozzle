@@ -14,7 +14,7 @@ import {
 
 // 動態產生 category 列表
 export async function getStaticPaths() {
-  const allPosts = await Astro.glob('../posts/*.mdx');
+  const allPosts = await Astro.glob('../posts/**/*.mdx');
   const allCategory = [
     ...new Set(allPosts.map((p) => multiCategoryHandler(p.frontmatter.category)).flat()),
     'all'
@@ -30,7 +30,7 @@ export async function getStaticPaths() {
 const { category } = Astro.params;
 const { name } = Astro.props;
 
-const allPosts = await Astro.glob('../posts/*.mdx');
+const allPosts = await Astro.glob('../posts/**/*.mdx');
 const organizedAllPosts = organizeAllPosts(allPosts, {
   category: category === 'all' ? null : category
 });
