@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { slugify } from '@utils/index.js';
 import { BsArrowLeftCircle } from 'react-icons/bs/index.js';
 
-// interface Props {
-//   name: string;
-//   categoryList: string[];
-// }
+interface Props {
+  name: string;
+  categoryList: string[];
+}
 
 // const CategoryAside: React.FC<Props> = ({ name, categoryList }) => {
 const CategoryAside = (props) => {
