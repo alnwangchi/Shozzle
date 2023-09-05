@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Tooltip } from 'react-tooltip';
 import { slugify } from '@utils/index.js';
 import { BsArrowLeftCircle } from 'react-icons/bs/index.js';
 
@@ -32,13 +33,16 @@ const CategoryAside = (props) => {
         <a
           key={c}
           href={`/category/${slugify(c)}/`}
-          className={`px-6 block whitespace-nowrap transition-all hover:text-primary ${
+          data-tooltip-id="tooltip-anchor"
+          data-tooltip-content={c}
+          className={`px-6 block whitespace-nowrap transition-all text-ellipsis overflow-hidden hover:text-primary ${
             name === c ? 'text-primary' : 'text-secondary'
           } ${isOpen ? 'opacity-100' : 'opacity-0'}`}
         >
           {c}
         </a>
       ))}
+      <Tooltip id="tooltip-anchor" place="bottom" offset={0} style={{ zIndex: 100 }} />
       <div
         className={`bg-white w-8 h-8 absolute top-2/4 -right-[16px] -translate-y-[32px] cursor-pointer z-50 rounded-full f-center transition-all duration-500 ${
           isOpen ? 'rotate-0' : 'rotate-180'
