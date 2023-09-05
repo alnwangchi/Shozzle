@@ -9,21 +9,22 @@ draft: false
 category: Unit Test
 ---
 
-import { Callout } from '../../components/postComponents/callout';
+import { Callout } from '@components/postComponents/callout';
 
 ## 前言
 
-**Matchers**的機制可以讓我們利用各種方法來進行測試來判斷結果是否符合預期。這篇文章會列出一些常用的matchers，並簡單地用一個範例來介紹，文章的最後也會簡單介紹如何客製化自己的matchers~
+**Matchers**的機制可以讓我們利用各種方法來進行測試來判斷結果是否符合預期。這篇文章會列出一些常用的 matchers，並簡單地用一個範例來介紹，文章的最後也會簡單介紹如何客製化自己的 matchers~
 
 ## 目錄
 
-- [Jest中的Matchers](#jest中的matchers-完整清單)
-- [React Testing Library中的Matchers](#react-testing-library中的matchers-完整清單)
-- [客製化Matchers](#客製化matchers)
+- [Jest 中的 Matchers](#jest中的matchers-完整清單)
+- [React Testing Library 中的 Matchers](#react-testing-library中的matchers-完整清單)
+- [客製化 Matchers](#客製化matchers)
 
-## Jest中的Matchers ([完整清單](https://jestjs.io/docs/expect#matchers))
+## Jest 中的 Matchers ([完整清單](https://jestjs.io/docs/expect#matchers))
 
-{/* toBe  */}
+{/* toBe */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -54,10 +55,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveBeenCalled  */}
+{/* toHaveBeenCalled */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -83,10 +86,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveBeenCalledTimes  */}
+{/* toHaveBeenCalledTimes */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -112,10 +117,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveBeenCalledWith  */}
+{/* toHaveBeenCalledWith */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -141,10 +148,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveReturned  */}
+{/* toHaveReturned */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -166,10 +175,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveReturnedTimes  */}
+{/* toHaveReturnedTimes */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -192,10 +203,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveReturnedWith  */}
+{/* toHaveReturnedWith */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -217,32 +230,34 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toHaveLength  */}
+{/* toHaveLength */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
-      ...toHaveLength(<code style="font-size: 16px">number</code>) -> <a href="https://jestjs.io/docs/expect#tohavelengthnumber">Link</a>
+      ...toHaveLength(<code style="font-size: 16px">number</code>) ->{' '}
+      <a href="https://jestjs.io/docs/expect#tohavelengthnumber">Link</a>
     </h3>
   </summary>
   <div style="padding-left: 14px">
-    透過 <code>.toHaveLength</code> 來確保該object擁有 <code>.length</code> 屬性，並且與傳入的參數 <code>number</code> 一致
+    透過 <code>.toHaveLength</code> 來確保該object擁有 <code>.length</code> 屬性，並且與傳入的參數{' '}
+    <code>number</code> 一致
     <details>
       <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
-        ```javascript
-        expect([1, 2, 3]).toHaveLength(3);
-        expect('abc').toHaveLength(3);
-        expect('').not.toHaveLength(5);
-        ```
+        ```javascript expect([1, 2, 3]).toHaveLength(3); expect('abc').toHaveLength(3);
+        expect('').not.toHaveLength(5); ```
       </div>
     </details>
   </div>
 </details>
 
-{/* toHaveProperty  */}
+{/* toHaveProperty */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -277,10 +292,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeCloseTo  */}
+{/* toBeCloseTo */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -303,7 +320,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeDefined  */}
+{/* toBeDefined */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -326,10 +344,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeFalsy  */}
+{/* toBeFalsy */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -353,10 +373,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeTruthy  */}
+{/* toBeTruthy */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -380,10 +402,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeGreaterThan  */}
+{/* toBeGreaterThan */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -404,10 +428,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeGreaterThanOrEqual  */}
+{/* toBeGreaterThanOrEqual */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -428,10 +454,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeLessThan  */}
+{/* toBeLessThan */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -452,10 +480,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeLessThanOrEqual  */}
+{/* toBeLessThanOrEqual */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -476,10 +506,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeInstanceOf  */}
+{/* toBeInstanceOf */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -501,10 +533,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
-{/* toBeNull  */}
+{/* toBeNull */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -527,7 +561,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeUndefined  */}
+{/* toBeUndefined */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -550,7 +585,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeNaN  */}
+{/* toBeNaN */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -573,7 +609,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toContain  */}
+{/* toContain */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -598,7 +635,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toEqual  */}
+{/* toEqual */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -626,7 +664,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toMatch  */}
+{/* toMatch */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -651,7 +690,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toThrow  */}
+{/* toThrow */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -680,9 +720,10 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-## React Testing Library中的Matchers ([完整清單](https://github.com/testing-library/jest-dom#custom-matchers))
+## React Testing Library 中的 Matchers ([完整清單](https://github.com/testing-library/jest-dom#custom-matchers))
 
-{/* toBeDisabled  */}
+{/* toBeDisabled */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -710,7 +751,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeEmptyDOMElement  */}
+{/* toBeEmptyDOMElement */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -739,7 +781,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeInTheDocument  */}
+{/* toBeInTheDocument */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -765,7 +808,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeRequired  */}
+{/* toBeRequired */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -795,7 +839,8 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toBeVisible  */}
+{/* toBeVisible */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -832,11 +877,14 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-{/* toContainElement  */}
+{/* toContainElement */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
-      ...toContainElement(<code style="font-size: 16px">element: HTMLElement | SVGElement | null</code>) -> <a href="https://github.com/testing-library/jest-dom#tocontainelement">Link</a>
+      ...toContainElement(
+      <code style="font-size: 16px">element: HTMLElement | SVGElement | null</code>) ->{' '}
+      <a href="https://github.com/testing-library/jest-dom#tocontainelement">Link</a>
     </h3>
   </summary>
   <div style="padding-left: 14px">
@@ -845,44 +893,44 @@ import { Callout } from '../../components/postComponents/callout';
       <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
         ```javascript
-        <span data-testid="ancestor"><span data-testid="descendant"></span></span>
-        ```
-        ```javascript
-        it('should contain element', () => {
-          expect(getByTestId('ancestor')).toContainElement(getByTestId('descendant'))
-        })
-        ```
+        <span data-testid="ancestor">
+          <span data-testid="descendant"></span>
+        </span>
+        ``` ```javascript it('should contain element', () =>{' '}
+        {expect(getByTestId('ancestor')).toContainElement(getByTestId('descendant'))}) ```
       </div>
     </details>
   </div>
 </details>
 
-{/* toContainHTML  */}
+{/* toContainHTML */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
-      ...toContainHTML(<code style="font-size: 16px">htmlText: string</code>) -> <a href="https://github.com/testing-library/jest-dom#tocontainhtml">Link</a>
+      ...toContainHTML(<code style="font-size: 16px">htmlText: string</code>) ->{' '}
+      <a href="https://github.com/testing-library/jest-dom#tocontainhtml">Link</a>
     </h3>
   </summary>
   <div style="padding-left: 14px">
-    透過 <code>.toContainHTML</code> 來確認element是否有包含其他html element作為子孫，且此html element使用string來做表示
+    透過 <code>.toContainHTML</code> 來確認element是否有包含其他html element作為子孫，且此html
+    element使用string來做表示
     <details>
       <summary style="font-style: italic; font-weight: 600">Example</summary>
       <div style="padding-left: 14px">
         ```javascript
-        <span data-testid="parent"><span data-testid="child"></span></span>
-        ```
-        ```javascript
-        it('should contain element', () => {
-          expect(getByTestId('parent')).toContainHTML('<span data-testid="child"></span>')
-        })
-        ```
+        <span data-testid="parent">
+          <span data-testid="child"></span>
+        </span>
+        ``` ```javascript it('should contain element', () =>{' '}
+        {expect(getByTestId('parent')).toContainHTML('<span data-testid="child"></span>')}) ```
       </div>
     </details>
   </div>
 </details>
 
-{/* toHaveAttribute  */}
+{/* toHaveAttribute */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -907,10 +955,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
 {/* toHaveClass */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -940,10 +990,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
 {/* toHaveFocus */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -971,10 +1023,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
 {/* toHaveStyle */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -1004,10 +1058,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
 {/* toHaveTextContent */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -1035,10 +1091,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
 {/* toHaveValue */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -1086,6 +1144,7 @@ import { Callout } from '../../components/postComponents/callout';
 </details>
 
 {/* toHaveDisplayValue */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -1121,10 +1180,12 @@ import { Callout } from '../../components/postComponents/callout';
         ```
       </div>
     </details>
+
   </div>
 </details>
 
 {/* toBeChecked */}
+
 <details>
   <summary>
     <h3 style="margin: 0">
@@ -1189,12 +1250,13 @@ import { Callout } from '../../components/postComponents/callout';
   </div>
 </details>
 
-## 客製化Matchers
-透過 <code>expect.extend</code> ，我們可以自己實作matchers來用在unit test上，詳細使用方式可以參考[官方docs](https://jestjs.io/docs/expect#expectextendmatchers)，以下用一個例子來簡述:
+## 客製化 Matchers
+
+透過 <code>expect.extend</code> ，我們可以自己實作 matchers 來用在 unit test 上，詳細使用方式可以參考[官方 docs](https://jestjs.io/docs/expect#expectextendmatchers)，以下用一個例子來簡述:
 
 > Example
 
-這個範例中，我們透過創建一個 <code>toContainRole</code> 來自己創建一個客製化的matcher，避免因為重複寫同樣的程式碼而變成碼農
+這個範例中，我們透過創建一個 <code>toContainRole</code> 來自己創建一個客製化的 matcher，避免因為重複寫同樣的程式碼而變成碼農
 
 <span style="font-style: italic">DataForm.js</span>
 ```jsx
@@ -1223,18 +1285,21 @@ import { Callout } from '../../components/postComponents/callout';
       pass: false,
       message: () => `Expected to find ${quantity} ${role} elements.`
     }
-  }
 
-  // 透過 expect.extend 來使用custom matchers
-  expect.extend({ toContainRole })
+}
 
-  it('should display two buttons', () => {
-    render(<DataForm />);
+// 透過 expect.extend 來使用 custom matchers
+expect.extend({ toContainRole })
+
+it('should display two buttons', () => {
+render(<DataForm />);
 
     const form = screen.getByRole('form');
 
     expect(form).toContainRole('button', 2);
-  })
+
+})
+
 ```
 
 ## Unit Test 系列其他文章
@@ -1242,3 +1307,4 @@ import { Callout } from '../../components/postComponents/callout';
 <a href="./UnitTest">Unit Test (1)：介紹單元測試</a>
 <br />
 <a href="./UnitTest-QueryFunctions">Unit Test (2)：Query Functions 整理</a>
+```

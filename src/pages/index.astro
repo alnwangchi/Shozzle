@@ -4,7 +4,7 @@ import MainLayout from '@layouts/MainLayout.astro';
 import { Image } from '@astrojs/image/components';
 import { commonDayFormatter, organizeAllPosts } from '@utils/index';
 
-const allPosts = await Astro.glob('../pages/posts/*.mdx');
+const allPosts = await Astro.glob('../pages/posts/**/*.mdx');
 
 const latestPost = organizeAllPosts(allPosts, { limit: 1 }).at(0);
 const {

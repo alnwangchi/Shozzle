@@ -14,7 +14,7 @@ const { frontmatter, headings } = Astro.props;
 const { title, description, date, category, author, image } = frontmatter;
 const categoryList = multiCategoryHandler(category);
 
-const allPosts = await Astro.glob('../pages/posts/*.mdx');
+const allPosts = await Astro.glob('../pages/posts/**/*.mdx');
 // FIXME: 加上 category 卻無法正確篩出
 const relatedPosts = organizeAllPosts(allPosts, {
   category: slugify(category),
