@@ -10,7 +10,7 @@ export async function getStaticPaths({ paginate }) {
   const allPosts = await Astro.glob('./**/*.mdx');
   const organizedAllPosts = organizeAllPosts(allPosts);
   // Return a paginated collection of paths for all posts
-  return paginate(organizedAllPosts, { pageSize: 7 });
+  return paginate(organizedAllPosts, { pageSize: 9 });
 }
 
 // 文章列表包在 data 裡面
