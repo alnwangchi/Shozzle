@@ -11,7 +11,8 @@
     "orbitron",
     "shozzle",
     "tailwindcss",
-    "tsconfigs"
+    "tsconfigs",
+    "giscus"
   ],
   // enable globally (here: format on save)
   "editor.formatOnSave": true,
