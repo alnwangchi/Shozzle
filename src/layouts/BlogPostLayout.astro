@@ -7,6 +7,7 @@ import ReadingProgress from '@components/ReadingProgress.jsx';
 
 import { CategoryCloud, PostHeader, RelatedPosts, TOC } from '@components/index.astro';
 import MainLayout from './MainLayout.astro';
+import GiscusComment from '../components/GiscusComment.astro';
 import { organizeAllPosts, slugify, multiCategoryHandler } from '@utils/index';
 
 const { frontmatter, headings } = Astro.props;
@@ -45,6 +46,7 @@ const nestedHeadings = (headingParam) => {
         <div class="markdown-body">
           <slot />
         </div>
+        <GiscusComment />
       </div>
       <div
         class="sticky top-10 h-fit max-w-[368px] p-4 flex flex-1 gap-4 flex-col border border-l-secondary"
