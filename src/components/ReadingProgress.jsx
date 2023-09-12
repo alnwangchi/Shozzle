@@ -4,6 +4,9 @@ const ReadingProgress = () => {
   const [percent, setPercent] = useState(0);
 
   useEffect(() => {
+    console.log('====================================');
+    console.log('This is GPT PR test. ');
+    console.log('====================================');
     const bodyHeight = document.querySelector('body').offsetHeight;
     const windowHeight = window.innerHeight;
 
