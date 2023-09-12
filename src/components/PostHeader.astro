@@ -5,8 +5,10 @@ import { Icon } from 'astro-icon';
 // utils imports
 import { slugify, commonDayFormatter, multiCategoryHandler } from '@utils/index.js';
 import authorData from '@constants/authorData';
+import ShareButtons from '@components/ShareButtons';
 
-const { category, title, author, date, image } = Astro.props;
+const { pathname } = Astro.url;
+const { category, title, author, date, image, description } = Astro.props;
 const categoryList = multiCategoryHandler(category);
 
 const authorImageConverter = (author: string): { name: string; avatar: string } => {
@@ -19,38 +21,43 @@ const authorImage = authorImageConverter(author);
 ---
 
 <header>
-  <div class="flex gap-2 items-center">
-    {
-      authorImage ? (
-        <Image
-          src={authorImage.avatar}
-          alt={authorImage.name}
-          width={52}
-          height={52}
-          format="avif"
-          fit="cover"
-          quality={80}
-          aspectRatio="1:1"
-        />
-      ) : (
-        <Icon name="typcn:user" height="52" width="52" />
-      )
-    }
-    <div class="w-fit">
-      <p class="leading-none mb-2">
-        <a class="w-fit" href={`/author/${slugify(author)}/`}>{author}</a> • {
-          commonDayFormatter(date)
-        }
-      </p>
-      <div class="space-x-1">
-        {
-          categoryList.map((c) => (
-            <small class="badge">
-              <a href={`/category/${slugify(c)}/`}>{c}</a>
-            </small>
-          ))
-        }
+  <div class="flex justify-between items-center">
+    <div class="flex gap-2 items-center">
+      {
+        authorImage ? (
+          <Image
+            src={authorImage.avatar}
+            alt={authorImage.name}
+            width={52}
+            height={52}
+            format="avif"
+            fit="cover"
+            quality={80}
+            aspectRatio="1:1"
+          />
+        ) : (
+          <Icon name="typcn:user" height="52" width="52" />
+        )
+      }
+      <div class="w-fit">
+        <p class="leading-none mb-2">
+          <a class="w-fit" href={`/author/${slugify(author)}/`}>{author}</a> • {
+            commonDayFormatter(date)
+          }
+        </p>
+        <div class="space-x-1">
+          {
+            categoryList.map((c) => (
+              <small class="badge">
+                <a href={`/category/${slugify(c)}/`}>{c}</a>
+              </small>
+            ))
+          }
+        </div>
       </div>
+    </div>
+    <div>
+      <ShareButtons pathname={pathname} title={title} summary={description} client:load />
     </div>
   </div>
   <h1 class="my-4">{title}</h1>
