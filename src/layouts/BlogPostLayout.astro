@@ -51,7 +51,7 @@ const nestedHeadings = (headingParam) => {
       <div
         class="sticky top-10 h-fit max-w-[368px] p-4 flex flex-1 gap-4 flex-col border border-l-secondary"
       >
-        <aside class="" aria-label="anchor">
+        <aside class="hidden md:block" aria-label="anchor">
           <h3 class="font-semibold mb-3">Anchor</h3>
           <TOC pageHeadings={nestedHeadings(headings)} />
           <!-- <small> TODO: 文章 Heading Links</small> -->
