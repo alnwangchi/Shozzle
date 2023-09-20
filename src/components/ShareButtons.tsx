@@ -24,13 +24,28 @@ const ShareButtons = (props: ShareButtonsProps) => {
   return (
     <div className="flex space-x-2">
       <FacebookShareButton url={url} quote={title}>
-        <FacebookIcon size={30} round bgStyle={{ fill: '#999' }} />
+        <FacebookIcon
+          size={30}
+          round
+          bgStyle={{ fill: 'transparent', stroke: '#101010', strokeWidth: 2 }}
+          iconFillColor="#101010"
+        />
       </FacebookShareButton>
       <LineShareButton url={url} title={title}>
-        <LineIcon size={30} round bgStyle={{ fill: '#999' }} />
+        <LineIcon
+          size={30}
+          round
+          bgStyle={{ fill: 'transparent', stroke: '#101010', strokeWidth: 2 }}
+          iconFillColor="#101010"
+        />
       </LineShareButton>
       <LinkedinShareButton url={url} title={title} summary={summary}>
-        <LinkedinIcon size={30} round bgStyle={{ fill: '#999' }} />
+        <LinkedinIcon
+          size={30}
+          round
+          bgStyle={{ fill: 'transparent', stroke: '#101010', strokeWidth: 2 }}
+          iconFillColor="#101010"
+        />
       </LinkedinShareButton>
     </div>
   );
