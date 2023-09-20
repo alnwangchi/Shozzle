@@ -125,3 +125,13 @@
       margin: 0 auto
     @include md 
       margin: unset
+
+/* overwrite react-share button */
+.react-share__ShareButton:hover
+  stroke-dasharray: 100
+  animation: dash 6s linear infinite
+
+@keyframes dash 
+  to 
+    stroke-dashoffset: 1000
+  
