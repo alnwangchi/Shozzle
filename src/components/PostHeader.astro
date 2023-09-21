@@ -5,7 +5,7 @@ import { Icon } from 'astro-icon';
 // utils imports
 import { slugify, commonDayFormatter, multiCategoryHandler } from '@utils/index.js';
 import authorData from '@constants/authorData';
-import ShareButtons from '@components/ShareButtons';
+import ShareButtons from '@components/ShareButtons.tsx';
 
 const { pathname } = Astro.url;
 const { category, title, author, date, image, description } = Astro.props;
