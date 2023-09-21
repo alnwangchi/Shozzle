@@ -3,7 +3,7 @@ layout: '@layouts/BlogPostLayout.astro'
 title: Commit 整理 - git rebase interactive mode
 date: 2023-09-21
 author: Allen Wang
-image: { src: 'https://i.imgur.com/PI8h1Va.png', alt: 'vscode' }
+image: { src: 'https://i.imgur.com/x3rf3aG.png', alt: 'vscode' }
 description: 透過 git rebase 的互動模式來調整 commit 的順序，刪除不必要的以及合併 commit，,也可以更改 commit message
 draft: true
 category: git,vscode
@@ -18,20 +18,21 @@ import PostImage from '@components/postComponents/PostImage.astro';
 
 ### 需要先知道的相關 git 指令
 
-`git log` : 列出 commit
-`git log --oneline` 列出並簡化成一行 (只為了複製 SHA 就用這個)
+`git log` : 列出 commit <br />
+`git log --oneline` 列出並簡化成一行 (只為了複製 SHA 就用這個) <br />
 `git rebase -i <此 SHA 之後的 記住commit>` : 從哪裡開始進行 rebase，貼上的那個 commit 不包含，在之後的 commit 才可以編輯
 
 以上都是在終端機操作，如果有裝 git graph 或是 source tree 這種視覺工具的話就可以直接找到對應的 commit SHA 來用
 
 我自己是有裝這幾個 extension
-![](https://hackmd.io/_uploads/HyZAYDK16.png)
+
+<PostImage src="https://i.imgur.com/iCb62TP.png" width={500} height={280} quality={100} />
 
 ### 需要先記一下的 vim 模式
 
 看到的 commit 是越下面越新，可能會跟工具介面相反，這邊有點容易搞混
 
-![](https://hackmd.io/_uploads/Hk1n7uK1a.png)
+<PostImage src="https://i.imgur.com/GuUZfVW.png" width={676} height={550} quality={100} />
 
 - 命令模式(預設) : 任意模式按下 Esc 就會回到這邊
   - 按 `i` 進入插入模式，可以輸入文字
@@ -47,51 +48,54 @@ import PostImage from '@components/postComponents/PostImage.astro';
 
 ### 需要先記一下的 vim 指令操作
 
-`:q!` : 不儲存，強制直接離開（有時候亂按搞砸了就下這個直接重來）
+`:q!` : 不儲存，強制直接離開（有時候亂按搞砸了就下這個直接重來)
+
 `:wq` : 儲存並離開
 
 `:{number}` : 移動到指定行
 
 ### 修改 commit message
 
-命令模式 `i` 進入插入模式
-將目標的 pick 改成 r
-`:wq` 儲存並退出
-`i` 再進入插入模式輸入修改訊息
+命令模式 `i` 進入插入模式 <br />
+將目標的 pick 改成 r <br />
+`:wq` 儲存並退出 <br />
+`i` 再進入插入模式輸入修改訊息 <br />
 `:wq` 儲存並退出，搞定
 
-![](https://hackmd.io/_uploads/Hk_l8tYkT.png)
+<PostImage src="https://i.imgur.com/7CskYsx.png" width={510} height={155} quality={100} />
 
-![](https://hackmd.io/_uploads/rJLMLFFka.png)
+<br />
+
+<PostImage src="https://i.imgur.com/D5xrUv5.png" width={500} height={155} quality={100} />
 
 ### 修改 commit 順序
 
-維持命令模式 `dd` 剪下
-到對應的位置 `p` 貼上
+維持命令模式 `dd` 剪下 <br />
+到對應的位置 `p` 貼上 <br />
 `:wq` 儲存並退出，搞定
 
 ### 合併 commit
 
-命令模式
-將目標的 pick 改成 f 或 s
-`:wq` 儲存並退出
+進入插入模式將目標的 pick 改成 f 或 s <br />
+`:wq` 儲存並退出 <br />
 
-![](https://hackmd.io/_uploads/B1ZujFKkp.png)
+<PostImage src="https://i.imgur.com/x1B5AVt.png" width={378} height={158} quality={100} />
 
-f 直接將該 commit 直接合進前一個 commit，因此 message 會保持前一個的相同
+f 直接將該 commit 直接合進前一個 commit，因此 message 會保持前一個的相同 <br />
 
-s 也是向前一個 commit 合併，差在會多一步驟讓我們寫下新的 commit message
+s 也是向前一個 commit 合併，差在會多一步驟讓我們寫下新的 commit message <br />
 
-走 s 的話用 `i` 再進入插入模式輸入修改訊息
+走 s 的話用 `i` 再進入插入模式輸入修改訊息 <br />
+
 `:wq` 儲存並退出，搞定
 
 結果會是這樣
 
-![](https://hackmd.io/_uploads/H1U3ittJa.png)
+<PostImage src="https://i.imgur.com/D6suO9K.png" width={516} height={78} quality={100} />
 
 ### 刪除 commit
 
-維持命令模式 `dd` 剪下
+維持命令模式 `dd` 剪下 <br />
 `:wq` 儲存並退出，搞定
 
 ## Getlens
@@ -99,17 +103,23 @@ s 也是向前一個 commit 合併，差在會多一步驟讓我們寫下新的 
 上面提到有裝這個 extension，有提供易操作的介面可以做到一樣的事情，還可以有 drag and drop 來調 commit 順序，這點挺讚的，以下為開啟及操作方式
 
 - 先啟用 rebase 編輯器
-  ![](https://hackmd.io/_uploads/Sks2hDFkT.png)
+
+<PostImage src="https://i.imgur.com/5a2WWW9.png" width={510} height={115} quality={100} />
 
 - 在想要修改的地方右鍵點選
-  ![](https://hackmd.io/_uploads/ByQ46wKy6.png)
+
+<PostImage src="https://i.imgur.com/uykEmP8.png" width={420} height={259} quality={100} />
 
 - 再選第二個選項就可以進入了
-  ![](https://hackmd.io/_uploads/BkjYTDY1p.png)
+
+<PostImage src="https://i.imgur.com/AyUfbJj.png" width={520} height={205} quality={100} />
 
 - 這樣就可以開始做操作了
-  ![](https://hackmd.io/_uploads/H1KTRvYyT.png)
+
+<PostImage src="https://i.imgur.com/SiILnuM.png" width={726} height={436} quality={100} />
 
 ## 小結
 
 整理 commit 是個好習慣且常常會需要使用到，看是從終端機或工具介面操作都 ok，記錄跟刻意練習一下之前一直不太熟用起來不順的部分
+
+最近夥伴新增了文章留言功能，如果有幫助可以留個言試試 :D
