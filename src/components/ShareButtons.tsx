@@ -1,5 +1,11 @@
-import React from 'react';
-import * as ReactShare from 'react-share';
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  LineShareButton,
+  LineIcon,
+  LinkedinShareButton,
+  LinkedinIcon
+} from 'next-share';
 
 interface ShareButtonsProps {
   pathname: string;
@@ -15,38 +21,16 @@ const ShareButtons = (props: ShareButtonsProps) => {
   const url = `${DOMAIN_URL}${pathname}`;
 
   return (
-    <div className="flex space-x-1">
-      <ReactShare.FacebookShareButton
-        url={url}
-        quote={title}
-        className="circle-btn animation-1 flex self-end shrink-0"
-      >
-        <span className="icon">
-          <ReactShare.FacebookIcon size={30} round iconFillColor="#101010" />
-        </span>
-        <div className="circle-bg" />
-      </ReactShare.FacebookShareButton>
-      <ReactShare.LineShareButton
-        url={url}
-        title={title}
-        className="circle-btn animation-1 flex self-end shrink-0"
-      >
-        <span className="icon">
-          <ReactShare.LineIcon size={30} round iconFillColor="#101010" />
-        </span>
-        <div className="circle-bg" />
-      </ReactShare.LineShareButton>
-      <ReactShare.LinkedinShareButton
-        url={url}
-        title={title}
-        summary={summary}
-        className="circle-btn animation-1 flex self-end shrink-0"
-      >
-        <span className="icon">
-          <ReactShare.LinkedinIcon size={30} round iconFillColor="#101010" />
-        </span>
-        <div className="circle-bg" />
-      </ReactShare.LinkedinShareButton>
+    <div className="next-share__ShareButton flex space-x-1">
+      <FacebookShareButton url={url} quote={title}>
+        <FacebookIcon size={30} round />
+      </FacebookShareButton>
+      <LinkedinShareButton url={url} title={title} summary={summary}>
+        <LinkedinIcon size={30} round />
+      </LinkedinShareButton>
+      <LineShareButton url={url} title={title}>
+        <LineIcon size={30} round />
+      </LineShareButton>
     </div>
   );
 };

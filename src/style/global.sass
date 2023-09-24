@@ -127,12 +127,19 @@
       margin: unset
 
 /* overwrite react-share button */
-.react-share__ShareButton
+.next-share__ShareButton button
   circle
     fill: transparent
+  svg path
+      fill: $clr_secondary
   &:hover
+    circle
+      stroke: $clr_primary
+      stroke-width: 2
+      stroke-dasharray: 100
+      animation: dash 6s linear infinite
     svg path
-      fill: $clr_emphasize
+      fill: $clr_primary
 
 @keyframes dash 
   to 
