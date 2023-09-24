@@ -1,10 +1,5 @@
 import React from 'react';
-import FacebookShareButton from 'react-share/lib/FacebookShareButton';
-import FacebookIcon from 'react-share/lib/FacebookIcon';
-import LineShareButton from 'react-share/lib/LineShareButton';
-import LineIcon from 'react-share/lib/LineIcon';
-import LinkedinShareButton from 'react-share/lib/LinkedinShareButton';
-import LinkedinIcon from 'react-share/lib/LinkedinIcon';
+import * as ReactShare from 'react-share';
 
 interface ShareButtonsProps {
   pathname: string;
@@ -21,37 +16,37 @@ const ShareButtons = (props: ShareButtonsProps) => {
 
   return (
     <div className="flex space-x-1">
-      <FacebookShareButton
+      <ReactShare.FacebookShareButton
         url={url}
         quote={title}
         className="circle-btn animation-1 flex self-end shrink-0"
       >
         <span className="icon">
-          <FacebookIcon size={30} round iconFillColor="#101010" />
+          <ReactShare.FacebookIcon size={30} round iconFillColor="#101010" />
         </span>
         <div className="circle-bg" />
-      </FacebookShareButton>
-      <LineShareButton
+      </ReactShare.FacebookShareButton>
+      <ReactShare.LineShareButton
         url={url}
         title={title}
         className="circle-btn animation-1 flex self-end shrink-0"
       >
         <span className="icon">
-          <LineIcon size={30} round iconFillColor="#101010" />
+          <ReactShare.LineIcon size={30} round iconFillColor="#101010" />
         </span>
         <div className="circle-bg" />
-      </LineShareButton>
-      <LinkedinShareButton
+      </ReactShare.LineShareButton>
+      <ReactShare.LinkedinShareButton
         url={url}
         title={title}
         summary={summary}
         className="circle-btn animation-1 flex self-end shrink-0"
       >
         <span className="icon">
-          <LinkedinIcon size={30} round iconFillColor="#101010" />
+          <ReactShare.LinkedinIcon size={30} round iconFillColor="#101010" />
         </span>
         <div className="circle-bg" />
-      </LinkedinShareButton>
+      </ReactShare.LinkedinShareButton>
     </div>
   );
 };
