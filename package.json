@@ -10,9 +10,9 @@
     "npm": "^9.5.1"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "sh lowercase.sh && astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "sh lowercase.sh && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
