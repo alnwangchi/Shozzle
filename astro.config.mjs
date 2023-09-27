@@ -24,6 +24,7 @@ export default defineConfig({
     sitemap({
       serialize(item) {
         item.url = item.url.toLowerCase();
+        item.lastmod = new Date();
         return item;
       }
     })
