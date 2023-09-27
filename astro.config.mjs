@@ -21,7 +21,12 @@ export default defineConfig({
     react(),
     tailwind(),
     mdx(),
-    sitemap()
+    sitemap({
+      serialize(item) {
+        item.url = item.url.toLowerCase();
+        return item;
+      }
+    })
   ],
   // output: 'server',
   adapter: netlify()
