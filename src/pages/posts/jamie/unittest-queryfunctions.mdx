@@ -1,0 +1,750 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Unit Test (2)：Query Functions 整理
+date: 2023-04-18
+author: Jamie Chien
+image: { src: 'https://i.imgur.com/BaIDa0m.png', alt: '範例' }
+description: Unit Test的Query Functions整理以及Testing Playground介紹
+draft: false
+category: Unit Test
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+**Query Functions**幫助我們找到要測試的 elements，但要把所有**Query Functions**記起來來尋找 elements 和 roles 是很困難的，因此這篇文章要用拆解的方式來幫助大家更簡單的記住這些 functions。也可以妥善利用工具來幫助找到 elements。這篇文章會先介紹一下工具，後面再來介紹這些**Query Functions**們～
+
+## 目錄
+
+- [Testing Playground 使用介紹](#testing-playground-link)
+- [Query Functions 介紹](#query-functions)
+- [Other RTL Method](#other-rtl-method-link)
+
+<Callout type="info">
+  <strong>以下會先介紹 Testing Playground 再介紹 Query Functions 們</strong>
+</Callout>
+
+<Callout type="warning">
+  <strong>不需要將這些 Query Functions 全部記起來，可以妥善利用 Testing Playground 工具</strong>
+</Callout>
+
+## Testing Playground ([Link](https://testing-playground.com/))
+
+使用 Testing Playground 的方法有幾個:
+
+### 方法 1
+
+直接到 Testing Playground 的網站使用
+
+### 方法 2
+
+在測試的區塊裡面加上`screen.logTestingPlaygroundURL()`可以在跑測試的時候產生一串網址，點擊網址就可以導到有你 render 出來的 element 的 playground 去了~
+
+> _Example_
+
+```jsx
+it('should render component correctly', () => {
+  render(<Component />);
+
+  screen.logTestingPlaygroundURL();
+
+  // ...other logic
+
+  // ...expect
+});
+```
+
+接者`npm run test {檔名}`來跑測試，然後就會出現如下圖的一串網址
+
+![](https://i.imgur.com/jF7r51T.png)
+
+點擊網址就會直接導向 Testing Playground 了~
+
+## Query Functions
+
+所有的 query functions 都是透過`screen` object 來使用的，這些 query functions 永遠都是從以下幾個名字開頭的: `getBy`、`getAllBy`、`queryBy`、`queryAllBy`、`findBy`、`findAllBy`，並根據使用情境來加上結尾，所以我們可以得到一個公式:
+
+<div style="text-align: center; font-weight: bold; padding: 10px 0">
+  <span style="font-style: italic">Query Functions</span> = 開頭 + 結尾
+</div>
+
+因此，以下將分成兩個部分，分別介紹 <strong style="color:#DAA001">開頭</strong> 和 <strong style="color:#DAA001">結尾</strong>
+
+### 開頭
+
+| Start of Function Name | Examples                             |
+| ---------------------- | ------------------------------------ |
+| `getBy...`             | getByRole, getByText                 |
+| `getAllBy...`          | getAllByText, getAllByDisplayValue   |
+| `queryBy...`           | queryByDisplayValue, queryByTitle    |
+| `queryAllBy...`        | queryAllByTitle, queryAllByText      |
+| `findBy...`            | findByRole, findByText               |
+| `findAllBy...`         | findAllByText, findAllByDisplayValue |
+
+> Compare
+
+| Name            | 0 matches | 1 matches | >1 matches | Await? | Notes                   |
+| --------------- | --------- | --------- | ---------- | ------ | ----------------------- |
+| `getBy...`      | Throw     | Element   | Throw      | NO     |                         |
+| `getAllBy...`   | Throw     | Element[] | Element[]  | NO     |                         |
+| `queryBy...`    | null      | Element   | Throw      | NO     |                         |
+| `queryAllBy...` | []        | Element[] | Element[]  | NO     |                         |
+| `findBy...`     | Throw     | Element   | Throw      | YES    | 預設 1 秒內尋找 element |
+| `findAllBy...`  | Throw     | Element[] | Element[]  | YES    | 預設 1 秒內尋找 element |
+
+<Callout type="warning">
+  <code>findBy</code>, <code>findAllBy</code> 是在 1 秒內不斷 retry 尋找 element，1 秒後{' '}
+  <code>findBy</code>, <code>findAllBy</code> 沒有找到 element 或 <code>findBy</code> 找到多個
+  elements 時就會 reject 掉
+</Callout>
+
+<Callout type="tip">
+  <code>findBy</code> 是 <code>getBy*</code> 與{' '}
+  <a href="https://testing-library.com/docs/dom-testing-library/api-async/#waitfor">waitFor</a>{' '}
+  的結合，他接收 <code>waitFor</code> options 來做為最後一個參數 (i.e.{' '}
+  <code>await screen.findByText('text', queryOptions, waitForOptions)</code> )
+</Callout>
+
+> Use Scenario
+
+| Goal of test                                      | Use                 |
+| ------------------------------------------------- | ------------------- |
+| 證明 element 存在                                 | getBy, getAllBy     |
+| 證明 element<span style="color:red">不</span>存在 | queryBy, queryAllBy |
+| 確保 element 最終存在                             | findBy, findAllBy   |
+
+### 結尾
+
+{/* prettier-ignore */}
+ 將下面的結尾搭配上面提到的開頭(<code>getBy</code>、<code>getAllBy</code>、<code>queryBy</code>、<code>queryAllBy</code>、<code>findBy</code>、<code>findAllBy</code>)，就可以組成一個完整的 QueryFunction，詳細的使用方式可以點開下放結尾裡面的 example 來參考～～
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      ...ByRole (<a href="https://testing-library.com/docs/queries/byrole">Link</a>) ->{' '}
+      <span style="color: #038759">Recommended</span>
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過 <a href="#">Aria Role</a> 來找到elements
+    <Callout type="info">
+      不建議自行新增aria role，可以使用implicit role搭配options (<code>name</code>,{' '}
+      <code>description</code>) 來找到想找的element
+    </Callout>
+    <br />
+    <blockquote>
+      <p>
+        <strong>How to Use</strong>
+      </p>
+    </blockquote>
+    ``` getByRole('{aria-role}', options) ```
+    其中的options有以下這些值可以選填:
+
+    ```typescript
+    options?: {
+      hidden?: boolean = false,
+      name?: TextMatch,
+      description?: TextMatch,
+      selected?: boolean,
+      busy?: boolean,
+      checked?: boolean,
+      pressed?: boolean,
+      suggest?: boolean,
+      current?: boolean | string,
+      expanded?: boolean,
+      queryFallbacks?: boolean,
+      level?: number,
+      value?: {
+        min?: number,
+        max?: number,
+        now?: number,
+        text?: TextMatch,
+      }
+    }
+    ```
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">UserList.js</span>
+        ```jsx
+          function ButtonComponent() {
+            return (
+              <div>
+                <button>Submit</button>
+                <button>Cancel</button>
+              </div>
+            )
+          }
+        ```
+        <span style="font-style: italic">UserList.test.js</span>
+        ```jsx
+        it('should render two buttons', () => {
+          render(<ButtonComponent />);
+
+          const submitBtn = screen.getByRole('button', { name: /submit/i });
+          const cancelBtn = screen.getByRole('button', { name: /cancel/i });
+
+          expect(submitBtn).toBeInTheDocument();
+          expect(cancelBtn).toBeInTheDocument();
+        })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      ...ByText (<a href="https://testing-library.com/docs/queries/bytext">Link</a>)
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過包含的text來找到elements
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <h3>My Data Form</h3>
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  value="jane@gmail.com"
+                />
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByText('My Data Form');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      ...ByLabelText (<a href="https://testing-library.com/docs/queries/bylabeltext">Link</a>)
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過搭配的<strong>labels</strong>包含的text來找到elements
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  value="jane@gmail.com"
+                />
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByLabelText('Email');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      …ByPlaceholderText (<a href="https://testing-library.com/docs/queries/byplaceholdertext">Link</a>)
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過<strong>placeholder</strong> text來找到elements
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  value="jane@gmail.com"
+                  placeholder="input email"
+                />
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByPlaceholderText('input email');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      …ByDisplayValue (<a href="https://testing-library.com/docs/queries/bydisplayvalue">Link</a>)
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過當下的value來找到elements
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  value="jane@gmail.com"
+                />
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByDisplayValue('jane@gmail.com');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      …ByAltText (<a href="https://testing-library.com/docs/queries/byalttext">Link</a>)
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過 <code>alt</code> attribute來找到elements
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <div data-testid="img-wrapper">
+                  <img src="myImg.jpg" alt="myImgAlt" />
+                </div>
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByAltText('myImgAlt');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      …ByTitle (<a href="https://testing-library.com/docs/queries/bytitle">Link</a>)
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過 <code>title</code> attribute來找到elements
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <button title="Click Me">
+                  Submit
+                </button>
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByTitle('Click Me');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">
+      ...ByTestId (<a href="https://testing-library.com/docs/queries/bytestid">Link</a>) ->{' '}
+      <span style="color: #DF360C">NOT Recommended</span>
+    </h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過 <code>data-testid</code> attribute來找到elements
+    <br />
+    <blockquote>
+      <p>
+        <strong>How to Use</strong>
+      </p>
+    </blockquote>
+    ``` getByTestId('{data-testid}') ```
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">DataForm.js</span>
+        ```jsx
+          function DataForm() {
+            return (
+              <form>
+                <div data-testid="img-wrapper">
+                  <img src="myImg.jpg" alt="myImgAlt" />
+                </div>
+              </form>
+            )
+          }
+        ```
+        <span style="font-style: italic">DataForm.test.js</span>
+        ```jsx
+          it('should render element', () => {
+            render(<DataForm />);
+
+            const element = screen.getByTestId('img-wrapper');
+
+            expect(element).toBeInTheDocument();
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<Callout type="info">
+  以上皆以 <code>getBy</code> 來做範例
+</Callout>
+
+<Callout type="warning">
+  建議使用 <code>ByRole</code> 來做query function，除非 <code>ByRole</code>{' '}
+  比較難以做到才使用其他functions ( <code>ByTestId</code> 最不建議使用)
+</Callout>
+
+## Other RTL Method ([Link](https://testing-library.com/docs/react-testing-library/api/#render-result))
+
+<details>
+  <summary>
+    <h3 style="margin: 0">container</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    透過container可以取得你rendered的React Element的<strong>DOM node</strong>，因此可以透過呼叫
+    <code>container.querySelector</code> 來查看他的children
+
+    <Callout type="info">
+      React Testing Library將會創建一個<code>div</code>，並將該<code>div</code>加到<code>document</code>中
+    </Callout>
+
+    <Callout type="tip">
+      透過<code>container.firstChild</code>來取得rendered element的<code>root element</code>
+    </Callout>
+
+    <Callout type="error">
+      避免使用<code>container</code>來query elements
+    </Callout>
+
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+      <div style="padding-left: 14px">
+
+        <span style="font-style: italic">UserList.js</span>
+        ```jsx
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {renderedUsers}
+            </tbody>
+          </table>
+        ```
+        <span style="font-style: italic">UserList.test.js</span>
+        ```jsx
+          it('should render row', () => {
+            const users = [
+              { name: 'jane', email: 'jane@gmail.com'},
+              { name: 'sam', email: 'sam@gmail.com' }
+            ];
+
+            const { container } = render(<UserList users={users} />);
+
+            const rows = container.querySelectorAll('thead th')
+
+            expect(rows).toHaveLength(2);
+          })
+        ```
+      </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">baseElement</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    你的React Element渲染到的<strong>DOM Node</strong>所在的container，如果沒有在render的選項中指定baseElement，那默認的值將會是<code>document.body</code>
+
+    當你想要測試的組件在 container div 之外渲染內容時就會很好用，例如：當你想要快<code>snapshot</code>試你的 portal 組件時，該組件直接在 body 中渲染它的 HTML
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">debug</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    這是<code>console.log(prettyDOM(baseElement))</code>的簡寫
+
+    <Callout type="note">
+      建議使用 <code>screen.debug</code>
+    </Callout>
+
+    ```jsx
+      import React from 'react'
+      import {render} from '@testing-library/react'
+
+      const HelloWorld = () => <h1>Hello World</h1>
+      const {debug} = render(<HelloWorld />)
+      debug()
+      // 以下是log出來的內容
+      // <div>
+      //   <h1>Hello World</h1>
+      // </div>
+    ```
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">rerender</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    如果你測試的component正在更新prop，可以使用<code>rerender</code>來確保component正確更新props
+
+    ```jsx
+      import {render} from '@testing-library/react'
+
+      const {rerender} = render(<NumberDisplay number={1} />)
+
+      // re-render the same component with different props
+      rerender(<NumberDisplay number={2} />)
+    ```
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">unmount</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    可以讓rendered的component被unmount，當你測試的component被從畫面上移除時很有用
+
+    ```jsx
+      import {render} from '@testing-library/react'
+
+      const {container, unmount} = render(<Login />)
+      unmount()
+      // your component has been unmounted and now: container.innerHTML === ''
+    ```
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">asFragment</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    從rendered的component回傳一個 <code>DocumentFragment</code>
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">cleanup</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    他會unmount那些透過 <code>render</code> mounted的React trees
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">act</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    為斷言準備一個component，包裹要渲染的code在裡面，並在調用 <code>act()</code>
+    時更新，這會使得測試更接近React在瀏覽器中的工作方式
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+          <div style="padding-left: 14px">
+
+            <span style="font-style: italic">hook</span>
+            ```jsx
+              import { useState, useCallback } from 'react'
+
+              export default function useCounter() {
+                const [count, setCount] = useState(0)
+                const increment = useCallback(() => setCount((x) => x + 1), [])
+                return { count, increment }
+              }
+            ```
+            <span style="font-style: italic">hook.test.js</span>
+            ```jsx
+              test('should increment counter', () => {
+                const { result } = renderHook(() => useCounter())
+
+                act(() => {
+                  result.current.increment()
+                })
+
+                expect(result.current.count).toBe(1)
+              })
+            ```
+        </div>
+    </details>
+
+  </div>
+</details>
+
+<details>
+  <summary>
+    <h3 style="margin: 0">renderHook</h3>
+  </summary>
+  <div style="padding-left: 14px">
+    渲染一個用於測試的component，这个component會調用包含的 hook 的callback。
+    直接看範例吧！！
+    
+    <details>
+      <summary style="font-style: italic; font-weight: 600">Example</summary>
+          <div style="padding-left: 14px">
+
+            <span style="font-style: italic">hook</span>
+            ```jsx
+              import { useState, useCallback } from 'react'
+
+              export default function useCounter() {
+                const [count, setCount] = useState(0)
+                const increment = useCallback(() => setCount((x) => x + 1), [])
+                return { count, increment }
+              }
+            ```
+            <span style="font-style: italic">hook.test.js</span>
+            ```jsx
+              test('should use counter', () => {
+                const { result } = renderHook(() => useCounter())
+
+                expect(result.current.count).toBe(0)
+                expect(typeof result.current.increment).toBe('function')
+              })
+            ```
+        </div>
+
+    </details>
+
+  </div>
+</details>
+
+## Unit Test 系列其他文章
+
+<a href="./UnitTest">Unit Test (1)：介紹單元測試</a>
+<br />
+<a href="./UnitTest-Matchers">Unit Test (3)：常見的 Matchers (Assertions) 整理</a>
