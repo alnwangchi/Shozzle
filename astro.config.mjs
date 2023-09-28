@@ -23,7 +23,7 @@ export default defineConfig({
     mdx(),
     sitemap({
       serialize(item) {
-        item.url = item.url.toLowerCase();
+        item.url = item.url.toLowerCase(); // 專案中頁面資料夾命名已統一小寫 這邊為將產生的提交網址確保小寫
         item.lastmod = new Date();
         return item;
       }

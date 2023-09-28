@@ -1,0 +1,100 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Shozzle blog post introduction
+date: 2023-04-08
+author: Allen Wang
+image: { src: 'https://i.imgur.com/b6Zd8l4.png', alt: '範例' }
+description: Shozzle 首篇文章登場，大致上說明一下如何新增一篇文章的流程以及一些內容的說明
+draft: false
+category: Astro
+---
+
+## Description
+
+<p>{frontmatter.description}</p>
+
+## Po 文流程
+
+可以先看一下 README 的專案資料夾結構，目前文章皆會放在 `/src/pages/posts` 這
+
+1. 直接在此新增 .md 檔案即可開寫
+2. 參考此篇的 [關於文章的資訊](#關於文章的資訊) 這些是必要的文章資訊
+3. 從 main branch 切出去後發 pr，基本上 po 文的話就只是走個流程會直接 merged
+4. merged 後會自動部署應該很快就可以出現在線上版了
+
+## 關於文章的資訊
+
+在 .mdx 檔案上面的資訊會是一包 frontmatter 物件
+
+```markup
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Shozzle blog post introduction
+date: 2023-03-12
+author: Allen Wang
+image: { src: '/images/Allen_Avatar.png', alt: '範例' }
+description: 這是一篇範例說明文章
+draft: false
+category: Astro
+---
+```
+
+| info        | description                                       |
+| ----------- | ------------------------------------------------- |
+| layout      | 文章共用版型 (基本不動)                           |
+| title       | 文章標題                                          |
+| date        | 日期 (影響排序)                                   |
+| author      | 作者 (影響分類)                                   |
+| image       | 首圖 ( TBC: 預設 or 如何呈現 )                    |
+| description | 文章說明 (影響列表說明以及 SEO meta tag 跟 title) |
+| draft       | 草稿 (寫一半還沒要發的時候用)                     |
+| category    | 文章類型 (影響分類)                               |
+
+全站的 category 會依照所有文章的 category 填什麼就自動產生，稍微注意一下同義不同字的情況
+
+下方文章內容就正常以 markdown 語法撰寫即可
+
+## md vs. mdx
+
+mdx 檔案比起一般 md，他多了一些功能
+
+- 允許變數，並以 `{JSX expressions}` 語法撰寫
+
+```
+export const variable = 'My MDX variable';
+
+## {variable}
+```
+
+- 直接使用 Frontmatter 資訊
+
+```
+{frontmatter.description}
+```
+
+- Render components 如果要介紹元件的時候可以直接將元件 render 出來，比起看過很多文章都是用截圖的這點應該會蠻酷的
+
+```
+import Button from '@components/Button.astro';
+import ReactCounter from '@components/ReactCounter.jsx';
+
+Click <Button title="Contact me" />.
+
+Here is my counter component, working in MDX:
+
+<ReactCounter client:load />
+```
+
+## import markdown file
+
+專案中取得得文章的方式
+
+```javascript
+// Import a single file
+import * as myPost from '../pages/post/my-post.mdx';
+
+// Import multiple files with Astro.glob
+const posts = await Astro.glob('../pages/post/**/*.mdx');
+```
+
+藉此方式取得後再用上述的 [關於文章的資訊](#關於文章的資訊) 然後再配合我寫了個 util function `organizeAllPosts` 來決定我最終會拿到什麼文章
