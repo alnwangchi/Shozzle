@@ -1,0 +1,180 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: React children as props
+date: 2023-10-22
+author: Josh Chou
+image: { src: 'https://i.imgur.com/pvJcxdF.jpeg', alt: '範例' }
+description: 'ADVANCED REACT 了解 children props pattern與hooks'
+draft: false
+category: react
+---
+
+import PostImage from '@components/postComponents/PostImage.astro';
+
+## Description
+
+**ADVANCED REACT** 從 react children as props pattern 到 react hooks
+
+## 前言
+
+上集內容跟這一集沒有任何關係，但有興趣還是可以看一下[初探 React render 的機制](./advanced-react-1-render)
+
+此篇是 **"ADVANCED REACT"** 這本書中講解 children as props 的一段，這個 pattern 在 React hooks 出現後已經不常用了，但是有些特定情境會用到，同時也會增加你對 React pattern 的更深一層認識。
+
+## children as props? 聽起來有點厲害
+
+先拆解名詞：
+
+1. children：指的是在 component tag 中間的內容，
+
+```javascript
+<Parent>
+  <Child />
+</Parent>
+```
+
+```javascript
+<Parent children={<Child />} />
+```
+
+```javascript
+<Parent children={() => <Child />} />
+```
+
+以上三段程式碼結果是一樣的。
+
+2. props: 指的是 component 的屬性，可以是 javascript 的任何資料型態。你傳什麼進去都可以。
+
+那麼我們把兩段結合起來， children as props 就是把 children 當作 props 傳進去，好處是可以**在父層 component 中控制 children 的內容。**
+
+## children as props 的使用情境
+
+借用書裡的例子，我們要實作一個監聽 resize 事件並且回傳當前 innerWidth 的 component。
+第一個比較亂但直覺的寫法是，
+
+1. 在父層建立 state，
+2. 把 setState 的方法傳給子層，
+3. 子層在 resize 時呼叫 setState，這樣就可以在父層控制子層的 render。
+
+```javascript
+const ResizeDetector = ({ onWidthChange }) => {
+  const [width, setWidth] = useState();
+  useEffect(() => {
+    const listener = () => {
+      const width = window.innerWidth;
+      setWidth(width);
+      // trigger onWidthChange prop here
+      onWidthChange(width);
+    }
+    window.addEventListener("resize", listener);
+    // the rest of the code
+  }, [])
+  return ...
+}
+```
+
+```javascript
+const Layout = () => {
+  const [windowWidth, setWindowWidth] = useState(0);
+  return (
+    <>
+      <ResizeDetector onWindowWidth={setWindowWidth} />
+      {windowWidth > 600 ? <WideLayout /> : <NarrowLayout />}
+    </>
+  );
+};
+```
+
+這樣寫完全可以運作，但在每個父層要用的時候都要在父層管理一個 state，這樣違反了不要重複這個原則。
+我們想一下，有什麼部分可以省略的？一定要在父層管理 state 嗎？
+
+書裡面的另一種解法：
+
+```javascript
+const ResizeDetector = ({ children }) => {
+  const [width, setWidth] = useState();
+  // same code as before
+  // pass width to children
+  return children(width);
+};
+```
+
+```javascript
+const Layout = () => {
+  return (
+    <ResizeDetector>
+      {(windowWidth) => {
+        // no more state! Get it directly from the resizer
+        return windowWidth > 600 ? <WideLayout /> : <NarrowLayout />;
+      }}
+    </ResizeDetector>
+  );
+};
+```
+
+我們成功的用 render props 的方式，把原本在父層的 state，變成 render children 的 function props，
+要使用的 component 不再需要額外管理 state。
+
+## Hooks 出現
+
+用 hooks 改寫：
+
+```javascript
+const useResizeDetector = () => {
+  const [width, setWidth] = useState();
+  useEffect(() => {
+    const listener = () => {
+    Page 65
+    const width = ... // get window width here
+    setWidth(width);
+    }
+    window.addEventListener("resize", listener);
+    // the rest of the code
+  }, [])
+  return width;
+}
+```
+
+這個 state 的現在不在父層或子層了，要用他的地方直接 call hooks 拿 state。
+
+1. Hooks 的精神是 declarative，使用時不必關心實現方式。
+2. Render props 的 pattern 在會產生 nested 的 jsx 程式碼，相較於 hooks 的可讀性比較差。
+
+```javascript
+const Layout = () => {
+  const windowWidth = useResizeDetector();
+  return windowWidth > 600 ? <WideLayout /> : <NarrowLayout />;
+};
+```
+
+##
+
+剛剛講這麼多，其實 hooks 出來後幾乎都轉投 hooks 懷抱。但是作者有提到：
+
+1. Legacy 的 React，也就是在 hooks 出來前的React@16.8.0，這種 render props 隨處可見。
+2. 在某些情境下，例如有些 listener 是掛在 DOM 上的 element，這個時候還要用 ref 然後 props 傳下去，然後判斷的時候 ref.current()，這時候 hooks 比傳統的 render children props 麻煩許多。
+
+```javascript
+const ScrollDetector = ({ children }) => {
+  const [scroll, setScroll] = useState();
+  return <div onScroll={(e) => setScroll(e.currentTarget.scrollTop)}>{children}</div>;
+};
+```
+
+```javascript
+const Layout = () => {
+  return (
+    <ScrollDetector>
+      {(scroll) => {
+        return <>{scroll > 30 ? <SomeBlock /> : null}</>;
+      }}
+    </ScrollDetector>
+  );
+};
+```
+
+下一篇文章會講解 React.memo (跟你們一樣，我從來沒用過)。
+
+## Reference
+
+    - [ADVANCED REACT](https://advanced-react.com/)
