@@ -64,19 +64,22 @@ const MainScrollableArea = () => {
 
 等等，這時候應該會問問題：「為什麼 position 更新了但是`{content}`不會被觸發更新？他們不是放在同個 component 裡嗎？」作者這時候會說你問的問題很棒，但事實並不是你想的那樣。們先來定義什麼是 components、什麼是 re-render?
 
-什麼是 component? 其實就是一個 function。每個 component 都會 return 一個 React element，React element 是一個物件，裡面包含了這個 component 的資訊，例如：type, props, children 等等，React element 會被 React runtime 解析成 DOM node，然後 render 到瀏覽器上。 React.createElement 負責將 jsx 語法糖轉換成 React 看得懂的 object，因為有點離題，我把 createElement 的解釋搬到文章最後。
+什麼是 component? 其實就是一個 function。
 
-重點來了，React 怎麼決定要不要 re-render？還記得剛剛被 createElement 轉成的物件嗎？React 會用 `Object.is(ElementBefore,ElementAfter)` 去比較差異，如果 return `true` 那麼就不會去 deep comparison 兩者的差異;如果 return `false` 那麼 React 就會去先去找物件的 type，如果 type 相同，React 就會依據 props 去 re-render component，如果 type 不同，React 就會把舊的 component 從 DOM tree 中移除，然後把新的 component render 到 DOM tree 中。
+1. 每個 component 都會 return 一個 React element，
+2. React element 是一個物件，裡面包含了這個 component 的資訊，例如：`type`, `props`, `children` 等等，
+3. React runtime 解析 React element 成 DOM node，然後 render 到瀏覽器上。 `React.createElement` 負責將 `jsx` 語法糖轉換成 React 看得懂的 object，因為有點離題，我把 `createElement` 的解釋搬到文章最後。
+
+重點來了，React 怎麼決定要不要 re-render？
+
+1. React 會用 `Object.is(ElementBefore,ElementAfter)` 去比較剛剛被 `createElement` 轉成的物件差異，如果 return `true` 那麼就不會去 **deep comparison** 兩者的差異;如果 return `false` 那麼 React 就會去先去找物件的 `type，`
+2. 如果 物件的 `type` **相同**，React 就會依據 props 去 re-render component，如果 type **不同**，React 就會把舊的 component 從 DOM tree 中移除，然後把新的 component render 到 DOM tree 中。
 
 到這邊就解釋完為什麼 state 更新了但是 component 卻沒有 re-render，恭喜你的 PR 被主管 approve 了！
 
 ### React.createElement 解釋
 
 這邊借用官網的範例，他說明了如果不想用 jsx 的話，可以自行用 React.createElement 操作，上述提到的 jsx 轉成 React element 的過程就是透過 React.createElement 來完成的。
-
-````javascript
-
-```javascript
 
 ```javascript
 import { createElement } from 'react';
@@ -90,7 +93,7 @@ function Greeting({ name }) {
     '. Welcome!'
   );
 }
-````
+```
 
 其實相等於
 
@@ -104,11 +107,9 @@ function Greeting({ name }) {
 }
 ```
 
-## 下集內容
+[下一篇文章](./advanced-react-2-props)會介紹一個 React pattern： Children as props，時至今日這個 pattern 大部分已經被 React hooks 取代，但是有些特定情境會用到，同時也會增加你對 React pattern 的更深一層認識。
 
-下一篇文章會介紹一個 React pattern： Children as props，時至今日這個 pattern 大部分已經被 React hooks 取代，但是有些特定情境會用到，同時也會增加你對 React pattern 的更深一層認識。
-
-## Reference:
+## Reference
 
     - [React dev createElement](https://react.dev/reference/react/createElement)
     - [ADVANCED REACT](https://advanced-react.com/)
