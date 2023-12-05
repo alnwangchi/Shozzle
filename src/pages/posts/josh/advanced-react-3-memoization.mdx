@@ -1,0 +1,199 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: React children as props
+date: 2023-12-06
+author: Josh Chou
+image: { src: 'https://i.imgur.com/pvJcxdF.jpeg', alt: '範例' }
+description: 'ADVANCED REACT 深入瞭解 React.memo'
+draft: false
+category: react
+---
+
+import PostImage from '@components/postComponents/PostImage.astro';
+
+## Description
+
+**ADVANCED REACT** 使用 React.memo 讓 component 不要重複 render
+
+## 前言
+
+上集內容與這集各自獨立，但有興趣還是可以看一下[ADVANCED REACT 了解 children props pattern 與 hooks](./advanced-react-2-props.mdx)
+
+此篇是 **"ADVANCED REACT"** 終於不再是 useState 和 useEffec，從一個你我都知道但都沒用過的 React.memo 開始，再進一步講解 useMemo 和 useCallback 的原理。
+本書依舊不會細講如何使用，但會講解常常會犯的錯誤，原本想要 optimize 程式碼的，結果跟預期的結果不同。
+
+## useCallback and useMemo 避免 re-render
+
+簡單說明 useCallback 和 useMemo，useCallback 是用來 cache 一個 function;useMemo 是用來 cache 一個 value。讓整個 component 在更新的時候，被包起來的不要觸發 re-render。
+以下是書中的示意程式碼，第一段是常規寫法，不做任何 cache 處理，每次執行都是一個 new function
+
+```javascript
+const func = (callback) => {
+  // do something with this callback
+};
+
+// first call
+func(() => {});
+
+// second call
+func(() => {});
+```
+
+可以將 useCallback 理解為：**在 dependencies 相同時，return 一個完全相同的 reference**，簡單示意程式碼如下
+
+```javascript
+let cachedCallback;
+
+const func = (callback) => {
+  if (dependeniesEqual()) {
+    return cachedCallback;
+  }
+
+  cachedCallback = callback;
+
+  return callback;
+};
+```
+
+其實 useMemo 的原理也是一樣，只是從 function 改成 value 而已。其實就是以下原理，a 跟 b 指到記憶體中的相同位址：
+
+```javascript
+const a = { id: 1 };
+const b = a;
+
+a === b; // true
+```
+
+## useCallback
+
+對 React 來說，每次更新都是觸發一次 createElement，換句話說：**「只要沒有 memoize 起來，component 內的每行程式碼都會被更新」**
+
+```javascript
+const Component = () => {
+  const submit = () => {};
+
+  useEffect(()=>{
+    submit();
+  }, [submit]);
+
+  return ...
+}
+```
+
+如果將 submit 用 useCallback 包起來，可以讓他只在第一次 render 的時候被更新。
+
+```javascript
+const Component = () => {
+  const submit = useCallback(() => {}, []);
+
+  useEffect(()=>{
+    submit();
+  }, [submit]);
+
+  return ...
+}
+```
+
+成功讓`submit`只在`Component`組件 create 時只在第一次更新了。但聰明如你有想到，如果`Component`的父組件更新了，每次對`submit`來說都是第一次。
+React.memo 登場了！
+
+## What's React.memo
+
+剛剛講到就算你把`Component`全家包起來，`Component`的父層更新還是會觸發`Component`重新 create。
+但如果`Component`被 React.memo 包起來，就算父層更新，只要`Component`的 props 沒有變，就不會觸發`Component`重新 create。
+React 官網的說明是：`memo(Component, arePropsEqual?)`，如果不帶第二個參數，則 React 會用`Object.is`去比較每次的 props。`arePropsEqual`是一個 function`arePropsEqual(oldProps, newProps)`，如果`return true`，則不會觸發 re-render。
+
+```javascript
+const Component = ({ data, onChange }) => {
+  const submit = useCallback(() => {}, []);
+
+  useEffect(()=>{
+    submit();
+  }, [submit]);
+
+  return ...
+}
+
+const MemoComponent = React.memo(Component)
+
+const ParentComponent = () => {
+  const [data, setData] = useState();
+  const onChange = () => {...}
+
+  // Lots of complicated logic here
+
+  // MemoComponent will be preserved during every re-render, because the props of MemoComponent is same.
+  return <MemoComponent />
+}
+```
+
+### Memoize component props
+
+一般情況下，cache 自己的 props 是沒有意義的，因為父層 component 更新 props，子層 compoent 也會被更新。
+但既然 `React.memo`是把 component render 與否的決定權交給父層 component，那麼是不是可以 memoize 自己的 props 了呢？
+書中提到三種情況 cache 自己的 props 才有意義：
+
+1. component 被`React.memo`包起來。
+2. 在 component 中有 hooks 的 dependency 使用到 props。
+3. props 又往下傳到其它 component。
+
+### Avoid in React.memo
+
+1. 避免使用 spread props 的方式，因為單看程式碼，難以得知從其他 component 傳進來的`{...props}`是否有任何變化。
+2. 避免使用從其他 component 傳來的 `non-primitive props`，React 在比較`non-primitive`時用的是`by reference`，並不是`by value`。
+
+3. 避免使用從 custom hooks 傳進來的`non-primitive values`，理由是 custom hooks 將複雜邏輯抽象出來，但是在使用的時候，很難得知 custom hooks 裡面的`non-primitive values`是否有變化，如下程式碼：
+
+```javascript
+const useForm = () => {
+  // lots and lots of code to control the form state
+  const submit = () => {
+    // do something on submit, like data validation
+  };
+  return {
+    submit
+  };
+};
+```
+
+任何使用`useForm`的 component 都會被 re-render，因為`useForm`裡面的`submit`每次都是一個新的 function。
+
+另外再舉一個很容易犯錯的例子：
+
+```javascript
+const ChildMemo = React.memo(Child);
+const ParentMemo = React.memo(Parent);
+const Component = () => {
+  return (
+    <ParentMemo>
+      <ChildMemo />
+    </ParentMemo>
+  );
+};
+```
+
+`ParentMemo` 表現的跟沒被 `React.memo` 包起來一樣，因為 `ParentMemo` 的 props 是 children（`<ParentMemo children={<ChildMemo />}>`），而 children 是一個 function，每次都是一個新的 function，所以 `ParentMemo` 每次都會被 re-render。
+要達成目的，可以這樣寫：
+
+```javascript
+const Component = () => {
+  const child = useMemo(() => <Child />, []);
+
+  return <ParentMemo>{child}</ParentMemo>;
+};
+```
+
+是不是每次包起來，稍不注意，跑起來都跟你想的不一樣？這就是作者說的**「合理使用」**。
+
+## Attention
+
+我們現在已經會依照情況使用 useCallback, useMemo 和 React.memo 了，但請注意以下兩點：
+
+1. **每次 dependencies 的比較其實對 React 來說，都是一筆複雜的開銷**:
+   他必須比較 prev 和 next 的 dependencies，所以如果你的 dependencies 是一個很複雜的 object，那麼每次都要比較他們的值，這樣反而會讓程式變慢。
+2. **React.memo 其實很容易做白工**:
+   喜孜孜的把 component 包起來，但是當發生上述的問題，這樣就白包了。這也是本書建議將`React.memo`當作調校效能的最後手段，因為實際上把所有 props cache 起來是比想像中還困難的事情。
+
+## Reference
+
+    - [ADVANCED REACT](https://advanced-react.com/)
