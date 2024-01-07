@@ -1,0 +1,194 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Docker： CMD 和 ENTRYPOINT 的差異
+date: 2024-01-07
+author: Jamie Chien
+image: { src: 'https://i.imgur.com/uwZNU1j.png', alt: 'docker' }
+description: 在撰寫Dockerfile的時候，常常會看到CMD和ENTRYPOINT，但你了解他們的差異嗎?
+draft: false
+category: Docker
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+在學習 Docker 的時候，看到 `CMD` 和 `ENTRYPOINT` 這兩個指令，這兩個用途很雷同，但一直搞不懂之間的差異，所以稍微研究了一下，並在這邊將我的理解記錄下來，如有錯誤，還請大家可以在底下留言指教~
+
+## Shell vs. Exec Form
+
+`RUN`, `ENTRYPOINT` 和 `CMD` 這三個指令都有兩個不同的形式，這些形式會影響每個指令的行為
+
+### Shell form
+
+指令是**不帶** `[]` 的，且由 container 的 shell (e.g. `/bin/sh -c`) 執行
+
+```docker
+FROM node:18-alpine
+
+# /bin/sh -c 'echo $HOME'
+RUN echo $HOME
+
+# /bin/sh -c 'echo $PATH'
+CMD echo $PATH
+```
+
+### Exec form
+
+指令是以 `[]` 包裹的形式撰寫，並直接執行，而非透過 shell
+
+```docker
+FROM node:18-alpine
+
+RUN ["npm", "install"]
+
+CMD ["npm", "start"]
+```
+
+### 建議
+
+以下為推薦使用在各個指令的形式
+
+- `RUN` : Shell Form (因為 [shell feature](https://emmer.dev/blog/docker-shell-vs.-exec-form/#shell-features))
+- `ENTRYPOINT` : Exec Form (因為 [signal trapping](https://emmer.dev/blog/docker-shell-vs.-exec-form/#signal-trapping-forwarding))
+- `CMD` : Exec Form (因為 [signal trapping](https://emmer.dev/blog/docker-shell-vs.-exec-form/#signal-trapping-forwarding))
+
+<Callout type="info">
+  建議使用 Exec form，因為他可以避免潛在的 Shell 注入問題，並更直接的命令和給參數，而無須透過
+  Shell，下面有[詳細的建議說明](#為什麼建議使用-exec-form-補充)
+</Callout>
+
+<Callout type="tip">
+  若命令需要使用 [Shell
+  的功能](https://emmer.dev/blog/docker-shell-vs.-exec-form/#shell-features)，建議寫成 shell
+  script，並透過 Exec form 的形式來執行
+</Callout>
+
+## CMD
+
+`CMD` 是用來設定一個命令 (command)，並在啟動 container (_from Image_) 的時候執行此命令
+
+> `CMD` 存在的目的是為了提供執行中的 container 一個預設值，此預設值可以是一個可執行檔(executable)，或者也可以省略可執行檔，只留下參數，但在後者的情況下，必須同時指定 `ENTRYPOINT` 指令
+
+### Example
+
+```docker
+# Exec form
+CMD ["executable", "param1", "param2"]
+
+# Exec form (作為 ENTRYPOINT 的預設參數)
+CMD ["param1", "param2"]
+
+# Shell form
+CMD command param1 param2
+```
+
+### 特性
+
+1. 必須包含至少一個 `CMD` 或 `ENTRYPOINT`
+2. 若 Dockerfile 中包含多於一個 `CMD` 時，只有最後一個 `CMD` 會有作用
+3. 若在 `docker run` 的指令後面定義參數，那將會覆蓋掉 Dockerfile 中定義的 `CMD` (但依舊會使用在 Dockerfile 中定義的預設 `ENTRYPOINT`)
+
+<Callout type="warning">
+  請不要搞混 `RUN` 和 `CMD`， `RUN` 實際上會執行一個 command 並且對結果做 commit; 但 `CMD` 在 build
+  階段**不會執行**任何指令，但會定義預期的 command 給 Image
+</Callout>
+
+## ENTRYPOINT
+
+`ENTRYPOINT` 允許你設置一個 container，並將此 container 作為一個可執行檔(executable)來運行
+
+### Example
+
+```docker
+# Exec form (preferred)
+ENTRYPOINT ["executable", "param1", "param2"]
+
+# Shell form
+ENTRYPOINT command param1 param2
+```
+
+### 特性
+
+1. 必須包含至少一個 `CMD` 或 `ENTRYPOINT`
+2. 若 Dockerfile 中包含多於一個 `ENTRYPOINT` 時，只有最後一個 `ENTRYPOINT` 會有作用
+3. 若在`docker run` 的指令後面透過 `--entrypoint` 定義參數，將覆蓋掉 Dockerfile 中定義的 `ENTRYPOINT`
+4. 使用 Shell form 形式的 `ENTRYPOINT` 指令，會忽略任何 `CMD` 以及 command line 的參數設定，並且會使用 `/bin/sh -c` 作為 subcommand 來運行 `ENTRYPOINT`
+
+## CMD 與 ENTRYPOINT 的交互作用
+
+當 `CMD` 和 `ENTRYPOINT` 同時被定義的時候，`CMD` 的含意就改變了，不再是直接執行其指令，而是做為參數傳遞給 `ENTRYPOINT`，概念上就變成:
+
+```docker
+<ENTRYPOINT> "<CMD>"
+```
+
+至於在運行 container 時，哪個指令會被執行呢? 以下會描述一些他們合作的規則:
+
+1. Dockerfile 中至少需要包含一個 `CMD` 或 `ENTRYPOINT`
+2. 若要將 container 作為一個可執行檔(executable)時，就必須要定義 `ENTRYPOINT`
+3. `CMD` 應該被用來定義 `ENTRYPOINT` 的默認參數，或者用於 container 中執行 ad-hoc command
+4. 當在 `docker run` 後面加上參數時，`CMD` 將被覆蓋
+
+以下的表格展示不同的 `CMD`/`ENTRYPOINT` 組合，實際上會執行什麼樣的 command:
+
+|                                  | `No ENTRYPOINT`            | `ENTRYPOINT exec_entry p1_entry` | `ENTRYPOINT ["exec_entry", "p1_entry"]`        |
+| -------------------------------- | -------------------------- | -------------------------------- | ---------------------------------------------- |
+| **`No CMD`**                     | error, not allowed         | /bin/sh -c exec_entry p1_entry   | exec_entry p1_entry                            |
+| **`CMD ["exec_cmd", "p1_cmd"]`** | exec_cmd p1_cmd            | /bin/sh -c exec_entry p1_entry   | exec_entry p1_entry exec_cmd p1_cmd            |
+| **`CMD exec_cmd p1_cmd`**        | /bin/sh -c exec_cmd p1_cmd | /bin/sh -c exec_entry p1_entry   | exec_entry p1_entry /bin/sh -c exec_cmd p1_cmd |
+
+<Callout type="info">
+  上面說的落落長，但為什麼有了 `CMD` 後還需要 `ENTRYPOINT` 呢?
+  參考[這篇文章](https://yeasy.gitbook.io/docker_practice/image/dockerfile/entrypoint#chang-jing-yi-rang-jing-xiang-bian-cheng-xiang-ming-ling-yi-yang-shi-yong)提到的情境後就會清楚許多~
+</Callout>
+
+## 該使用 CMD 還是 ENTRYPOINT
+
+`CMD` 和 `ENTRYPOINT` 對於建構和執行 Dockerfile 來說都是不可或缺的，使用情境上完全取決於當下的情況，但一般來說:
+
+- 使用 `RUN` 來安裝依賴和模組，並建構 Image
+- `ENTRYPOINT` 適合使用在當 container 啟動時需要始終運行特定命令的情況
+- `CMD` 適合在沒有定義任何 arguments 給 `docker run` 時作為預設的執行指令
+- `CMD` 也適合作為預設參數來給 `ENTRYPOINT`，同時也可透過在 `docker run` 後面加上參數來替換 Dockerfile 中的 `CMD` 指令
+
+<Callout type="note">
+  不論 `CMD` 或 `ENTRYPOINT`，只要使用 Shell form，Docker 預設會使用 `/bin/sh -c` 來執行指令
+</Callout>
+
+## 為什麼建議使用 Exec form (補充)
+
+以下會用 Shell form 形式來舉一個反例:
+
+```docker
+# Shell form
+ENTRYPOINT npm run dev
+```
+
+當我在 Dockerfile 使用以上指令時，事實上相當於在 container 中運行:
+
+```shell
+/bin/sh -c npm run dev
+```
+
+因此，在這個例子中 `/bin/sh -c` 會是 main process，而 `npm run dev` 會被作為參數傳遞進去。因為 main process 是 `/bin/sh -c` 的原因，所以會導致某些信號處理(Signal Handling)和終止(Termination)的問題出現
+
+<Callout type="note">
+  在 Docker 中，container 裡面的 main process 通常被稱為 "init" process，且它通常以 PID 1 運行
+</Callout>
+
+### Signal Handling
+
+在 container 中的 PID 1 要負責處理信號(Signals)，例如: 在執行 `docker stop` 時會出現`SIGTERM` 這個終止信號。然而，**大多數的 shells 不會發送 signals 給 child process**，因此可能會導致出現非預期的行為。
+
+### 結論
+
+根據上面的例子，這時候 container 裡面的 PID 1 就會是 shell process (`/bin/sh -c`)，而 `npm run dev` 這個指令的執行會是他的 child process，因此，在操作一些信號處理的指令時，可能會發現沒有作用，這時候就可以快速的猜出可能的問題了~
+
+## Reference
+
+- [Docker 官方 Docs - CMD](https://docs.docker.com/engine/reference/builder/#cmd)
+- [Docker 官方 Docs - ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint)
+- [Docker Shell vs. Exec Form](https://emmer.dev/blog/docker-shell-vs.-exec-form)
+- [ENTRYPOINT 入口点](https://yeasy.gitbook.io/docker_practice/image/dockerfile/entrypoint)
