@@ -20,7 +20,11 @@ export default defineConfig({
     }),
     react(),
     tailwind(),
-    mdx(),
+    mdx({
+      shikiConfig: {
+        langs: ['shell', 'docker']
+      }
+    }),
     sitemap({
       serialize(item) {
         item.url = item.url.toLowerCase(); // 專案中頁面資料夾命名已統一小寫 這邊為將產生的提交網址確保小寫
