@@ -1,0 +1,742 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: 用React開發你的第一個Dapp
+date: 2024-05-19
+author: Josh Chou
+image: { src: 'https://i.imgur.com/MRtznEP.png', alt: '範例' }
+description: '撰寫並部署智能合約在本地，並在React的Dapp上操作'
+draft: false
+category: smart-contract
+---
+
+import PostImage from '@components/postComponents/PostImage.astro';
+
+## Description
+
+<p>{frontmatter.description}</p>
+
+網路上關於智能合約的實作很多都是 2020 年以前了，使用的套件很多跑起來不是`deprecated`就是`unsupported`，於是決定自己來寫一篇關於如何用 React 去寫一個 Web3 Dapp 可以查看自己的錢包餘額，並呼叫自己寫的 smart contract 功能的教學。
+
+網頁的功能如下
+
+1. 第一次載入時會要求取得`MetaMask`權限
+2. 有錢包地址的權限會顯示帳號地址和錢包餘額
+3. 透過 ABI 操作各個方法都會要求發起者同意，同意之後畫面上的錢包餘額會減少，並且會更新`counter`的值
+
+### 行前準備
+
+此專案使用 npm 作為套件管理工具
+
+1. 請於電腦中安裝 NodeJS，版本建議`>=`18.16
+2. 安裝 chrome 瀏覽器錢包 extension `MetaMask`，[下載網址](https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-TW&utm_source=ext_sidebar) ，用來查看測試網路上的錢包餘額
+3. 新增一個資料夾 Hello-web3
+
+```shell
+mkdir Hello-web3
+```
+
+3. 因為前端框架用 React，所以在開發上採前後端分離，在`Hello-web3`內分別新增前端`web`後端`contract`
+
+```shell
+cd Hello-web3
+mkdir web
+mkdir contract
+```
+
+4. 我們所有的操作都是在 local，用 npm global 安裝`ganache`，建立本地測試網路，**記得不是安裝`ganache-cli`，會遇到`Eip1559NotSupportedError`**
+
+```shell
+npm i -g ganache
+```
+
+### 開發流程
+
+在一般網頁開發中，後端會開發應用程式開出 API，前端開發畫面去串接。
+
+在 Dapp 開發中，可以把智能合約當作是後端應用程式，溝通介面叫做 ABI(Application Binary Interface)。
+
+所以流程如下：
+
+1. 開發智能合約
+2. 用`solc`編譯智能合約，把編譯結果寫成`json`檔，並部署編譯結果的 ABI 和 bytecode 到本地 Ethereum 區塊鏈上
+3. 開發前端 Dapp，使用`web3.js`套件向智能合約 ABI 發起`transaction`
+
+### 開發智能合約
+
+進入`contract`目錄
+
+```shell
+cd contract
+```
+
+用`solidity`語言開發一個簡單的智能合約`hello.sol`
+
+```solidity
+// hello.sol
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract Counter {
+    uint256 public count;
+
+    // Function to get the current count
+    function get() public view returns (uint256) {
+        return count;
+    }
+
+    // Function to set new count to current count
+    function set(uint256 _count) public {
+        count = _count;
+    }
+
+    // Function to increment count by 1
+    function inc() public {
+        count += 1;
+    }
+
+    // Function to decrement count by 1
+    function dec() public {
+        // This function will fail if count = 0
+        count -= 1;
+    }
+}
+```
+
+指定`solidity`版本
+
+```
+pragma solidity ^0.8.19;
+```
+
+contract 後面的是智能合約的 name
+
+```
+contract Counter {
+
+}
+```
+
+類似 JavsScript class 的 constructor，底下的 function 都可以直接 access，不用加 this
+
+```
+uint256 public count;
+```
+
+function 可以帶參數，型態可以是 expression(有 return)或是 statement(沒有 return)
+
+帶參數
+
+```
+function set(uint256 _count) public {}
+```
+
+expression
+
+```
+function get() public view returns (uint256) {
+    return count;
+}
+```
+
+statement
+
+```
+function inc() public {
+    count += 1;
+}
+```
+
+### 編譯和部署智能合約
+
+編譯的工具我們選擇使用`solc`這個套件，[npm 連結](https://www.npmjs.com/package/solc)，比較舊的文章教學是使用`truffle`，但已經被移除了。
+
+官網上有教學用 web worker 去使用，但我沒研究，有興趣的讀者可以自行研究。
+
+一樣在`contract`目錄
+
+```shell
+cd contract
+```
+
+用 npm 管理並安裝`solc`, `web3`, `fs`
+
+```shell
+npm init
+npm i solc web3 fs --save
+```
+
+啟動本地網路`ganache`
+
+```shell
+ganache
+```
+
+輸入之後會在終端機上看到以下訊息：
+
+```shell
+ganache v7.9.2 (@ganache/cli: 0.10.2, @ganache/core: 0.10.2)
+Starting RPC server
+
+Available Accounts
+==================
+(0) 0x184FaAa4C27F2Bc9D913c601A92305907d93B36C (1000 ETH)
+(1) 0xa158972a3d14A16e82FA0Ee334a0f2aD50DD719F (1000 ETH)
+(2) 0xe56108E5a07cF100D02accCfbC8F475e43172b65 (1000 ETH)
+(3) 0xD4C09b8E6e35Ca7670C1571A210b00e5A09D6BA3 (1000 ETH)
+(4) 0x511471E8A04b4775867DB2362876678EAF60e053 (1000 ETH)
+(5) 0x082f3bc0620117Dfa1996F46B694Cbc0C467b4ad (1000 ETH)
+(6) 0x9826BfF2714CB094A535c71911793869a70dAAd2 (1000 ETH)
+(7) 0x391A545790422F897a69e3D80267361aF0d74D63 (1000 ETH)
+(8) 0x6F5f380e80EcFcE2cf79b2A1534881a0eE717862 (1000 ETH)
+(9) 0x5060c8b2C6E661DaA0068C4739B6365fDdb262BB (1000 ETH)
+
+Private Keys
+==================
+(0) 0x4c265d064b62a39fc5a87d5124fffa37b2005c6189828b9edb9479960032ef16
+(1) 0x578c64c08222451f0f2776d501fe5efdcc1a43c8c406278dc6838f3a9c6f6f1e
+(2) 0x0605e1497628fce17a1224d2aaa310f07b36ca268efce1da2686f486b06c7d22
+(3) 0x75aa7fd9abb78452195e0dbac46f3bacf7107761a23d70a11cc80f77079385c8
+(4) 0x7f92ee9a617321e3901fb20b06d72043c876092c1fb6ffac16fc3287db62923c
+(5) 0x141f32d73d5d1f942a06915da94ed3f7baf5b834bcf6722d863bc4485877f5ce
+(6) 0x5776eef474ca98cb564a27d074290db08bf5515d02787b056ca71de85c958c80
+(7) 0xec0adb9874fb3476a699039a59be61283ede9ba550f55f630342cc174970f08e
+(8) 0x8c61c64f752b70964013acabd59e5b1692f30afeb2822be6e88958b900ac0bd8
+(9) 0x8331b6c06eb6e1c6a193f5bc9aed3fe3c71d49ce64122ca6a68ec49997e141bd
+
+HD Wallet
+==================
+Mnemonic:      caution side number glance mouse antique kingdom solve volcano guard cement urge
+Base HD Path:  m/44'/60'/0'/0/{account_index}
+
+Default Gas Price
+==================
+2000000000
+
+BlockGas Limit
+==================
+30000000
+
+Call Gas Limit
+==================
+50000000
+
+Chain
+==================
+Hardfork: shanghai
+Id:       1337
+
+RPC Listening on 127.0.0.1:8545
+```
+
+可以看到有 RPC server 在本地的 8545 port 上
+還提供 10 組測試用的錢包地址和私鑰，接下來會將其中一組私鑰丟到`MetaMask`上測試
+
+新增一支檔案`web3.js`
+
+```shell
+touch web3.js
+```
+
+連接本地 Etherum 網路取得，這裡的 8545 是剛剛`ganache`啟動的 server
+
+```javascript
+const web3 = new Web3(Web3.givenProvider || 'http://127.0.0.1:8545');
+```
+
+讀取寫好的`hello.sol`檔案
+
+```javascript
+const sourceCode = fs.readFileSync('./hello.sol', 'utf8');
+```
+
+input 的格式是`solc`套件要求的參數，sources 下的每個 key 都是檔名，content 的 value 放讀取的`hello.sol`檔案
+最後`JSON parse`compile 後的結果
+
+```javascript
+const input = {
+  language: 'Solidity',
+  sources: {
+    'hello.sol': {
+      content: sourceCode
+    }
+  },
+  settings: {
+    outputSelection: {
+      '*': {
+        '*': ['*']
+      }
+    }
+  }
+};
+
+const compiledCode = JSON.parse(solc.compile(JSON.stringify(input)));
+```
+
+輸出 JSON 檔案
+
+```javascript
+const outputFile = './compiledCode.json';
+fs.writeFileSync(outputFile, JSON.stringify(compiledCode, null, 2), 'utf8');
+```
+
+部署智能合約
+
+```javascript
+const result = compiledCode.contracts['hello.sol']['Counter'];
+
+web3.eth
+  .getAccounts()
+  .then((accounts) => {
+    console.log('====================================');
+    console.log(accounts);
+    console.log('====================================');
+    return new web3.eth.Contract(result.abi).deploy({ data: result.evm.bytecode.object }).send({
+      from: accounts[0],
+      gas: 1500000,
+      gasPrice: '30000000000000'
+    });
+  })
+  .then((contract) => {
+    console.log('Contract deployed at ', contract.options.address);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+```
+
+完整`web3.js`檔案如下
+
+```javascript
+const fs = require('fs');
+const solc = require('solc');
+const { Web3 } = require('web3');
+
+// Connect to local Ethereum node
+const web3 = new Web3(Web3.givenProvider || 'http://127.0.0.1:8545');
+
+// Compile the source code
+const sourceCode = fs.readFileSync('./hello.sol', 'utf8');
+
+// Compile the Solidity code
+const input = {
+  language: 'Solidity',
+  sources: {
+    'hello.sol': {
+      content: sourceCode
+    }
+  },
+  settings: {
+    outputSelection: {
+      '*': {
+        '*': ['*']
+      }
+    }
+  }
+};
+
+const compiledCode = JSON.parse(solc.compile(JSON.stringify(input)));
+
+// Check for compilation errors
+if (compiledCode.errors) {
+  compiledCode.errors.forEach((error) => {
+    console.error(error.formattedMessage);
+  });
+  process.exit(1); // Exit with non-zero status code to indicate failure
+}
+const outputFile = './compiledCode.json';
+fs.writeFileSync(outputFile, JSON.stringify(compiledCode, null, 2), 'utf8');
+
+const result = compiledCode.contracts['hello.sol']['Counter'];
+
+web3.eth
+  .getAccounts()
+  .then((accounts) => {
+    console.log('====================================');
+    console.log(accounts);
+    console.log('====================================');
+    return new web3.eth.Contract(result.abi).deploy({ data: result.evm.bytecode.object }).send({
+      from: accounts[0],
+      gas: 1500000,
+      gasPrice: '30000000000000'
+    });
+  })
+  .then((contract) => {
+    console.log('Contract deployed at ', contract.options.address);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+```
+
+執行檔案
+
+```shell
+node web3.js
+```
+
+部署成功後印出合約地址先記著，等等在前端會使用到。
+
+```shell
+Contract deployed at  0xfe10485C2DbcD23D543c031306a648F754b73b0B
+```
+
+### 開發前端 Dapp
+
+從`contract`回到上一層`Hello-web3`目錄
+
+```shell
+cd ..
+```
+
+輸入`create-react-app`指令，會新增一個 web 資料夾，進入 web 目錄
+
+```shell
+npx create-react-app web
+cd web
+```
+
+必須：安裝`web3.js`套件
+
+```shell
+npm i web3
+```
+
+非必須：安裝`antd`套件，有現成的 UI 可以使用
+
+```
+npm i antd
+```
+
+把剛剛編譯智能合約步驟產出的`compiledCode.json`複製到`src/`底下
+
+啟動 React app
+
+```shell
+npm run start
+```
+
+這時候看到的是預設畫面，接下來會直接修改`App.js`
+
+寫一個 hooks 負責把 web3 實例和合約實例 new 出來
+
+在/src 下新增 hooks 資料夾，並新增一個檔案`useWeb3Abi.js`
+
+把上一步驟部署智能合約成功印出來的地址丟到變數中
+
+```javascript
+const CONTRACT_ADDRESS = '0xfe10485C2DbcD23D543c031306a648F754b73b0B';
+```
+
+選用 ref 原因讓變數更新不會觸發畫面 re-render
+
+```javascript
+const web3Ref = useRef(null);
+const abiRef = useRef(null);
+```
+
+因為之前有安裝`MetaMask`，所以瀏覽器中會在 windows 加上`window.ethereum
+
+1. 我們要取得在這個 etherum 網路上的 accounts 和餘額，參考`web3.js`官網上的說明，要先用`window.ethereum` new 出一個 `Web3`實例
+2. 要操作智能合約 ABI，參考`web3.js`官網上的說明，要用智能合約的 ABI 和地址去 new 出一個 `Contract`實例
+
+```javascript
+useEffect(() => {
+  web3Ref.current = new Web3(window.ethereum);
+  abiRef.current = new web3Ref.current.eth.Contract(
+    CONTRACT_JSON['contracts']['hello.sol']['Counter'].abi,
+    CONTRACT_ADDRESS
+  );
+}, []);
+```
+
+```javascript
+// useWeb3Abi.js
+import { useEffect, useRef } from 'react';
+import CONTRACT_JSON from '../compiledCode.json';
+import Web3 from 'web3';
+
+const CONTRACT_ADDRESS = '0xfe10485C2DbcD23D543c031306a648F754b73b0B';
+
+export default function useWeb3Abi() {
+  const web3Ref = useRef(null);
+  const abiRef = useRef(null);
+
+  useEffect(() => {
+    web3Ref.current = new Web3(window.ethereum);
+    abiRef.current = new web3Ref.current.eth.Contract(
+      CONTRACT_JSON['contracts']['hello.sol']['Counter'].abi,
+      CONTRACT_ADDRESS
+    );
+  }, []);
+
+  return { web3Ref, abiRef };
+}
+```
+
+在`App.jsx`中使用 hooks
+
+```jsx
+import useWeb3Abi from './hooks/useWeb3Abi';
+
+function App() {
+  const { web3Ref, abiRef } = useWeb3Abi();
+}
+```
+
+取得`MetaMask`授權的帳號地址
+因為我只有同意一個帳號，所以回傳的`accs`陣列值只有一個。
+注意使用的方法是`requestAccounts`，且是使用非同步的方式取回傳值。
+
+```jsx
+const [accounts, setAccounts] = useState('');
+useEffect(() => {
+  if (web3Ref.current) {
+    web3Ref.current.eth
+      .requestAccounts()
+      .then((accs) => {
+        setAccounts(accs[0]);
+      })
+      .catch((error) => {
+        console.error('Error getting accounts:', error);
+      });
+  }
+}, [web3Ref]);
+return <h1 className="App-title">{`Account: ${accounts}`}</h1>;
+```
+
+取得該錢包地址的餘額
+注意:
+
+1. 使用的方法是`getBalance`(accounts)，參數是帳號，回傳值一樣是非同步。
+2. `typeof balanceVal`是`bigint`，要用`Number`去轉
+3. 記得在 accounts 有值之後再拿
+
+```jsx
+const [balance, setBalance] = useState(0);
+
+const balanceGetter = useCallback(async () => {
+  const balanceVal = await web3Ref.current.eth.getBalance(accounts);
+  setBalance(Number(balanceVal) / 100);
+}, [accounts, web3Ref]);
+
+useEffect(() => {
+  try {
+    accounts && balanceGetter();
+  } catch (err) {
+    setStatus(err);
+  }
+}, [accounts, balanceGetter]);
+return <h1 className="App-title">{`Balance: ${balance} H@`}</h1>;
+```
+
+把智能合約的 ABI 所有方法做一層抽象方便呼叫
+
+call 智能合約的`get`方法，取得現在`counter`的值
+
+```jsx
+const [contractCount, setContractCount] = useState(0);
+
+const contractGetter = useCallback(async () => {
+  const newVal = await abiRef.current.methods.get().call();
+  setContractCount(Number(newVal));
+}, [abiRef]);
+
+useEffect(() => {
+  if (!abiRef.current) return;
+  contractGetter();
+}, [contractGetter, abiRef]);
+
+return <h1 className="App-title">{`Counter: ${contractCount}`}</h1>;
+```
+
+call 智能合約的`set`方法，直接改變`counter`的值，
+
+1. call `set()`之後記得再`get()`一次，取得更新後的值
+2. 這裡的`gas`是每次 call 智能合約的燃料，在本地先隨便填個數字即可，不填就是預設。在區塊鏈上每次新增一筆`transaction`需要其他節點幫你計算此`transaction`是否有效，這個算是獎勵幫你計算的節點。
+3. `gas`是從交易發起者的錢包扣除，所以還需要再更新帳號餘額
+
+```javascript
+const [contractValue, setContractValue] = useState(0);
+const contractSetter = useCallback(
+    async (v) => {
+      await abiRef.current.methods.set(v).send({ from: accounts, gas: your_number });
+      contractGetter();
+      balanceGetter();
+    },
+    [accounts, contractGetter, balanceGetter, abiRef]
+);
+
+return (
+	<InputNumber
+	  size="small"
+	  placeholder="請輸入數字"
+	  onChange={setContractValue}
+	/>
+	<Button onClick={() => contractSetter(contractValue)}>送出</Button>
+)
+```
+
+call 智能合約的`inc`, `dec`方法，`counter`值加一或是減一
+
+```jsx
+const contractCaller = useCallback(
+    async (methodName) => {
+      if (!abiRef) return;
+      try {
+        switch (methodName) {
+          case "inc":
+            await abiRef.current.methods.inc().send({ from: accounts });
+            contractGetter();
+            balanceGetter();
+            break;
+          case "dec":
+            await abiRef.current.methods.dec().send({ from: accounts });
+            contractGetter();
+            balanceGetter();
+            break;
+          case "get":
+            contractGetter();
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        setStatus(error);
+      }
+    },
+    [accounts, contractGetter, balanceGetter, abiRef]
+);
+
+return (
+	<Button type="primary" onClick={() => contractCaller("inc")}>
+	  {" "}
+	  +{" "}
+	</Button>
+	<Button type="primary" onClick={() => contractCaller("dec")}>
+	  {" "}
+	  -{" "}
+	</Button>
+)
+```
+
+完整的`App.jsx`檔案
+
+```jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import './App.css';
+import { Button, InputNumber, Flex } from 'antd';
+import useWeb3Abi from './hooks/useWeb3Abi';
+function App() {
+  const { web3Ref, abiRef } = useWeb3Abi();
+  const [balance, setBalance] = useState(0);
+  const [status, setStatus] = useState('');
+  const [accounts, setAccounts] = useState('');
+  const [contractCount, setContractCount] = useState(0);
+  const [contractValue, setContractValue] = useState(0);
+
+  const contractGetter = useCallback(async () => {
+    const newVal = await abiRef.current.methods.get().call();
+    setContractCount(Number(newVal));
+  }, [abiRef]);
+
+  const balanceGetter = useCallback(async () => {
+    const balanceVal = await web3Ref.current.eth.getBalance(accounts);
+    setBalance(Number(balanceVal) / 100);
+  }, [accounts, web3Ref]);
+
+  const contractSetter = useCallback(
+    async (v) => {
+      await abiRef.current.methods.set(v).send({ from: accounts });
+      contractGetter();
+      balanceGetter();
+    },
+    [accounts, contractGetter, balanceGetter, abiRef]
+  );
+  const contractCaller = useCallback(
+    async (methodName) => {
+      if (!abiRef) return;
+      try {
+        switch (methodName) {
+          case 'inc':
+            await abiRef.current.methods.inc().send({ from: accounts });
+            contractGetter();
+            balanceGetter();
+            break;
+          case 'dec':
+            await abiRef.current.methods.dec().send({ from: accounts });
+            contractGetter();
+            balanceGetter();
+            break;
+          case 'get':
+            contractGetter();
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        setStatus(error);
+      }
+    },
+    [accounts, contractGetter, balanceGetter, abiRef]
+  );
+
+  useEffect(() => {
+    if (web3Ref.current) {
+      web3Ref.current.eth
+        .requestAccounts()
+        .then((accs) => {
+          setAccounts(accs[0]);
+        })
+        .catch((error) => {
+          console.error('Error getting accounts:', error);
+        });
+    }
+  }, [web3Ref]);
+
+  useEffect(() => {
+    if (!abiRef.current) return;
+    contractGetter();
+  }, [contractGetter, abiRef]);
+
+  useEffect(() => {
+    try {
+      accounts && balanceGetter();
+    } catch (err) {
+      setStatus(err);
+    }
+  }, [accounts, balanceGetter]);
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        {status && <h1 className="App-title">{status}</h1>}
+        <h1 className="App-title">{`Balance: ${balance} H@`}</h1>
+        <h1 className="App-title">{`Account: ${accounts}`}</h1>
+        <h1 className="App-title">{`Counter: ${contractCount}`}</h1>
+        <Flex gap={10} align="center">
+          <h2 className="App-title">Contract ABI</h2>
+          <Button type="primary" onClick={() => contractCaller('inc')}>
+            {' '}
+            +{' '}
+          </Button>
+          <Button type="primary" onClick={() => contractCaller('dec')}>
+            {' '}
+            -{' '}
+          </Button>
+          <Flex gap={5} align="center">
+            <InputNumber size="small" placeholder="請輸入數字" onChange={setContractValue} />
+            <Button onClick={() => contractSetter(contractValue)}>送出</Button>
+          </Flex>
+        </Flex>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## Reference
+
+- [使用 React 開發 DApp](https://gasolin.gitbooks.io/learn-ethereum-dapp/content/dapp-with-create-react-app.html)
+- [【Ethereum 智能合約開發筆記】深入智能合約 ABI](https://medium.com/taipei-ethereum-meetup/ethereum-%E6%99%BA%E8%83%BD%E5%90%88%E7%B4%84%E9%96%8B%E7%99%BC%E7%AD%86%E8%A8%98-%E6%B7%B1%E5%85%A5%E6%99%BA%E8%83%BD%E5%90%88%E7%B4%84-abi-268ececb70ae)
