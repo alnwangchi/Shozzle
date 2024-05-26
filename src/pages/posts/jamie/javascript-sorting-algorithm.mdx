@@ -1,0 +1,354 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Javascript 排序演算法(Sorting Algorithm)
+date: 2024-05-25
+author: Jamie Chien
+image: { src: 'https://i.imgur.com/r7j3GOd.png', alt: '範例' }
+description: 介紹一些在 javascript 常見的排序演算法
+draft: false
+category: Javascript
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+或多或少大家都有接觸過排序的問題，這篇文章想透過 Javascript 來實作並解釋幾個常見的排序演算法
+
+## 目錄
+
+- [泡沫排序法(Bubble Sort)](#泡沫排序法bubble-sort)
+- [插入排序法(Insertion Sort)](#插入排序法insertion-sort)
+- [選擇排序法(Selection Sort)](#選擇排序法selection-sort)
+- [合併排序法(Merge Sort)](#合併排序法merge-sort)
+- [堆積排序法(Heap Sort)](#堆積排序法heap-sort)
+- [快速排序法(Quick Sort)](#快速排序法quick-sort)
+
+## 泡沫排序法(Bubble Sort)
+
+比較 array 中 2 個位置的值，透過 swap 交換 2 個值，並且 go through 整個 array 來確保整個 array 排序如預期
+
+<Callout type="info">演算法較簡單，但效能較差，因此較少使用</Callout>
+
+### 實作 (Javascript)
+
+```javascript
+const bubbleSort = (arr) => {
+  for (let i = 0; i < arr.length - 2; i++) {
+    for (let j = arr.length - 1; j >= i + 1; j--) {
+      if (arr[j] < arr[j - 1]) {
+        // swap
+        const temp = arr[j];
+        arr[j] = arr[j - 1];
+        arr[j - 1] = temp;
+      }
+    }
+  }
+
+  return arr;
+};
+```
+
+### 時間複雜度 (Time Complexity)
+
+| Case         | Complexity |
+| ------------ | ---------- |
+| Worst Case   | O(n^2)     |
+| Best Case    | O(n)       |
+| Average Case | O(n^2)     |
+
+## 插入排序法(Insertion Sort)
+
+逐一從 array 取得值並且插入 array 最左邊（根據大小排序），因為可以確保左方 array 是排序好的，因此可以更快速的找到對應的位置並插入值
+
+<Callout type="info">在實務上比 Bubble Sort 效率好一點</Callout>
+
+### 實作 (Javascript)
+
+```javascript
+const insertionSort = (arr) => {
+  for (let i = 1; i < arr.length; i++) {
+    target = arr[i];
+    let j = i - 1;
+    while (j >= 0 && arr[j] > target) {
+      arr[j + 1] = arr[j];
+      j--;
+    }
+    arr[j + 1] = target;
+  }
+
+  return arr;
+};
+```
+
+### 時間複雜度 (Time Complexity)
+
+| Case         | Complexity |
+| ------------ | ---------- |
+| Worst Case   | O(n^2)     |
+| Best Case    | O(n)       |
+| Average Case | O(n^2)     |
+
+## 選擇排序法(Selection Sort)
+
+在 array 裡面還沒排序的部分找到最小的值，並把他放到已經排序的部分的最後面（和 array 裡面還沒排序的部分的第一個值交換）
+
+<Callout type="info">
+  跟 <strong>插入排序法</strong> 相比，因為 <strong>選擇排序法</strong> 是從 unsorted array
+  中尋找最小值，所以他在最佳的情況下也是需要 <strong>O(n)</strong> 的時間複雜度
+</Callout>
+
+### 實作 (Javascript)
+
+```javascript
+const selectionSort = (arr) => {
+  for (let i = 0; i < arr.length - 1; i++) {
+    // find the index of smallest value
+    let smallestIndex = i;
+    for (let j = i; j < arr.length; j++) {
+      if (arr[j] < arr[smallestIndex]) {
+        smallestIndex = j;
+      }
+    }
+    // swap
+    const temp = arr[i];
+    arr[i] = arr[smallestIndex];
+    arr[smallestIndex] = temp;
+  }
+
+  return arr;
+};
+```
+
+### 時間複雜度 (Time Complexity)
+
+| Case         | Complexity |
+| ------------ | ---------- |
+| Worst Case   | O(n^2)     |
+| Best Case    | O(n^2)     |
+| Average Case | O(n^2)     |
+
+## 合併排序法(Merge Sort)
+
+先將一個 array 拆成 n 個長度為 1 的小 array，接著兩兩比較並且組合，最後得到長度為 n 且已排序的 array (known as [Divide and Conquer](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm))
+
+組合的方式是使用兩個 pointer 分別指向兩個要比較的 array 並從各自的 0 index 開始往後，因為可以確定這些 array 都是 sorted array，因此透過比較兩個 pointer 指向的值來決定哪個要先放到新 array 中，並讓 pointer++
+
+<Callout type="info">會比較耗記憶體（空間複雜度較高）</Callout>
+
+![Divide and Conquer 示意圖](https://i.imgur.com/gOA9z4S.png)
+
+### 實作 (Javascript)
+
+```javascript
+// merge is used in mergeSort
+const merge = (arr1, arr2) => {
+  let p1 = 0;
+  let p2 = 0;
+  const result = [];
+
+  while (p1 < arr1.length && p2 < arr2.length) {
+    if (arr1[p1] < arr2[p2]) {
+      // push arr1[p1] to result
+      result.push(arr1[p1]);
+      p1++;
+    } else {
+      // push arr2[p2] to result
+      result.push(arr2[p2]);
+      p2++;
+    }
+  }
+
+  // if p1 not reach the end of the arr1
+  while (p1 < arr1.length) {
+    result.push(arr1[p1]);
+    p1++;
+  }
+
+  // if p2 not react the end of the arr2
+  while (p2 < arr2.length) {
+    result.push(arr2[p2]);
+    p2++;
+  }
+
+  return result;
+};
+
+const mergeSort = (arr) => {
+  if (arr.length === 1) return arr;
+
+  const middle = Math.floor(arr.length / 2);
+  const leftArr = arr.slice(0, middle);
+  const rightArr = arr.slice(middle, arr.length);
+  return merge(mergeSort(leftArr), mergeSort(rightArr));
+};
+```
+
+### 時間複雜度 (Time Complexity)
+
+| Case         | Complexity |
+| ------------ | ---------- |
+| Worst Case   | O(n log n) |
+| Best Case    | O(n log n) |
+| Average Case | O(n log n) |
+
+## 堆積排序法(Heap Sort)
+
+建立一個 Max Heap，因為可以確定 Max Heap 的 root node 一定會是最大值，因此把最右下角 leaf node 的值換到 root node 的位置，並重新建立一次 Max Heap 來取得下一個最大值，不斷循環這個步驟來達成目的
+
+<Callout type="info">
+  會透過一個 heapSize 來存目前 heap 的大小，這樣可以<strong>避免</strong>剛剛換完的最大值又被
+  heapify 到 root node
+</Callout>
+
+<Callout type="note">
+  建立一個 Max Heap 需要不斷地把最大值換到 parent node 的位置，直到整個樹的 parent node
+  都大於他們各自的 child node，而將最大值教會到 parent node 的這個行為稱作{' '}
+  <strong>(Max) Heapify</strong>
+  (Heapify 的時間複雜度為 <strong>O(log n)</strong>)
+</Callout>
+
+<Callout type="warning">
+  限制條件：要能夠建立成 [complete binary
+  tree](https://xlinux.nist.gov/dads/HTML/completeBinaryTree.html)
+</Callout>
+
+![heap sort 演示](https://i.imgur.com/0DbHnc8.gif)
+
+### 實作 (Javascript)
+
+```javascript
+const heapSort = (arr) => {
+  let heapSize;
+
+  const _swap = (i, j) => {
+    const temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  };
+
+  const _maxHeapify = (parent) => {
+    let largest;
+    const leftChild = parent * 2 + 1;
+    const rightChild = parent * 2 + 2;
+
+    // Compare {parent} with {left child}
+    if (leftChild <= heapSize && arr[leftChild] > arr[parent]) {
+      largest = leftChild;
+    } else {
+      largest = parent;
+    }
+
+    // Compare {largest} with {right child}
+    if (rightChild <= heapSize && arr[rightChild] > arr[largest]) {
+      largest = rightChild;
+    }
+
+    // Do heapify down if largest is not parent
+    if (largest !== parent) {
+      // swap arr[parent] with arr[largest]
+      _swap(parent, largest);
+      // heapify down until to the right bottom leaf node
+      _maxHeapify(largest);
+    }
+  };
+
+  const _buildMaxHeap = () => {
+    heapSize = arr.length - 1;
+
+    for (let i = Math.floor(heapSize / 2); i >= 0; i--) {
+      _maxHeapify(i);
+    }
+  };
+
+  const sort = () => {
+    _buildMaxHeap();
+
+    for (let i = arr.length - 1; i >= 0; i--) {
+      // exchange arr[0] with arr[i] (index i is the right bottom leaf node)
+      _swap(0, i);
+      // decrease the heapSize (to avoid heapify the max value got from prev step)
+      heapSize--;
+      // heapify from the root node
+      _maxHeapify(0);
+    }
+  };
+
+  sort();
+  return arr;
+};
+```
+
+### 時間複雜度 (Time Complexity)
+
+| Case         | Complexity |
+| ------------ | ---------- |
+| Worst Case   | O(n log n) |
+| Best Case    | O(n log n) |
+| Average Case | O(n log n) |
+
+## 快速排序法(Quick Sort)
+
+透過 Partition 演算法（選定一個 pivot，並將一個 array 拆分成兩個部分），接著再讓拆分的兩個部分再分別做 partition，就這樣遞回下去直到無法做 partition（長度小於 1）為止
+
+<Callout type="note">
+  透過 <strong>Partition 演算法</strong> 拆分的兩個部分都還不是 sorted array，但是可以確定選定的
+  pivot 是在這兩個部分的中間（sorted）
+</Callout>
+
+<Callout type="tip">最常被用來做 sorting 的演算法</Callout>
+
+### 實作 (Javascript)
+
+```javascript
+const quickSort = (arr) => {
+  const _swap = (i, j) => {
+    const temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  };
+
+  const _partition = (start, end) => {
+    // The goal of partition is to find the position that suit for pivot value
+    // use the last(end) value as pivot
+    const pivotValue = arr[end];
+    let pos = start - 1;
+
+    for (let i = start; i <= end - 1; i++) {
+      // swap pos value with the current value
+      if (arr[i] <= pivotValue) {
+        pos += 1;
+        _swap(i, pos);
+      }
+    }
+    // swap pos value with the pivot value
+    _swap(pos + 1, end);
+
+    return pos + 1;
+  };
+
+  const sort = (start, end) => {
+    if (start < end) {
+      const pos = _partition(start, end);
+      sort(start, pos - 1);
+      sort(pos + 1, end);
+    }
+  };
+
+  sort(0, arr.length - 1);
+  return arr;
+};
+```
+
+### 時間複雜度 (Time Complexity)
+
+| Case         | Complexity |
+| ------------ | ---------- |
+| Worst Case   | O(n^2)     |
+| Best Case    | O(n log n) |
+| Average Case | O(n log n) |
+
+<Callout type="note">
+  Worst Case: 如果今天要把已經從小到大排序好的 array 改成從大到小時（或是倒過來）
+</Callout>
