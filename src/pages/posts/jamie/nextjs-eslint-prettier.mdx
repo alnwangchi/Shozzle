@@ -1,0 +1,217 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: 在 Next.js 專案中使用 ESLint + Prettier
+date: 2024-05-31
+author: Jamie Chien
+image: { src: 'https://i.imgur.com/xP8OMVk.png', alt: 'eslint+prettier' }
+description: ESLint 和 Prettier 分別是什麼呢? 要如何在 Next.js 中使用 ESLint + Prettier?
+draft: false
+category: ESLint, Prettier, nextjs
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+你是否曾經因為設定 ESLint 和 Prettier 而搞得焦頭爛額呢? 剛好最近在公司要負責建置一個全新的專案，趁這個時機來好好地了解一下為什麼會想要把 ESLint 和 Prettier 組合再一起，以及了解一下他們各自所要達成的目的是什麼
+
+> 以下內文會以 Airbnb coding style 來作範例，最後也會附上一個我自己建置好的專案 Template~
+
+<Callout type="info">
+  若想直接看怎麼在 Next.js 中同時使用 ESLint + Prettier 的話，可以直接跳轉到[範例
+  Template](#範例-template)
+</Callout>
+
+## 目錄
+
+- [什麼是 ESLint?](#什麼是-eslint)
+- [什麼是 Prettier?](#什麼是-prettier)
+- [ESLint 和 Prettier 的差異?](#eslint-和-prettier-的差異)
+- [同時使用 ESLint 和 Prettier 的目的是?](#同時使用-eslint-和-prettier-的目的是)
+- [組合 ESLint 和 Prettier](#組合-eslint-和-prettier)
+- [範例 Template](#範例-template)
+
+## 什麼是 ESLint?
+
+官方的敘述是這樣:
+
+> ESLint is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code, with the goal of making code more consistent and avoiding bugs.
+
+簡單來說，ESLint 存在的目的就是為了讓 **ECMAScript/JavaScript** 程式碼更一致並且避免錯誤
+
+在 [ESLint Core Concepts](https://eslint.org/docs/latest/use/core-concepts/) 的頁面更是有提到:
+
+> ESLint is a configurable JavaScript linter. It helps you find and fix problems in your JavaScript code. Problems can be anything from potential runtime bugs, to not following best practices, to styling issues.
+
+因此，使用 ESLint 這個 Javascript linter 來找到淺藏在 Javascript code 的問題，可以大大減少 runtime bugs 的出現，又或是讓開發者更好的遵循最佳實踐，並減少 styling issues
+
+<Callout type="note">
+  結論: <strong>ESLint</strong> 是 <strong>linter</strong> 的一種，而 <strong>linter</strong>{' '}
+  更擅長找到隱藏的 syntax error，並改善語法
+</Callout>
+
+## 什麼是 Prettier?
+
+官方的敘述是這樣:
+
+> Prettier is an opinionated code formatter with support for Javascript, JSX, Angular, Vue, Typescript.... It removes all original styling and ensures that all outputted code conforms to a consistent style.
+
+**Prettier** 移除很多原始的 styling，並根據制定的規則來重新編排程式碼，他不在乎程式碼的語意，把重點集中在讓程式碼符合一致的 coding style
+
+<Callout type="note">
+  結論: <strong>Prettier</strong> 是 <strong>formatter</strong> 的一種，而
+  <strong>formatter</strong> 更擅長根據 coding style (rules)去格式化(format)程式碼
+</Callout>
+
+## ESLint 和 Prettier 的差異?
+
+<Callout type="tip">
+  簡單來說，<strong>ESLint</strong> 是一種 linter；<strong>Prettier</strong> 是一種 formatter
+</Callout>
+
+以下表格是兩者的一些比較:
+
+|                      | ESLint | Prettier |
+| -------------------- | ------ | -------- |
+| 回報程式碼錯誤       | Yes    | No       |
+| 自動修正程式碼錯誤   | Yes    | No       |
+| 新增客製化規則/選項  | Yes    | No       |
+| 提供配置選項         | Yes    | Poor     |
+| 格式化(format)程式碼 | Yes    | Yes      |
+
+## 同時使用 ESLint 和 Prettier 的目的是?
+
+套一句 Prettier 官方的話:
+
+> Use **Prettier for formatting** and **linters for catching bugs**!
+
+分別使用 ESLint 和 Prettier 的目的是為了讓他們各司其職，透過 ESLint 來確保程式碼品質並減少隱藏的錯誤；透過 Prettier 來格式化程式碼並使程式碼符合一致的 coding style
+
+## 組合 ESLint 和 Prettier
+
+從上面 [ESLint 和 Prettier 的差異](#ESLint-和-Prettier-的差異) 可以發現，ESLint 和 Prettier 都有 **格式化(format)程式碼** 的功能，因此可想而知，在同時使用 ESLint 和 Prettier 的時候應該會發生不少問題(兩者衝突)
+
+這部分在 [Prettier 的官方文件](https://prettier.io/docs/en/integrating-with-linters) 中也有提到:
+
+> Linters usually contain not only code quality rules, but also stylistic rules. Most stylistic rules are unnecessary when using Prettier, but worse – they might conflict with Prettier!
+
+因此，我們需要去解決這個問題!!!
+
+**Solution**
+
+幸好，Prettier 的官方有提供一個很簡單的方式，可以透過以下的 extension 和 plugin 來解決衝突問題:
+
+### 🚀 [eslint-config-prettier](https://www.npmjs.com/package/eslint-config-prettier)
+
+這個 extension 會關掉 ESLint 中所有跟 Prettier 衝突(或不必要)的 rules
+
+**How to Use**
+
+1. 安裝 eslint-config-prettier
+
+```bash
+npm install --save-dev eslint-config-prettier
+```
+
+2. 設定 .eslintrc.json 檔案
+
+```json
+{
+  "extends": [
+    ...,
+    "prettier"
+  ]
+}
+```
+
+<Callout type="tip">確保把 `"prettier"` 放在 `extends` array 的最後面</Callout>
+
+### 🚀 [eslint-plugin-prettier](https://www.npmjs.com/package/eslint-plugin-prettier/v/4.0.0) (optional)
+
+把 Prettier 當作 ESLint 的 rule 來使用，概念上就是如果程式碼不符合 Prettier 時，會回報一個 ESLint 的錯誤
+
+<Callout type="warning">Prettier 官方表示: 一般不推薦</Callout>
+
+**How to Use**
+
+1. 安裝 eslint-config-prettier
+
+```bash
+npm install --save-dev eslint-plugin-prettier
+```
+
+2. 設定 .eslintrc.json 檔案
+
+```json
+{
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}
+```
+
+<Callout type="info">
+  使用這個 plugin 可能會有以下缺點:
+  <ul>
+    <li>
+      可能會導致在編輯器中出現很多紅蚯蚓(錯誤提示)，這違背了 Prettier 的初衷(不需要自行面對
+      formatting 的問題)
+    </li>
+    <li>比直接運行 Prettier 還慢</li>
+  </ul>
+</Callout>
+
+## 範例 Template
+
+👉 [**點我查看範例**](https://github.com/tsungyu927/nextjs-eslint-prettier-starter)
+
+在這個範例中使用到的技術如下:
+
+- [Typescript](https://www.typescriptlang.org/)
+- [Next.js](https://nextjs.org/) (Version 14 with App Router)
+- [TailwindCSS](https://tailwindcss.com/)
+- [ESLint (Airbnb)](https://github.com/airbnb/javascript)
+- [Prettier](https://prettier.io/)
+
+### ESLint 相關套件
+
+{/* prettier-ignore */}
+| 套件 | 說明 | 依賴(需要哪些額外套件) |
+| -------- | -------- | -------- |
+| [eslint](https://www.npmjs.com/package/eslint) | ESLint 本身，用來識別並回報在 ECMAScript/JavaScript 中不符合規定的程式碼 | |
+| [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb) | 為 Javascript 和 React 程式碼提供一組由 Airbnb 定義的 rules 和 style 指南 | `eslint`, `eslint-plugin-import`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y` |
+| [eslint-config-next](https://www.npmjs.com/package/eslint-config-next) | 包括一組專門針對 Next.js 量身定製的(推薦的) ESLint 規則 | |
+| [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier) | 這個 extension 會關掉 ESLint 中所有跟 Prettier 衝突(或不必要)的 rules | |
+| [eslint-plugin-import](https://www.npmjs.com/package/eslint-plugin-import) | 這個 Plugin 支援 linting ES2015+(ES6+) 的 import/export 語法，並防止出現錯誤的檔案路徑和錯誤的 import 名稱 | |
+| [eslint-plugin-jsx-a11y](https://www.npmjs.com/package/eslint-plugin-jsx-a11y) | 這個 Plugin 提供一組 rules 來在 JSX 中執行 accessibility 的最佳實踐，他幫助我們識別並修正一些常見的 accessibility 的問題 | `eslint` |
+| [eslint-plugin-unused-imports](https://www.npmjs.com/package/eslint-plugin-unused-imports) | 這個 Plugin 會找到並且移除沒有使用的 ES6 module import | <ul><li>Typescript: `@typescript-eslint/eslint-plugin`, `@typescript-eslint/parser` </li><li>React: `eslint-plugin-react` (並且 enable `react/jsx-uses-react` 和 `react/jsx-uses-vars`)</li></ul> |
+| [eslint-import-resolver-typescript](https://www.npmjs.com/package/eslint-import-resolver-typescript) | 與 `eslint-plugin-import` 插件配合使用，幫助 ESLint 根據 TypeScript 的配置來理解並正確解析 module 的路徑 | `eslint`, `eslint-plugin-import` |
+| [@typescript-eslint/eslint-plugin](https://www.npmjs.com/package/@typescript-eslint/eslint-plugin) | 一個 ESLint 的 Plugin，為 Typescript codebases 提供 lint rules | |
+| [@typescript-eslint/parser](https://www.npmjs.com/package/@typescript-eslint/parser) | 一個 ESLint 的 parser，他借助 [Typescript ESTree](https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/typescript-estree) 來允許 ESLint lint Typescript 程式碼 | |
+
+<Callout type="tip">
+  `eslint-config-airbnb` 依賴套件中的`eslint-plugin-react`和`eslint-plugin-react-hooks` 已經由
+  `eslint-config-next` 內建提供，因此就不用額外新增這兩個 Plugin
+  ([相關連結](https://nextjs.org/docs/app/building-your-application/configuring/eslint#eslint-config))
+</Callout>
+
+<Callout type="info">
+  `eslint-plugin-jsx-a11y` 雖然會被 `eslint-config-airbnb` 使用到，但**不需要**手動新增
+  plugin，因此在 .eslintrc.json 中**不需要**加上 `plugins: ["jsx-a11y"]`
+</Callout>
+
+### Prettier 相關套件
+
+{/* prettier-ignore */}
+| 套件 | 說明 | 依賴(需要哪些額外套件) |
+| -------- | -------- | -------- |
+| [prettier](https://www.npmjs.com/package/prettier) | Prettier 本身，用來格式化程式碼 | |
+| [prettier-plugin-tailwindcss](https://www.npmjs.com/package/prettier-plugin-tailwindcss/v/0.0.0-insiders.d539a72) | 是一個 Plugin，也是 TailwindCSS 官方推薦的 Plugin，用來自動排序程式碼中的 classes | `prettier` |
+| [@trivago/prettier-plugin-sort-imports](https://www.npmjs.com/package/@trivago/prettier-plugin-sort-imports/v/2.0.0) | 是一個 Plugin，用來排序程式碼中 import 的順序，可以在 `.prettierrc` 中自訂義順序 | `prettier` |
+
+> 其他 Convention:
+>
+> 1. JSX 屬性請使用 **double quotes (`"`)**；其他 JS 請使用 **single quotes (`'`)**
+> 2. 其他 Airbnb 相關規範請參考我整理的這一份（[Link](https://hurricane-activity-c3d.notion.site/ESLint-Prettier-Rules-df67abf7c83d413b86d07a3b6bb3a9e1?pvs=74)）
