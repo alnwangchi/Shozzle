@@ -1,0 +1,168 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Golang 系列(1)：Getting Started 環境建置
+date: 2024-10-15
+author: Jamie Chien
+image: { src: 'https://i.imgur.com/czWltwU.png', alt: '範例' }
+description: 如何開始一個 Go 專案？ 簡單介紹 Go 的安裝並建立一個 Hello World 程式吧！
+draft: false
+category: Go
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+在開始跳進 Go 的世界之前，我們需要先來認識一下 Go，然後要把環境建構起來，廢話不多說就開始吧
+
+## 目錄
+
+- [什麼是 Go？](#什麼是-go)
+- [為什麼要用 Go？](#為什麼要用-go)
+- [安裝 Go](#安裝-go)
+- [第一支程式：Hello World](#第一支程式hello-world)
+- [Reference](#reference)
+
+## 什麼是 Go?
+
+Go 又被稱作 Golang 或 Go language，是 Google 開發的開源程式語言，目的在於提供簡潔、直覺且高效的程式語言，根據官網的說法，Go 的目的是為了讓開發者提高工作效率
+
+> _The Go programming language is an open source project to make programmers more productive._ - from [Official Website](https://go.dev/doc/)
+
+## 為什麼要用 Go？
+
+可以從幾個面向來看為什麼你可以選擇使用 Go:
+
+- 簡潔、清晰的語法設計
+  - Go 的語法設計非常簡潔，讓開發者更容易理解和維護代碼。Go 拋棄了一些傳統編程語言中繁瑣的特性（例如，類繼承、複雜的模板語法等）
+- 性能高與並發處理
+  - **Goroutine**：Go 使用 Goroutine 來進行輕量級的並發處理，相較於傳統的線程，Goroutine 更加高效且消耗資源更少。這使得 Go 能夠輕鬆處理大量的併發任務，適合用於網絡伺服器、微服務和處理實時資料。
+  - **高效垃圾回收**：Go 的垃圾回收機制進行了多次優化，提供了更好的內存管理性能，使得並發程序運行更加流暢。
+- 跨平台支持和靜態編譯
+  - Go 是一個靜態編譯語言，編譯後可以生成高效的二進制文件，並且支持跨平台編譯。這意味著開發者可以編寫一次代碼，並將其編譯為不同平台（如 Windows、macOS、Linux 等）的可執行文件，無需為每個平台進行額外的修改。
+
+還有很多原因就不細述了～
+
+## 安裝 Go
+
+Go 有許多安裝方式，以下列舉幾個：
+
+- 從原始碼安裝（請參考 [Installing Go from source](https://go.dev/doc/install/source)）
+- 從標準安裝套件安裝（請參考 [Download and install](https://go.dev/doc/install)）
+- 透過其他第三方工具安裝
+  - [GVM](https://github.com/moovweb/gvm)（可以管理多個 Go version）
+  - Homebrew（我用這個～）(請參考 [Link](https://formulae.brew.sh/formula/go))
+    ```bash
+    brew install go
+    ```
+
+安裝完成後透過以下指令確認是否成功安裝(只要有顯示 Go 的版本就代表成功了)
+
+```bash
+go version
+```
+
+> 更多的安裝方式可以參考 [Will 保哥的文章](https://willh.gitbook.io/build-web-application-with-golang-zhtw/01.0/01.1)
+
+## 第一支程式：Hello World
+
+### 建立一個新專案
+
+在你的 `$GOPATH/src` 底下建立一個新資料夾(`hello`)，並進入到資料夾裡面
+
+```bash
+cd $GOPATH/src
+mkdir hello
+cd hello
+```
+
+### 依賴追蹤（Go version > `1.11`）
+
+當你的 Go 專案使用的是 Go Modules 的話，需要在你的專案中建立一個 `go.mod` 檔案來管理 dependencies（當你的 code import 其他 modules 的 packages）
+
+<Callout type="warning">
+  這個 <code>go.mod</code> 也需要一併保存在你的 repository
+</Callout>
+
+透過以下指令來 initiate 一個 `go.mod` 檔案
+
+```bash
+# go mod init <module_name>
+go mod init practice/hello
+```
+
+<Callout type="note">
+  module 的 path 通常會是放 source code 的 repository 的位置(i.e. <code>github.com/mymodule</code>
+  )，如果你打算 publish 你的 modules，那這個 module path 必須是 Go tools 可以下載的位置（[點我了解更多](https://go.dev/doc/modules/managing-dependencies#naming_module))
+</Callout>
+
+### 新增主程式
+
+建立一個 `main.go` 檔案
+
+```bash
+touch main.go
+```
+
+在 `main.go` 檔案中新增以下程式：
+
+```go
+package main
+
+import (
+  "fmt"
+)
+
+func main() {
+  fmt.Println("Hello, World!!")
+}
+```
+
+<Callout type="note">
+  如果你的 func 在 package 外要被看到，那 func 的名字必須以 <b>upper case</b> 開頭（這裡的{' '}
+  <code>main</code> func 當然就是維持 <code>main</code> 就好）
+</Callout>
+
+### 執行你的 code
+
+在同一個目錄底下(`$GOPATH/src/hello`)執行下面指令：
+
+```bash
+go run main.go
+```
+
+如果看到以下結果，那就大功告成了
+
+```bash
+Hello, World!!
+```
+
+<Callout type="tip">
+  在你的 Go 程式碼中必須：
+  <ol>
+    <li>
+      包含一個 <code>main</code> package (這個 <code>main</code> package
+      告訴我們他是可以獨立執行的套件，編譯後會產生執行檔)
+    </li>
+    <li>
+      在 <code>main</code> package 中包含 <code>main</code> func (運行 <code>main</code> package
+      的時候預設會執行 <code>main</code> func)
+    </li>
+  </ol>
+</Callout>
+
+### 編譯並產生執行檔
+
+在相同目錄底下(`$GOPATH/src/hello`)執行下面指令：
+
+```bash
+go build main.go
+```
+
+可以看到在目錄底下會出現一個執行檔，點擊打開後也可以看到相同的執行結果～
+
+## Reference
+
+- [使用 Golang 打造 Web 應用程式 - Will 保哥](https://willh.gitbook.io/build-web-application-with-golang-zhtw)
+- [Official Doc](https://go.dev/doc/tutorial/getting-started)
