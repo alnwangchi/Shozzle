@@ -1,0 +1,196 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Golang 系列(2)：GOPATH 和 Go Modules 的差異
+date: 2024-10-29
+author: Jamie Chien
+image: { src: 'https://imgur.com/lCMMOX8.png', alt: '範例' }
+description: GOROOT, GOPATH 和 Go Modules 是什麼呢？而 GOPATH 和 Go Modules 有什麼差別？ 而 GO111MODULE 又是什麼呢？
+draft: false
+category: Go
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+最近開始學習 Go 語言(又俗稱 Golang)，但在最一開始就被環境建置搞了好久，然後看到有些文章用 **GOPATH** 管理依賴，有些文章則是使用 **Go Modules** 來管理，導致我被搞得一頭霧水，所以就稍微研究了一下，並寫下這篇文章來記錄！
+
+> 若想了解 Go 的環境建置，或是想嘗試寫一個 Hello World 程式的話，可以參考上一篇 『**[Golang 系列(1)：Getting Started 環境建置](./go-getting-started)**』
+
+## 目錄
+
+- [概述](#概述)
+- [GOROOT 介紹](#goroot-介紹)
+- [GOPATH 介紹](#gopath-介紹)
+- [Go Modules 介紹](#go-modules-介紹)
+- [GOPATH vs Go modules](#gopath-vs-go-modules)
+- [Reference](#reference)
+
+## 概述
+
+最一開始 Go 的依賴都是使用 **GOPATH** 的方式（也就是把依賴放在 **GOPATH** 路徑底下），直到後來 Go 在 `1.11` 版的時候推出 **Go Modules** 後，這個依賴的問題才逐漸被解決，接下來會針對這幾個管理方式來展開討論～
+
+## GOROOT 介紹
+
+**GOROOT** 是 Go 編譯器的安裝路徑，通常會自動配置到安裝 Go 時的預設目錄。**GOROOT** 是系統用來找到 Go 標準庫的路徑(類似於 Java 的 JDK)，例如 `fmt`、`time` 等內建套件。
+
+<Callout type="note">
+  預設情況下，我們不需要手動修改 <b>GOROOT</b>，除非有多個 Go 版本或是需要手動配置 Go 的安裝位置。
+</Callout>
+
+使用以下指令來查看目前的 **GOROOT**：
+
+```bash
+go env GOROOT
+```
+
+可以得到：
+
+```bash
+# 因為我是透過 homebrew 安裝 Go 的，所以路徑會是這樣
+/opt/homebrew/Cellar/go/1.23.2/libexec
+```
+
+<Callout type="warning">
+  若 <b>GOROOT</b> 設定錯誤或未設定，Go 將無法正常編譯程式碼，因為它無法找到標準庫中的套件
+</Callout>
+
+## GOPATH 介紹
+
+**GOPATH** 是指 Go 編譯器用來尋找或存放工作區（workspace）中專案的路徑。這個路徑通常包含三個子目錄：
+
+- `src`: 用來放 source code 的地方，也就是我們開發的 Go 專案
+- `pkg`: 編譯後的二進位檔案會存放在這裡，通常就是你自己做的 package 透過 `go install` 產生的 .a 檔案存放的地方
+- `bin`: 可執行檔(.exe)會在此目錄下，通常就是會放你透過 `go build` 編譯後的執行檔
+
+<Callout type="note">
+  在沒有使用 <b>Go Modules</b> 的情況下，<b>GOPATH</b> 是 Go 項目管理的核心概念，所有專案的 source
+  code 都應該放在 <code>GOPATH/src</code> 下。
+</Callout>
+
+如果你想查看當前的 GOPATH，可以使用以下指令：
+
+```bash
+go env GOPATH
+```
+
+可以得到：
+
+```bash
+# 這邊只是個範例，他可能存在不一樣的路徑
+/Users/<username>/go
+```
+
+<Callout type="tip">
+  在 GOPATH 的模式下，可以設定多個 <b>GOPATH</b>，其中第一個將會是預設的目錄，使用 `go get` 下載的
+  packages 都會放在這個路徑底下
+</Callout>
+
+### Go 如何尋找 import 的 packages
+
+在 import packages 的時候，Go 會根據以下的步驟去尋找 packages：
+
+1. 若是標準庫的話，Go 會在 `$GOROOT/src` 目錄尋找
+2. 若是第三方 package，Go 則會在 `$GOPATH/src` 目錄尋找
+3. 若都找不到，Go 會回報錯誤
+
+### 缺點
+
+- 使用 `go get` 下載的 packages 都會放到 `$GOPATH` 路徑底下，對於組織專案結構來說會很不方便，如果遇到不同專案需要不同版本的 package，會非常難管裡
+- GOPATH 無法支持版控，他只能管理最新的版本，導致 package 更新或不相容時，所有依賴他的專案可能都會受到影響
+- 雖然可以透過設置多個 GOPATH 來解決部分上述問題，但不同的 GOPATH 都需要下載 packages，會佔用儲存空間
+
+<Callout type="info">
+  隨著 <b>Go Modules</b> 的引入，GOPATH 的重要性逐漸降低，特別是在新專案中
+</Callout>
+
+## Go Modules 介紹
+
+**Go Modules** 是從 Go `1.11` 版本後開始引入的一種新的依賴管理方式，它讓專案不再依賴 GOPATH 來管理專案路徑，並提供了更方便的依賴包版本控制
+
+**Go Modules** 主要包含以下幾個檔案：
+
+- `go.mod`: 定義專案的模組名稱和依賴關係，並記錄了使用的 Go 版本。
+- `go.sum`: 確保每個依賴包的版本是正確且一致的，防止不同開發者之間依賴版本不一致的問題。
+
+<Callout type="note">
+  使用 <b>Go Modules</b> 的好處在於，你可以在任意目錄下創建 Go 專案，不需要再依賴 <b>GOPATH</b>
+  ，並且可以輕鬆指定每個依賴包的版本。
+</Callout>
+
+可以使用以下指令啟用 **Go Modules** 並創建一個 go.mod 文件：
+
+```bash
+go mod init <module-name>
+```
+
+產生的 `go.mod`：
+
+```go
+module <module-name>
+
+go 1.23.2
+```
+
+這樣 Go 編譯器就能根據 go.mod 檔案來管理和下載依賴包了
+
+### go.mod 檔案
+
+在 `go.mod` 檔案中記載了一些版本資訊以及依賴資訊，有興趣的話可以參考[官方文件](https://go.dev/ref/mod#go-mod-file)，以下就簡單說明幾個重要資訊：
+
+| 關鍵字    | 說明                                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `module`  | 定義這個 Go 專案的模組名稱(路徑)                                                                                            |
+| `go`      | 定義使用的 Go 版本                                                                                                          |
+| `require` | 列出依賴的第三方模組，並可以指定他的版號(預設使用最新)                                                                      |
+| `replace` | 用來替換模組來源，可以將某個模組替換成本地路徑（使用情境可能會是如果同時開發專案要用到的模組，且這個模組還沒有 publish 時） |
+| `exclude` | 用來告訴 Go 不要使用指定的模組版本(通常在解決依賴衝突時使用)                                                                |
+
+### GO111MODULE 又是什麼？
+
+**GO111MODULE** 是 Go 的一個環境變數，用來控制是否啟用 **Go Modules**。它有三個可選值：
+
+- `off`: 關閉 **Go Modules**，Go 會使用傳統的 **GOPATH** 模式來管理專案
+- `on`: 強制啟用 **Go Modules**，無論是否在 **GOPATH** 中，都會使用 **Go Modules**
+- `auto`: 這是預設值，在 Go `1.16` 及之後的版本，**Go Modules** 自動啟用，除非專案位於 **GOPATH** 中且沒有 `go.mod` 文件
+
+<Callout type="note">
+  通常情況下，可以保持 <code>GO111MODULE=auto</code>，這樣 Go 會根據專案是否有 <code>go.mod</code>{' '}
+  文件來決定是否使用 <b>Go Modules</b>
+</Callout>
+
+可以使用以下指令來確認 **GO111MODULE** 的值：
+
+```bash
+go env GO111MODULE
+```
+
+<Callout type="tip">
+  如果你的 <code>GO111MODULE</code> 是空值(`''`)也會被視同是 `auto` mode 喔！
+</Callout>
+
+## GOPATH vs Go modules
+
+**GOPATH** 和 **Go Modules** 是 Go 語言中的兩種不同的專案管理方式：
+
+- **GOPATH**: 所有的 Go 專案和依賴都必須放在一個固定的路徑下，這讓專案管理變得有些不方便，特別是對於大型專案或需要使用不同版本依賴包的情況
+- **Go Modules**: 引入了更靈活的模組管理方式，不再依賴固定的工作區路徑，並允許不同專案使用不同版本的依賴包
+
+簡單來說，**Go Modules** 是 **GOPATH** 的升級，解決了依賴版本管理和靈活性不足的問題!!
+
+### 比較
+
+| 特性     | GOPATH                       | Go Modules                                            |
+| -------- | ---------------------------- | ----------------------------------------------------- |
+| 目錄限制 | 必須位於 `$GOPATH/src` 下    | 任意目錄均可                                          |
+| 版本控制 | 無內建版本控制，需第三方工具 | 支援 [semantic version](https://semver.org/) 版本控制 |
+| 依賴隔離 | 所有項目共用依賴，難以隔離   | 每個模組可獨立依賴                                    |
+| 兼容性   | 適用於 Go 早期版本           | 官方推薦，自 Go 1.13 起成為標準                       |
+| 管理命令 | 無專用命令，需要手動管理     | `go mod tidy`、`go get` 等命令支援                    |
+
+## Reference
+
+- [浅谈 GoPath 和 Go Modules 包管理](https://www.cnblogs.com/ssgeek/p/14843476.html)
+- [從一知半解到略懂 Go modules](https://myapollo.com.tw/blog/golang-go-module-tutorial/)
+- [Go Modules Doc](https://go.dev/ref/mod)
