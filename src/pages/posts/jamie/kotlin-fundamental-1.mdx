@@ -1,0 +1,228 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Kotlin 系列(1)：變數與基本型別
+date: 2025-03-22
+author: Jamie Chien
+image: { src: 'https://imgur.com/i4P9u2G.png', alt: '範例' }
+description: 這篇文章將簡單整理 Kotlin 的變數和基本型別
+draft: false
+category: Kotlin
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+在一些因緣際會下，我開始要接觸 Kotlin 這個語言，每次學習一個新的語言，當然就要把它整理一下，下面我將分享一下我學習這個語言所整理的筆記～ Let's Go!
+
+## 目錄
+
+- [變數](#變數)
+- [基本型別](#基本型別)
+- [Reference](#reference)
+
+## 變數
+
+在 Kotlin 中，透過 `val` 或 `var` 關鍵字來宣告一個變數
+
+### `val` vs `var`
+
+- `val`: 用來宣告 Immutable 的變數（類似 constant），其值在宣告後**不可**被改變
+- `var`: 用來宣告 Mutable 的變數，其值在宣告後**可以**改變
+
+```kotlin
+// Immutable
+val pi = 3.14
+
+// Mutable
+var x = "Hello World"
+```
+
+<Callout type="info">Kotlin 默認建議優先使用 `val`</Callout>
+
+## 基本型別
+
+### Number
+
+**Integer 型別 (預設：`Int`)**
+
+| 型別    | Size (bits) | 最小值                     | 最大值                    |
+| ------- | ----------- | -------------------------- | ------------------------- |
+| `Byte`  | 8           | -128                       | 127                       |
+| `Short` | 16          | -32768                     | 32767                     |
+| `Int`   | 32          | -2,147,483,648             | 2,147,483,647             |
+| `Long`  | 64          | -9,223,372,036,854,775,808 | 9,223,372,036,854,775,807 |
+
+```kotlin
+val one = 1 // Int
+val threeBillion = 3000000000 // Long
+val oneLong = 1L  // Long
+val oneByte: Byte = 1
+```
+
+**Floating-point 型別（預設：`Double`）**
+
+| 型別     | Size (bits) | Significant bits | Exponent bits | Decimal digits |
+| -------- | ----------- | ---------------- | ------------- | -------------- |
+| `Float`  | 32          | 24               | 8             | 6-7            |
+| `Double` | 64          | 53               | 11            | 15-16          |
+
+```kotlin
+val pi = 3.14 // Double
+val oneDouble = 1.0 // Double
+val eFloat = 2.7182818284f  // Float, actual value is 2.7182817
+```
+
+**型別轉換**
+
+- `toByte(): Byte` (**deprecated** for `Float` and `Double`)
+- `toShort(): Short`
+- `toInt(): Int`
+- `toLong(): Long`
+- `toFloat(): Float`
+- `toDouble(): Double`
+
+<Callout type="info">在大多數情況下是不需要做以上的 Explicit conversions</Callout>
+
+### Unsigned Integer Number
+
+在宣告的數字後面加上 `U` 或 `u`, 若沒有給定特殊的型別，預設型別會根據 size 給 `UInt` 或 `ULong`
+
+| 型別     | Size (bits) | 最小值 | 最大值                     |
+| -------- | ----------- | ------ | -------------------------- |
+| `UByte`  | 8           | 0      | 255                        |
+| `UShort` | 16          | 0      | 65535                      |
+| `UInt`   | 32          | 0      | 4,294,967,295              |
+| `ULong`  | 64          | 0      | 18,446,744,073,709,551,615 |
+
+```kotlin
+val i = 1u  // UInt (Default)
+val l = 5000000000u // ULong (Default)
+val b: UByte = 1u // UByte
+val s: UShort = 1u  // UShort
+val ll: ULong = 1u // ULong
+```
+
+<Callout type="warning">
+  2025 Mar 16: Unsigned arrays and ranges 功能（包含運算）尚在 Beta 中
+</Callout>
+
+### Boolean
+
+可以是 `true`, `false` 或是 `null`
+
+```kotlin
+val myTrue: Boolean = true
+val myFalse: Boolean = false
+val boolNull: Boolean? = null
+```
+
+### Character
+
+使用單引號（`'`）來表示 `Char` 型別（e.g. `'1'`），其他特殊字元使用反斜線（`\`）開頭來跳脫字元：
+
+- `\t`: tab
+- `\b`: backspace
+- `\n`: new line (LF)
+- `\r`: carriage return (CR)
+- `\'`: single quotation mark
+- `\"`: double quotation mark
+- `\\`: backslash
+- `\$`: dollar sign
+
+### String
+
+使用雙引號（`"`）來表示 `String` 型別（e.g. `"abc"`）
+
+**跳脫字元**
+
+一樣可以使用 `\` 來使用跳脫字元
+
+```kotlin
+val s = "Hello, world!\n"
+```
+
+**多行字串**
+
+使用 `"""` 來建立多行字串
+
+```kotlin
+val text = """
+    for (c in "foo")
+        print(c)
+    """
+```
+
+### Array
+
+用來保存 **固定數量** 且 **相同 type\(or subtypes\)** 的資料結構
+
+**限制**
+
+從 Array 中新增 or 刪除元素的唯一方法是每次建立一個新的 Array
+
+```kotlin
+var riversArray = arrayOf("Nile", "Amazon", "Yangtze")
+
+// Using the += assignment operation creates a new riversArray,
+// copies over the original elements and adds "Mississippi"
+riversArray += "Mississippi"
+println(riversArray.joinToString())
+// Nile, Amazon, Yangtze, Mississippi
+```
+
+**建立 Array**
+
+1. [`arrayOf()`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/array-of.html)
+
+```kotlin
+val simpleArray = arrayOf(1, 2, 3)
+println(simpleArray.joinToString())
+// 1, 2, 3
+```
+
+2. [`arrayOfNulls()`](<https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/array-of-nulls.html#kotlin$arrayOfNulls(kotlin.Int)>)
+
+```kotlin
+val nullArray: Array<Int?> = arrayOfNulls(3)
+println(nullArray.joinToString())
+// null, null, null
+```
+
+3. [`emptyArray()`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/empty-array.html)
+
+```kotlin
+var exampleArray = emptyArray<String>()
+// or
+var exampleArray: Array<String> = emptyArray()
+```
+
+4. `Array` constructor
+
+```kotlin
+val initArray = Array<Int>(3) { 0 }
+println(initArray.joinToString())
+// 0, 0, 0
+
+val asc = Array(5) { i -> (i * i).toString() }
+asc.forEach { print(it) }
+// 014916
+```
+
+**Primitive-type Array**
+| Primitive-type Array | Equivalent in Java |
+| --- | --- |
+| [`BooleanArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean-array/) | `boolean[]` |
+| [`ByteArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/) | `byte[]` |
+| [`CharArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-array/) | `char[]` |
+| [`DoubleArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double-array/) | `double[]` |
+| [`FloatArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/) | `float[]` |
+| [`IntArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int-array/) | `int[]` |
+| [`LongArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long-array/) | `long[]` |
+| [`ShortArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-short-array/) | `short[]` |
+
+## Reference
+
+- [Kotlin - Basic syntax](https://kotlinlang.org/docs/basic-syntax.html)
+- [Kotlin - Basic types](https://kotlinlang.org/docs/basic-types.html)
