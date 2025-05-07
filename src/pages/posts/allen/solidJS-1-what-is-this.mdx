@@ -1,0 +1,90 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: solidJS 系列(1) - 介紹與 React 之間
+date: 2025-05-07
+author: Allen Wang
+image:
+  {
+    src: 'https://firebasestorage.googleapis.com/v0/b/for-my-images.firebasestorage.app/o/SolidJS-1.png?alt=media&token=f618cfbd-423a-40db-a97f-ac5d2b3ed4ff',
+    alt: 'solidJS'
+  }
+description: solidJS 系列，此篇簡單介紹 solidJS 框架以及一些與 React 的比較，後續文章會再詳細探討
+draft: false
+category: solidJS
+---
+
+## 前言
+
+對 React 開發者來說，SolidJS 的切入門檻低，但它在設計上與 React 有顯著差異。本系列文章將由我看到哪寫到哪邊學邊寫邊看看 SolidJS 的架構、API、使用情境，並穿插與 React 的對照，讓自己能清楚理解這個框架並記錄。
+
+---
+
+## SolidJS 是什麼？
+
+**SolidJS** 是一個聲明式、響應式、無虛擬 DOM 的 JavaScript UI 框架。由 Ryan Carniato 開發，目標是結合 React 的開發體驗與原生 JavaScript 的效能極限。
+
+### 核心特點：
+
+- 無虛擬 DOM，直接操作 DOM。
+- 精細響應性（fine-grained reactivity）。
+- JSX 為第一公民，編譯階段優化。
+- 極致效能：更新快速，資源佔用低。
+
+---
+
+## SolidJS vs React 比較
+
+| 面向              | React                                        | SolidJS                                             |
+| ----------------- | -------------------------------------------- | --------------------------------------------------- |
+| **渲染機制**      | 虛擬 DOM，每次更新整個組件重執行             | 無虛擬 DOM，每個 signal 控制 DOM，精確更新          |
+| **狀態管理**      | `useState`、`useReducer`，依賴 hook          | `createSignal` 為主，響應式狀態是語言層級核心       |
+| **副作用管理**    | `useEffect`，需手動列出依賴                  | `createEffect` 自動追蹤依賴                         |
+| **組件更新邏輯**  | 組件 function 每次 render 都會重新執行       | 組件只執行一次，變動由響應式系統處理                |
+| **JSX 編譯**      | Babel 轉成 React.createElement()             | 自行編譯為原生 DOM 操作碼                           |
+| **條件/列表渲染** | 使用 JS 表達式，如 `array.map()`、三元運算符 | 使用 `<For>`、`<Show>`、`<Switch>` 控制組件         |
+| **Context API**   | 使用 `createContext` / `useContext`          | 類似 API，但更新範圍更小，效率更高                  |
+| **生態與工具鏈**  | 巨大且成熟（Next.js、Redux、Tailwind 插件）  | 新興，但 SolidStart 支援 SSR、routing、meta tags 等 |
+| **學習曲線**      | 大多數開發者熟悉 React 概念                  | 語法簡潔但響應式模型需適應                          |
+| **效能表現**      | 中等偏上，需手動優化                         | 預設極速，幾乎可比原生操作                          |
+
+---
+
+### 核心差異補充說明
+
+#### 1. **重渲染模型的不同**
+
+React 中每次 state 改變，整個 function component 都會重新執行一次，可能導致非必要的效能損耗。SolidJS 則是依靠 signal 控制精確的 DOM 區塊更新，不會重新執行整個 component function。
+
+#### 2. **副作用處理更直覺**
+
+React 的 `useEffect` 需要手動維護 dependency array，容易漏或錯。Solid 的 `createEffect` 自動追蹤變數依賴，只要你用到某個 signal，它就會自動註冊。
+
+#### 3. **JSX 的優化差異**
+
+React 的 JSX 是透過 Babel 編譯為虛擬 DOM 結構再運行；SolidJS 則在編譯階段就轉換為「直接 DOM 操作」，免去 runtime 比對，大幅加快效能。
+
+---
+
+## 範例對比：計數器
+
+### React 寫法
+
+這我相當熟悉
+
+```jsx
+const [count, setCount] = useState(0);
+return <button onClick={() => setCount(count + 1)}>{count}</button>;
+```
+
+### Solid 寫法
+
+注意解構出來的第一個值是 getter function ，從 React 轉來容易漏了呼叫
+
+```jsx
+const [count, setCount] = createSignal(0);
+return <button onClick={() => setCount(count() + 1)}>{count()}</button>;
+```
+
+## 小結
+
+SolidJS 不是為了取代 React，而是針對極致效能與簡潔邏輯設計的選擇。
