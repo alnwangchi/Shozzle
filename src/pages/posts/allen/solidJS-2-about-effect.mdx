@@ -1,0 +1,118 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: solidJS 系列(2) - state management and props
+date: 2025-05-11
+author: Allen Wang
+image:
+  {
+    src: 'https://firebasestorage.googleapis.com/v0/b/for-my-images.firebasestorage.app/o/SolidJS-1.png?alt=media&token=f618cfbd-423a-40db-a97f-ac5d2b3ed4ff',
+    alt: 'solidJS'
+  }
+description: solidJS 系列，本篇探討 SolidJS 中的 state 與 props 管理方式，說明 createSignal 與 createStore 的差異與使用時機，並與 React 的 useState 進行比較。還有 SolidJS 中 props 的 reactive 行為以及為何不解構 props。
+draft: false
+category: solidJS
+---
+
+## 前言
+
+狀態管理是處理與操作(涉及儲存與更新)整個應用程式資料的過程，在 Solid 是透過 signal 與 subscriber 來實作，當 signal 改變有追蹤到的地方就會重新執行它的 getter function。在 React 是透過 useState hook 來實作，當 state 改變時整個元件都會重新渲染，因此兩者就有了更新粒度的差異。
+Solid 的核心是反應系統( Reactivity System )，它並不是透過整個元件的重新渲染來更新畫面，而是以細緻的追蹤機制，讓程式知道哪一行 code 依賴了哪一個 signal，然後只重新執行那一行。
+
+## `useState` and `createSignal`比較
+
+| 項目         | React `useState`      | SolidJS `createSignal`      |
+| ------------ | --------------------- | --------------------------- |
+| 回傳內容     | `[value, setValue]`   | `[getter, setter]`          |
+| 使用方式     | `count` 是值          | `count` 是函數（getter）    |
+| 更新後行為   | 觸發整個元件重新執行  | 只觸發使用 `count()` 的地方 |
+| 初次執行 JSX | 每次狀態變化重新跑    | 只執行一次（JSX 是靜態的）  |
+| 性能表現     | 依賴 Virtual DOM diff | 直接操作 DOM                |
+
+### React：`useState`
+
+```jsx
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  console.log('每次'); // 每次點擊都會 log 出來
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+### Solid : `createSignal`
+
+適合儲存基本型別的資料
+
+```jsx
+function Counter() {
+  const [count, setCount] = createSignal(0);
+
+  console.log('第一次'); // 只會在初始時執行一次
+
+  return (
+    <div>
+      <p>Count: {count()}</p>
+      <button onClick={() => setCount(count() + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+## `createStore`
+
+跟 `createSignal` 很像但是它是特別設計來儲存物件陣列等複雜資料，這個還沒弄很清楚有空在補
+
+## props
+
+需要特別注意的是 solid 所傳遞的 props 寫法上不建議直接解構，
+
+### React
+
+```jsx
+// React Component (可直接解構)
+function Greeting({ name }) {
+  return <h1>Hello, {name}!</h1>;
+}
+
+// 使用
+<Greeting name="Allen" />;
+```
+
+```jsx
+// 父元件
+function Parent() {
+  const [person, setPerson] = createSignal({ name: 'Allen', age: 30 });
+
+  setTimeout(() => {
+    setPerson({ name: 'Apple', age: 40 }); // 整個物件被替換
+  }, 2000);
+
+  return <Child person={person} />;
+}
+
+// 子元件
+function Child(props) {
+  // 這裡解構出來的是 person function
+  const { person } = props;
+
+  // 這裡再解構 person() 返回的物件
+  const { age } = person(); // 這樣會斷開響應連接!
+
+  return <div>Age: {age}</div>; // 不會變成 Apple 不會更新
+}
+```
+
+## 總結
+
+在 React 中，狀態變了就會觸發整個元件重新執行；
+在 Solid 中，只有用到那個狀態的「那一行」才會重新執行。
+
+從原本可解構的寫法來看可能會不太習慣，可以記住在傳遞 signal 時候永遠直接訪問不要解構來避免錯誤
