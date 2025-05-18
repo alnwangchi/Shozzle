@@ -38,15 +38,13 @@ const links = linkGenerator(data.links);
     {
       data?.intro && (
         <div>
-          <p class="pb-2 mb-2 text-lg tracking-[.2em] border-b border-solid border-soft">
-            ABOUT ME
-          </p>
+          <p class="pb-2 mb-2 text-lg border-b border-solid border-soft font-bold">About</p>
           <ul>{data.intro}</ul>
         </div>
       )
     }
     <div>
-      <p class="pb-2 mb-2 text-lg tracking-[.2em] border-b border-solid border-soft">SKILLS</p>
+      <p class="pb-2 mb-2 text-lg border-b border-solid border-soft font-bold">Skills</p>
       <ul>
         {data.skills.map((skill) => <li>{skill}</li>)}
       </ul>
