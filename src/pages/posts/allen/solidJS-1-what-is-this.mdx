@@ -36,12 +36,12 @@ category: solidJS
 
 | 面向              | React                                        | SolidJS                                             |
 | ----------------- | -------------------------------------------- | --------------------------------------------------- |
-| **渲染機制**      | 虛擬 DOM，每次更新整個組件重執行             | 無虛擬 DOM，每個 signal 控制 DOM，精確更新          |
+| **渲染機制**      | 虛擬 DOM，每次更新整個元件重執行             | 無虛擬 DOM，每個 signal 控制 DOM，精確更新          |
 | **狀態管理**      | `useState`、`useReducer`，依賴 hook          | `createSignal` 為主，響應式狀態是語言層級核心       |
 | **副作用管理**    | `useEffect`，需手動列出依賴                  | `createEffect` 自動追蹤依賴                         |
-| **組件更新邏輯**  | 組件 function 每次 render 都會重新執行       | 組件只執行一次，變動由響應式系統處理                |
+| **元件更新邏輯**  | 元件 function 每次 render 都會重新執行       | 元件只執行一次，變動由響應式系統處理                |
 | **JSX 編譯**      | Babel 轉成 React.createElement()             | 自行編譯為原生 DOM 操作碼                           |
-| **條件/列表渲染** | 使用 JS 表達式，如 `array.map()`、三元運算符 | 使用 `<For>`、`<Show>`、`<Switch>` 控制組件         |
+| **條件/列表渲染** | 使用 JS 表達式，如 `array.map()`、三元運算符 | 使用 `<For>`、`<Show>`、`<Switch>` 控制元件         |
 | **Context API**   | 使用 `createContext` / `useContext`          | 類似 API，但更新範圍更小，效率更高                  |
 | **生態與工具鏈**  | 巨大且成熟（Next.js、Redux、Tailwind 插件）  | 新興，但 SolidStart 支援 SSR、routing、meta tags 等 |
 | **學習曲線**      | 大多數開發者熟悉 React 概念                  | 語法簡潔但響應式模型需適應                          |
