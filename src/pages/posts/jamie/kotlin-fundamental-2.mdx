@@ -1,0 +1,143 @@
+---
+layout: '@layouts/BlogPostLayout.astro'
+title: Kotlin 系列(2)：Collections
+date: 2026-01-05
+author: Jamie Chien
+image: { src: 'https://meee.com.tw/VzcmICW.png', alt: '範例' }
+description: 簡單了解 List、Set 和 Map
+draft: false
+category: Kotlin
+tags: Shozzle
+---
+
+import { Callout } from '@components/postComponents/callout';
+
+## 前言
+
+上一篇講到變數和基本型別，這篇要來講 Collections，Collections 是用來組織與管理資料的核心工具，根據資料的**排列方式**、**重複性**以及**存取方式**，大致上可以分成 3 種（`List`, `Set`, `Map`），但根據唯獨（Read-only）與可變（Mutable），又可以衍生出另外 3 個可修改的集合（`MutableList`, `MutableSet`, `MutableMap`），應該不難發現其實就是加上 `Mutable` 這個前綴！下面就來過一下這些 Collections 的差異和使用吧～
+
+## 目錄
+
+- [List](#List)
+- [Set](#Set)
+- [Map](#Map)
+- [Recap](#Recap)
+- [轉換集合](#轉換集合)
+- [Reference](#reference)
+
+## List：有序且可重複的清單
+
+List 根據新增的順序來儲存項目，並且**允許**重複的項目。這就好比是排隊的人群，每個人都有一個特定的位置（也就是索引 Index），且同一個人可以重複出現在隊伍中。
+
+<Callout type="info">常見的使用情境是『購物車清單』或『使用者留言列表』</Callout>
+
+List 的建立可以分成 **read-only** 和 **mutable**，建立的方式如下：
+
+- Read-only: `listOf()`
+- Mutable: `mutableListOf()`
+
+### listOf
+
+```kotlin
+val readOnlyList = listOf("Apple", "Banana", "Apple")
+
+println(readOnlyList) // Output: [Apple, Banana, Apple] (順序不變，且允許重複)
+```
+
+### mutableListOf
+
+```kotlin
+val fruits = mutableListOf("Apple", "Banana")
+fruits.add("Orange")
+fruits[1] = "Big Banana"
+
+println(fruits) // Output: [Apple, Big Banana, Orange]
+```
+
+## Set：無序且獨一無二的集合
+
+Set 是一個**無序**且只能儲存**獨一無二**值的集合。這就像你丟了一大堆硬幣到一個袋子裡面，但在袋子中，同樣面額只會計算一次，也就是說你最後會得到一個存有各個獨一無二面額的集合。
+
+<Callout type="info">
+  常見的使用情境是『身分證字號清單』、『標籤（Tags）』或是用來排除重複項目
+</Callout>
+
+Set 的建立可以分成 **read-only** 和 **mutable**，建立的方式如下：
+
+- Read-only: `setOf()`
+- Mutable: `mutableSetOf()`
+
+### setOf
+
+```kotlin
+val readOnlySet = setOf("Taipei", "Taichung", "Kaohsiung", "Tainan", "Taipei")
+
+println(readOnlySet)  // Output: [Taipei, Taichung, Kaohsiung, Tainan] (重複的 Taipei 被忽略掉)
+```
+
+### mutableSetOf
+
+```kotlin
+val cities = mutableSetOf("Taipei", "Tainan")
+cities.add("New Taipei")
+cities.add("Yilan")
+
+println(cities) // Output: [Taipei, Tainan, New Taipei, Yilan]
+```
+
+## Map：成雙成對的 Key-Value 對
+
+Map 透過 **key-value** 對來儲存 items，在 Map 中每一個 key 都必須是**獨一無二**的，但對應的 value 則可以重複。Map 就像是字典或是電話簿（好老的詞 XD），可以透過『鍵（Key）』來查閱『值（Value）』。
+
+<Callout type="info">
+  常用的情境是『使用者帳號與個人資料的對應』、『產品 ID 與價格對照』...等
+</Callout>
+
+Map 的建立可以分成 **read-only** 和 **mutable**，建立的方式如下：
+
+- Read-only: `mapOf()`
+- Mutable: `mutableMapOf()`
+
+### mapOf
+
+```kotlin
+val readOnlyMap = mapOf("A01" to "Allen", "A02" to "Josh")
+
+println(readOnlyMap["A01"]) // Output: Allen
+```
+
+### mutableMapOf
+
+```kotlin
+val userScores = mutableMapOf("Kotlin" to 90, "Java" to 85)
+userScores["Kotlin"] = 100
+userScores["Python"] = 95
+
+println(userScores) // Output: {Kotlin=100, Java=85, Python=95}
+```
+
+## 轉換集合
+
+在食物中，有時候會需要轉換集合類型。例如：如果有一個包含重複資料的 List，想要快速去除重複的資料，那可以這樣做：
+
+```kotlin
+val numbers = listOf(1, 2, 2, 3, 4, 4, 4)
+val uniqueNumbers = numbers.toSet()
+
+println(uniqueNumbers)  // Output [1, 2, 3, 4]
+```
+
+## Recap
+
+| 種類   | 簡介                                                               |
+| ------ | ------------------------------------------------------------------ |
+| `List` | **有序**的集合                                                     |
+| `Set`  | **無序**的集合，且裡面的 items 為**獨一無二的**                    |
+| `Map`  | 使用**key-value**的方式儲存，且**每一個 key 只能對應到一個 value** |
+
+這篇主要是概括一些常見且簡單的集合，每個集合都有一些實用的 API 可以使用（e.g. 可以用 `first()` 取得 List 的第一個 item），更多 API 請參考官方的 [doc](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections)
+
+## Reference
+
+- [Kotlin - Collection](https://kotlinlang.org/docs/collections-overview.html#collection-types)
+- [Kotlin - Collection API](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections)
